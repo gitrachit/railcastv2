@@ -1,0 +1,22 @@
+{
+  "success": true,
+  "data": {
+    "trainNo": "22188",
+    "trainName": "INTERCITY EXP",
+    "from": "JBP",
+    "to": "RKMP",
+    "class": "CC",
+    "distance": 338,
+    "baseFare": 434,
+    "reservation": 40,
+    "superfast": 45,
+    "fuelAmount": 0,
+    "concession": 0,
+    "tatkalFare": 0,
+    "gst": 26,
+    "otherCharge": 0,
+    "catering": 0,
+    "dynamicFare": 0,
+    "totalFare": 545
+  }
+}
