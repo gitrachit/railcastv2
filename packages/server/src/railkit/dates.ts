@@ -54,6 +54,20 @@ export function parseUpstreamDateTime(value: string | null | undefined): string 
   return `${m[3]}-${pad(month)}-${pad(m[1]!)}T${pad(m[4]!)}:${m[5]}:00+05:30`;
 }
 
+/** checkPNRStatus datetime: "Jul 4, 2026 5:10:00 PM" → "2026-07-04T17:10:00+05:30". */
+export function parseUpstreamPnrDateTime(value: string | null | undefined): string | null {
+  if (!value) return null;
+  const m = /^([A-Za-z]{3}) (\d{1,2}), (\d{4}) (\d{1,2}):(\d{2}):(\d{2}) (AM|PM)$/.exec(
+    value.trim(),
+  );
+  if (!m) return null;
+  const month = MONTHS[m[1]!];
+  if (!month) return null;
+  let hour = Number(m[4]) % 12;
+  if (m[7] === "PM") hour += 12;
+  return `${m[3]}-${pad(month)}-${pad(m[2]!)}T${pad(hour)}:${m[5]}:${m[6]}+05:30`;
+}
+
 /** Upstream delay strings: "" → null, "On Time" → 0, "3 Min" → 3, "1 Hr 5 Min" → 65. */
 export function parseDelayMin(value: string | null | undefined): number | null {
   if (!value) return null;

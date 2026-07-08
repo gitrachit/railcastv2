@@ -9,6 +9,7 @@ Fastify + TypeScript (strict). Redis (cache, BullMQ), Postgres (users/watches/PN
 ## Env (.env is gitignored; dev script loads it)
 - `RAILKIT_API_KEY` — upstream key (invariant 1)
 - `AUTH_TOKEN_SECRET` — HMAC secret for device tokens (rotating it invalidates all tokens)
+- `PNR_ENCRYPTION_KEY` — 64 hex chars; AES-256-GCM for PNR data at rest + HMAC cache keys (rotating it drops cached PNRs)
 - `REDIS_URL` (default redis://127.0.0.1:6379) · `PORT` (default 3000)
 
 ## Module map

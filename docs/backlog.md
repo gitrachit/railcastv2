@@ -19,7 +19,7 @@ Use **plan mode** for every item marked ⚠ (structural — review the plan befo
 - [x] ⚠ **1.2 Cache layer**: Redis TTL cache per §10 of contracts; single-flight (one upstream call per key across concurrent waiters); stale-while-revalidate with `meta.stale`; unit tests incl. concurrency test.
 - [x] **1.3 Auth**: `POST /auth/device` anonymous tokens; Bearer middleware; per-device rate limit.
 - [x] ⚠ **1.4 `/screen/train`** [FR-2.1–2.4]: run-date probe (`run=auto` checks today & yesterday, picks active), merge track+route+coords, position interpolation, cancelled/diverted states, coach guide with reversal detection from coach-position timeline [FR-3.1–3.2].
-- [ ] **1.5 `/screen/pnr`** [FR-4.1, FR-4.3]: masked responses, AES-encrypted at rest, purge job (post-journey + N days), join live status.
+- [x] **1.5 `/screen/pnr`** [FR-4.1, FR-4.3]: masked responses, AES-encrypted at rest, purge job (post-journey + N days), join live status.
 - [ ] **1.6 `/screen/station`** [FR-5.1]: window param, cancelled rows.
 - [ ] **1.7 `/screen/plan` + row hydration** [FR-6.1–6.4]: quota-aware, `pending` rows, `/screen/plan/row`.
 

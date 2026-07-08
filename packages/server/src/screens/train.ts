@@ -131,6 +131,11 @@ function hasArrived(track: RawTrackTrain): boolean {
   return last?.status === "current";
 }
 
+/** TrainStatus for a given run — reused by /screen/pnr's live join. */
+export function composeStatus(info: RawTrainInfo, track: RawTrackTrain, runDate: string): TrainStatus {
+  return buildStatus(track, buildRoute(info, track, runDate));
+}
+
 interface ComposeArgs {
   trainNo: string;
   runDate: string;
