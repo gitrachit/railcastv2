@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Railcast</title>
+<style>
+:root{color-scheme:light dark;}
+body{margin:0;}
+.rc[data-theme="light"]{
+  --bg:#E7ECEF; --surface:#FFFFFF; --surface2:#F1F4F6; --ink:#0F2A33;
+  --ink2:#54696F; --ink3:#8FA1A8; --line:#DCE3E7; --brand:#2743C4;
+  --brandsoft:#EAEEFB; --green:#178A52; --greensoft:rgba(23,138,82,.14);
+  --amber:#C9770B; --ambersoft:rgba(201,119,11,.14); --red:#C33F3F; --redsoft:#FBECEC;
+  --board:#0F2A33; --boardgreen:#3DE08A; --boardamber:#FFC24D; --boardink:#7FA6AE;
+}
+.rc[data-theme="dark"]{
+  --bg:#081115; --surface:#0F2129; --surface2:#15303A; --ink:#EAF3F4;
+  --ink2:#9DB4BB; --ink3:#6C868E; --line:#1E3B45; --brand:#8098FF;
+  --brandsoft:#182747; --green:#3DBB77; --greensoft:rgba(61,187,119,.16);
+  --amber:#E7A542; --ambersoft:rgba(231,165,66,.16); --red:#E36868; --redsoft:#3A1E1E;
+  --board:#06151A; --boardgreen:#3DE08A; --boardamber:#FFC24D; --boardink:#6E969E;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+.rc{font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans",sans-serif;background:var(--bg);color:var(--ink);width:100%;min-height:100vh;display:flex;justify-content:center;}
+.mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-variant-numeric:tabular-nums;letter-spacing:-.01em;}
+.ic{display:inline-flex;align-items:center;justify-content:center;line-height:1;font-style:normal;}
+.rc-phone{width:100%;max-width:430px;min-height:100vh;background:var(--bg);display:flex;flex-direction:column;position:relative;}
+@media(min-width:460px){.rc-phone{min-height:880px;height:880px;margin:24px 0;border-radius:34px;overflow:hidden;box-shadow:0 30px 80px -20px rgba(15,42,51,.35),0 0 0 1px var(--line);}}
+.hidden{display:none !important;}
+
+/* onboarding */
+.rc-ob{position:absolute;inset:0;z-index:50;background:var(--bg);display:flex;flex-direction:column;padding:44px 26px 30px;gap:26px;}
+.rc-ob-hero{display:flex;flex-direction:column;align-items:center;gap:8px;margin-top:26px;}
+.rc-ob-hero h1{font-size:30px;font-weight:800;letter-spacing:-.03em;margin:6px 0 0;}
+.rc-ob-hero p{color:var(--ink2);font-size:14.5px;margin:0;}
+.rc-logo{width:26px;height:26px;border-radius:8px;background:var(--brand);color:#fff;display:grid;place-items:center;font-size:14px;}
+.rc-logo.big{width:52px;height:52px;border-radius:15px;font-size:26px;}
+.rc-ob-body{display:flex;flex-direction:column;gap:14px;margin-top:8px;position:relative;}
+.rc-ob-back{position:absolute;top:-10px;left:-6px;background:none;border:none;color:var(--ink3);cursor:pointer;padding:6px;font-size:20px;}
+.center{text-align:center;}
+.rc-ob-langs{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.rc-ob-lang{padding:17px 10px;border-radius:15px;border:1px solid var(--line);background:var(--surface);font-size:16.5px;font-weight:650;color:var(--ink);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;font-family:inherit;}
+.rc-ob-lang.on{border-color:var(--brand);box-shadow:0 0 0 2px var(--brandsoft);}
+.rc-ob-lang.dim{opacity:.55;}
+.rc-soon{font-size:9.5px;font-weight:500;color:var(--ink3);}
+.rc-ob-intents{display:flex;flex-direction:column;gap:10px;}
+.rc-ob-intent{display:flex;align-items:center;gap:13px;padding:17px 16px;border-radius:15px;border:1px solid var(--line);background:var(--surface);font-size:16px;font-weight:650;color:var(--ink);cursor:pointer;text-align:left;font-family:inherit;width:100%;}
+.rc-ob-intent .grow{flex:1;}
+
+/* chrome */
+.rc-brandbar{display:flex;align-items:center;justify-content:space-between;padding:16px 18px 10px;}
+.rc-brand{display:flex;align-items:center;gap:8px;}
+.rc-wordmark{font-weight:700;font-size:17px;letter-spacing:-.02em;}
+.rc-chrome{display:flex;align-items:center;gap:8px;}
+.rc-pill{display:flex;align-items:center;gap:5px;font-size:12px;font-weight:600;padding:6px 10px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink2);cursor:pointer;font-family:inherit;}
+.rc-icobtn{width:32px;height:32px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink2);display:grid;place-items:center;cursor:pointer;font-size:14px;}
+.rc-icobtn.warn{background:var(--amber);border-color:var(--amber);color:#fff;}
+.rc-offline{display:flex;align-items:center;gap:8px;margin:0 18px 4px;padding:9px 13px;border-radius:11px;background:var(--ambersoft);color:var(--amber);font-size:12px;font-weight:600;}
+
+/* main */
+.rc-main{flex:1;overflow-y:auto;padding:0 18px 96px;}
+.rc-screen{display:flex;flex-direction:column;gap:14px;padding-top:6px;}
+.rc-hello h1{font-size:26px;font-weight:700;letter-spacing:-.03em;margin:4px 0 2px;}
+.rc-hello.sm h1{font-size:22px;}
+.rc-hello p{color:var(--ink2);font-size:14px;margin:0;}
+.rc-eyebrow{font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--ink3);}
+.rc-muted{color:var(--ink3);}
+.rc-mt{margin-top:6px;}
+.rc-sectionrow{display:flex;align-items:center;justify-content:space-between;margin-top:4px;}
+
+/* search + results */
+.rc-searchwrap{position:relative;}
+.rc-search{display:flex;align-items:center;gap:11px;width:100%;padding:5px 6px 5px 16px;border-radius:16px;background:var(--surface);border:1px solid var(--line);color:var(--ink3);}
+.rc-search input{flex:1;border:none;background:none;outline:none;font-size:15px;color:var(--ink);padding:10px 0;font-family:inherit;min-width:0;}
+.rc-search input::placeholder{color:var(--ink3);}
+.rc-mic{width:40px;height:40px;border-radius:12px;border:none;background:var(--brandsoft);color:var(--brand);display:grid;place-items:center;cursor:pointer;flex:none;font-size:16px;}
+.rc-results{position:absolute;top:calc(100% + 6px);left:0;right:0;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:8px;z-index:30;box-shadow:0 18px 40px -12px rgba(15,42,51,.28);display:flex;flex-direction:column;gap:2px;}
+.rc-res-eyebrow{font-size:10px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--ink3);padding:7px 10px 3px;}
+.rc-res{display:flex;align-items:center;gap:10px;padding:10px;border:none;background:none;border-radius:11px;cursor:pointer;text-align:left;color:var(--ink);font-family:inherit;width:100%;}
+.rc-res:hover{background:var(--surface2);}
+.rc-res-ico{width:30px;height:30px;border-radius:9px;background:var(--surface2);color:var(--ink2);display:grid;place-items:center;flex:none;font-size:14px;}
+.rc-res-name{font-size:14.5px;font-weight:600;flex:1;}
+.rc-res-meta{font-size:11px;color:var(--ink3);}
+
+/* cards */
+.rc-card{width:100%;text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:11px;font-family:inherit;color:inherit;}
+button.rc-card{cursor:pointer;}
+.rc-livecard-top{display:flex;align-items:center;justify-content:space-between;}
+.rc-trainmeta{display:flex;flex-direction:column;gap:2px;}
+.rc-trainno{font-size:12.5px;font-weight:600;color:var(--ink3);}
+.rc-trainname{font-size:16px;font-weight:650;letter-spacing:-.01em;}
+.rc-livecard-status{display:flex;align-items:center;gap:9px;}
+.rc-statusdot{width:9px;height:9px;border-radius:999px;flex:none;background:var(--amber);}
+.rc-statusbig{font-size:19px;font-weight:700;letter-spacing:-.02em;}
+.rc-livecard-sub{font-size:12px;color:var(--ink2);}
+.rc-pnrrow{display:flex;gap:8px;flex-wrap:wrap;}
+.rc-chip{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;padding:5px 10px;border-radius:999px;background:var(--surface2);color:var(--ink2);}
+.rc-chip.ok{background:var(--greensoft);color:var(--green);}
+.rc-chartnote{font-size:12px;color:var(--amber);display:flex;align-items:center;gap:6px;flex-wrap:wrap;background:none;border:none;cursor:pointer;text-align:left;padding:0;font-family:inherit;width:100%;}
+.rc-chartnote.ready{color:var(--green);}
+.rc-chartnote b{font-size:13px;}
+.rc-demo-hint{margin-left:auto;font-size:10px;color:var(--ink3);font-style:italic;}
+.rc-nearbtn{display:flex;align-items:center;justify-content:center;gap:8px;padding:14px;border-radius:14px;background:var(--brandsoft);color:var(--brand);border:none;font-weight:650;font-size:14px;cursor:pointer;font-family:inherit;}
+
+/* live dot */
+.rc-livedot{display:inline-grid;place-items:center;width:14px;height:14px;}
+.rc-livedot i{width:8px;height:8px;border-radius:999px;background:var(--ink3);position:relative;display:block;}
+.rc-livedot.on i{background:var(--green);}
+.rc-livedot.on i::after{content:"";position:absolute;inset:-4px;border-radius:999px;background:var(--green);opacity:.35;animation:rcpulse 1.8s ease-out infinite;}
+@keyframes rcpulse{0%{transform:scale(.6);opacity:.5;}100%{transform:scale(2.2);opacity:0;}}
+
+/* run-date chip + sheet */
+.rc-runchip{align-self:flex-start;display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--ink2);background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:7px 12px;cursor:pointer;font-family:inherit;}
+.rc-scrim{position:absolute;inset:0;z-index:60;background:rgba(8,17,21,.5);display:flex;align-items:flex-end;}
+.rc-sheet{width:100%;background:var(--surface);border-radius:24px 24px 0 0;padding:12px 20px 30px;display:flex;flex-direction:column;gap:12px;}
+.rc-sheet-grab{width:38px;height:4px;border-radius:99px;background:var(--line);align-self:center;}
+.rc-sheet-title{font-size:15px;font-weight:700;}
+.rc-datebtn{display:flex;flex-direction:column;gap:4px;padding:15px 16px;border-radius:15px;border:1px solid var(--line);background:var(--surface2);cursor:pointer;text-align:left;color:var(--ink);font-family:inherit;width:100%;}
+.rc-datebtn.on{border-color:var(--brand);box-shadow:0 0 0 2px var(--brandsoft);}
+.rc-datebtn-main{font-size:16px;font-weight:700;}
+.rc-datebtn-sub{font-size:12px;color:var(--ink3);display:inline-flex;align-items:center;gap:5px;}
+.rc-datebtn-sub.ok{color:var(--green);font-weight:600;}
+
+/* board hero */
+.rc-board{background:var(--board);border-radius:20px;padding:18px 18px 14px;color:var(--boardink);box-shadow:inset 0 0 0 1px rgba(255,255,255,.04);}
+.rc-board.stale{opacity:.82;}
+.rc-board-head{display:flex;align-items:center;justify-content:space-between;}
+.rc-board-no{color:#fff;font-size:15px;font-weight:600;}
+.rc-board-live{display:flex;align-items:center;gap:5px;font-size:10.5px;font-weight:700;color:var(--boardgreen);letter-spacing:.12em;}
+.rc-board-name{font-size:11px;margin-top:10px;letter-spacing:.04em;}
+.rc-board-status{margin-top:8px;}
+.rc-board-status-main{color:var(--boardamber);font-size:22px;font-weight:700;display:block;text-shadow:0 0 18px rgba(255,194,77,.4);}
+.rc-board-flip{display:flex;align-items:center;gap:10px;margin-top:12px;font-size:12px;color:#cfe0e3;}
+.rc-board-arrow{color:var(--boardgreen);}
+.rc-board-foot{display:flex;align-items:center;justify-content:space-between;margin-top:14px;padding-top:11px;border-top:1px solid rgba(255,255,255,.08);font-size:10.5px;}
+.rc-refresh{display:flex;align-items:center;gap:5px;background:none;border:none;color:var(--boardgreen);font-size:10.5px;cursor:pointer;font-family:inherit;}
+
+/* predict/actions */
+.rc-predict{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--ink2);background:var(--surface2);padding:11px 14px;border-radius:13px;flex-wrap:wrap;}
+.rc-basis{font-size:11px;}
+.rc-actions{display:flex;gap:10px;}
+.rc-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;padding:14px;border-radius:14px;font-weight:650;font-size:14px;cursor:pointer;border:1px solid var(--line);font-family:inherit;}
+.rc-btn.primary{background:var(--brand);color:#fff;border-color:var(--brand);}
+.rc-btn.ghost{background:var(--surface);color:var(--ink);}
+.rc-btn.sq{flex:0 0 52px;}
+
+/* coach guide */
+.rc-coachcard{gap:14px;}
+.rc-seg{display:flex;gap:4px;background:var(--surface2);padding:4px;border-radius:12px;}
+.rc-seg.small{align-self:flex-start;}
+.rc-segbtn{border:none;background:none;padding:7px 12px;border-radius:9px;font-size:12.5px;font-weight:600;color:var(--ink2);cursor:pointer;display:inline-flex;align-items:center;gap:5px;font-family:inherit;}
+.rc-segbtn.on{background:var(--surface);color:var(--ink);box-shadow:0 1px 3px rgba(15,42,51,.12);}
+.rc-qhint{font-size:9.5px;color:var(--amber);font-weight:700;}
+.rc-platform{display:flex;align-items:center;gap:8px;}
+.rc-platend{font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);flex:none;}
+.rc-coaches{display:flex;gap:4px;flex:1;overflow-x:auto;padding-bottom:2px;}
+.rc-coach{flex:none;min-width:30px;height:34px;display:grid;place-items:center;border-radius:7px;background:var(--surface2);font-size:11px;font-weight:600;color:var(--ink2);border:1px solid var(--line);}
+.rc-coach.eng{background:var(--ink);color:var(--bg);min-width:22px;border-color:var(--ink);}
+.rc-coach.you{background:var(--brand);color:#fff;border-color:var(--brand);box-shadow:0 0 0 3px var(--brandsoft);}
+.rc-coach.gen{background:var(--green);color:#fff;border-color:var(--green);}
+.rc-youmark{display:flex;}
+.rc-youpill{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--brand);background:var(--brandsoft);padding:6px 12px;border-radius:999px;}
+.rc-reversed{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--amber);}
+
+/* timeline */
+.rc-timeline{display:flex;flex-direction:column;}
+.rc-stop{display:flex;gap:13px;}
+.rc-stopline{display:flex;flex-direction:column;align-items:center;}
+.rc-stopdot{width:12px;height:12px;border-radius:999px;border:2.5px solid var(--ink3);background:var(--surface);margin-top:3px;flex:none;z-index:1;}
+.rc-stoprail{flex:1;width:2.5px;background:var(--line);margin:2px 0;}
+.rc-stop.passed .rc-stopdot,.rc-stop.departed .rc-stopdot{border-color:var(--green);background:var(--green);}
+.rc-stop.passed .rc-stoprail,.rc-stop.departed .rc-stoprail{background:var(--green);}
+.rc-stop.next .rc-stopdot{border-color:var(--amber);background:var(--amber);box-shadow:0 0 0 4px var(--ambersoft);}
+.rc-stop.dest .rc-stopdot{border-color:var(--brand);}
+.rc-stopbody{flex:1;padding-bottom:20px;}
+.rc-stoprow{display:flex;align-items:baseline;justify-content:space-between;}
+.rc-stopname{font-size:15px;font-weight:600;}
+.rc-stop.next .rc-stopname{color:var(--amber);}
+.rc-stoptime{font-size:13px;color:var(--ink2);}
+.rc-stopmeta{font-size:11.5px;color:var(--ink3);margin-top:2px;}
+.rc-delay{color:var(--amber);font-weight:600;}
+.rc-next{color:var(--amber);font-weight:700;}
+
+/* station */
+.rc-stnhead{display:flex;align-items:flex-end;justify-content:space-between;}
+.rc-stncode{font-size:30px;font-weight:700;line-height:1.05;margin-top:2px;}
+.rc-fresh{font-size:11px;color:var(--ink3);}
+.rc-segwrap{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.rc-seglabel{font-size:12px;color:var(--ink3);}
+.rc-boardlist{display:flex;flex-direction:column;gap:8px;}
+.rc-boardrow{display:flex;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px;}
+.rc-boardrow.dead{background:var(--redsoft);border-color:rgba(195,63,63,.3);}
+.rc-br-time{display:flex;flex-direction:column;align-items:flex-start;gap:3px;min-width:62px;}
+.rc-br-clock{font-size:16px;font-weight:700;}
+.rc-boardrow.dead .rc-br-clock{text-decoration:line-through;color:var(--ink3);}
+.rc-br-delay{font-size:10px;font-weight:700;padding:2px 6px;border-radius:6px;display:inline-flex;align-items:center;gap:3px;}
+.rc-br-delay.late{background:var(--ambersoft);color:var(--amber);}
+.rc-br-delay.ok{background:var(--greensoft);color:var(--green);}
+.rc-br-delay.bad{background:rgba(195,63,63,.15);color:var(--red);}
+.rc-br-mid{flex:1;min-width:0;}
+.rc-br-name{font-size:14px;font-weight:600;display:flex;gap:6px;align-items:baseline;flex-wrap:wrap;}
+.rc-br-name .mono{font-size:11px;font-weight:500;}
+.rc-br-to{font-size:12px;color:var(--ink3);margin-top:1px;}
+.rc-altbtn{margin-top:7px;display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:700;color:var(--brand);background:var(--brandsoft);border:none;border-radius:999px;padding:6px 12px;cursor:pointer;font-family:inherit;}
+.rc-br-pf{display:flex;flex-direction:column;align-items:center;min-width:34px;}
+.rc-pflabel{font-size:9px;letter-spacing:.08em;color:var(--ink3);text-transform:uppercase;}
+.rc-pfnum{font-size:20px;font-weight:700;line-height:1;}
+
+/* plan */
+.rc-tqremind{align-self:flex-start;display:inline-flex;align-items:center;gap:7px;font-size:12.5px;font-weight:650;color:var(--amber);background:var(--ambersoft);border:none;border-radius:999px;padding:8px 14px;cursor:pointer;font-family:inherit;}
+.rc-plancard{padding:0;overflow:hidden;}
+.rc-planhead{width:100%;background:none;border:none;text-align:left;cursor:pointer;padding:16px;display:flex;flex-direction:column;gap:11px;color:inherit;font-family:inherit;}
+.rc-plantimes{display:flex;align-items:center;gap:12px;}
+.rc-bigtime{font-size:22px;font-weight:700;}
+.rc-planarrow{color:var(--ink3);}
+.rc-planmeta{display:flex;flex-direction:column;gap:1px;}
+.rc-planstats{display:flex;align-items:center;justify-content:space-between;}
+.rc-fare{display:inline-flex;align-items:center;font-size:17px;font-weight:700;}
+.rc-punct{display:flex;align-items:center;gap:9px;}
+.rc-punctbar{flex:1;height:6px;border-radius:999px;background:var(--surface2);overflow:hidden;}
+.rc-punctbar i{display:block;height:100%;background:var(--green);border-radius:999px;}
+.rc-caret{transition:transform .2s;color:var(--ink3);display:inline-block;}
+.rc-caret.up{transform:rotate(180deg);}
+.rc-farebreak{border-top:1px solid var(--line);padding:14px 16px;display:flex;flex-direction:column;gap:9px;background:var(--surface2);}
+.rc-fareline{display:flex;justify-content:space-between;font-size:13.5px;color:var(--ink2);}
+.rc-fareline.total{border-top:1px dashed var(--line);padding-top:9px;font-weight:700;color:var(--ink);font-size:15px;}
+
+/* alerts */
+.rc-alertrow{flex-direction:row;align-items:center;gap:13px;}
+.rc-alerticon{width:38px;height:38px;border-radius:11px;background:var(--brandsoft);color:var(--brand);display:grid;place-items:center;flex:none;font-size:16px;}
+.rc-alertbody{flex:1;display:flex;flex-direction:column;gap:2px;}
+.rc-alerttitle{font-size:14.5px;font-weight:650;}
+.rc-alertsub{font-size:12px;}
+.rc-toggle{width:46px;height:28px;border-radius:999px;background:var(--line);border:none;position:relative;cursor:pointer;flex:none;transition:background .2s;}
+.rc-toggle.on{background:var(--brand);}
+.rc-knob{position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:999px;background:#fff;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.25);}
+.rc-toggle.on .rc-knob{transform:translateX(18px);}
+
+/* push toast */
+.rc-push{position:absolute;top:14px;left:14px;right:14px;z-index:70;display:flex;gap:11px;align-items:flex-start;background:var(--surface);border:1px solid var(--line);border-radius:17px;padding:13px 15px;box-shadow:0 20px 44px -12px rgba(15,42,51,.4);animation:rcdrop .35s cubic-bezier(.2,.9,.3,1.2);}
+@keyframes rcdrop{from{transform:translateY(-24px);opacity:0;}to{transform:translateY(0);opacity:1;}}
+.rc-push-ico{width:34px;height:34px;border-radius:10px;background:var(--greensoft);color:var(--green);display:grid;place-items:center;flex:none;font-size:16px;}
+.rc-push-title{font-size:11px;font-weight:700;color:var(--ink3);letter-spacing:.03em;}
+.rc-push-body{font-size:13.5px;font-weight:600;margin-top:2px;line-height:1.35;}
+
+/* nav */
+.rc-nav{position:absolute;bottom:0;left:0;right:0;display:flex;background:var(--surface);border-top:1px solid var(--line);padding:8px 6px calc(8px + env(safe-area-inset-bottom));z-index:20;}
+.rc-tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;background:none;border:none;padding:6px 0;color:var(--ink3);font-size:10.5px;font-weight:600;cursor:pointer;font-family:inherit;}
+.rc-tab .ic{font-size:18px;}
+.rc-tab.on{color:var(--brand);}
+
+button:focus-visible{outline:2px solid var(--brand);outline-offset:2px;border-radius:12px;}
+@media(prefers-reduced-motion:reduce){.rc-livedot.on i::after{animation:none;}.rc-push{animation:none;}*{transition:none!important;}}
+</style>
+</head>
+<body>
+<div class="rc" id="app" data-theme="light">
+  <div class="rc-phone">
+    <div id="ob"></div>
+    <div class="rc-brandbar">
+      <div class="rc-brand"><span class="rc-logo"><span class="ic">🚆</span></span><span class="rc-wordmark">Railcast</span></div>
+      <div class="rc-chrome">
+        <button class="rc-icobtn" id="btn-offline" data-act="offline" aria-label="demo offline"><span class="ic">📵</span></button>
+        <button class="rc-pill" data-act="lang-toggle"><span class="ic">🌐</span>&nbsp;<span id="langlabel">EN</span></button>
+        <button class="rc-icobtn" data-act="theme" aria-label="theme"><span class="ic" id="themeic">🌙</span></button>
+      </div>
+    </div>
+    <div class="rc-offline hidden" id="offlinestrip"></div>
+    <main class="rc-main">
+      <div class="rc-screen" id="screen-home"></div>
+      <div class="rc-screen hidden" id="screen-track"></div>
+      <div class="rc-screen hidden" id="screen-station"></div>
+      <div class="rc-screen hidden" id="screen-plan"></div>
+      <div class="rc-screen hidden" id="screen-alerts"></div>
+    </main>
+    <div id="push"></div>
+    <div id="sheet"></div>
+    <nav class="rc-nav" id="nav"></nav>
+  </div>
+</div>
+
+<script>
+"use strict";
+
+/* ---------------- state ---------------- */
+var state = {
+  onboard: "lang", tab: "home", lang: "en", dark: false, offline: false,
+  hrs: 4, quota: "GN", openRow: "22188", coachMode: "mine",
+  chartReady: false, runDate: "today", secs: 12, dateSheet: false,
+  alerts: { chart: true, arr: true, delay: false, quiet: true }
+};
+
+/* ---------------- i18n ---------------- */
+var STR = {
+  en: {
+    hello: "Good evening", sub: "Your journeys, live.",
+    searchPh: "Train name, number, PNR or station",
+    trains: "Trains", stations: "Stations",
+    near: "Trains near me", saved: "Saved journeys",
+    nav_home: "Home", nav_track: "Track", nav_station: "Station", nav_plan: "Plan", nav_alerts: "Alerts",
+    running: "Running", late: "late", min: "min",
+    updated: "updated", ago: "ago", now: "just now",
+    cachedAt: "Showing cached data from 6:40 PM — no connection",
+    departed: "departed", next: "Next", est: "estimated position",
+    day: "Day", journey: "Journey",
+    predict: "Usually ~20 min late by Narmadapuram", predictWhy: "based on last 30 runs",
+    alarm: "Arrival alarm", speak: "Speak status",
+    startWhen: "When did this train start?", startToday: "Started today", startYest: "Started yesterday",
+    autoDetect: "auto-detected · running now", notRun: "no active run",
+    coachTitle: "Coach & platform at Narmadapuram", myCoach: "My coach", genMode: "General coaches",
+    standHere: "Stand here", genHint: "General coaches stop at the front and rear here",
+    reversed: "Reverses at Itarsi — coach order flips after this stop",
+    front: "Front", rear: "Rear", destination: "Destination",
+    chartNo: "Chart not prepared", chartHint: "We'll alert you the moment it's ready.",
+    chartYes: "Chart prepared", chartTap: "tap to preview the alert",
+    allConf: "All 4 confirmed", pushTitle: "Railcast · now",
+    pushBody: "Chart prepared — Goa Express. All 4 passengers confirmed, coach A1.",
+    boardTitle: "Live at Jabalpur", within: "Next", hrs: "hrs", plat: "PF",
+    cancelled: "Cancelled", cancelHelp: "See alternatives",
+    planTitle: "Jabalpur → Narsinghpur", planSub: "Tomorrow, 4 Jul",
+    quota: "Quota", qGN: "General", qTQ: "Tatkal", qTQhint: "opens 10 AM", qSS: "Senior citizen",
+    tatkalRemind: "Remind me when Tatkal opens",
+    seats: "seats", punctual: "punctuality",
+    fareBreak: "Fare breakdown", base: "Base fare", resv: "Reservation", sf: "Superfast",
+    tatkalFee: "Tatkal charge", gst: "GST", total: "Total",
+    alertsTitle: "Your alerts", chartAlert: "Chart prepared alert", chartAlertSub: "PNR ••••2882 · Goa Express",
+    arrAlert: "Arrival alarm", arrAlertSub: "22188 · wake me 20 min before Rani Kamlapati",
+    delayAlert: "Delay & platform alerts", delayAlertSub: "All saved trains",
+    quiet: "Quiet hours", quietSub: "11 PM – 6 AM · only alarms come through",
+    onT: "On time",
+    ob_sub: "Trains, live. No ads, ever.",
+    ob_q: "What do you want to do?",
+    ob_track: "Track a train", ob_pnr: "Check my PNR", ob_near: "Trains near me",
+    ob_lang: "Choose your language",
+    icx: "Intercity Express", goa: "Goa Express", itarsi: "Itarsi Jn", ndpm: "Narmadapuram"
+  },
+  hi: {
+    hello: "शुभ संध्या", sub: "आपकी यात्राएँ, लाइव।",
+    searchPh: "ट्रेन नाम, नंबर, PNR या स्टेशन",
+    trains: "ट्रेनें", stations: "स्टेशन",
+    near: "आस-पास की ट्रेनें", saved: "सहेजी यात्राएँ",
+    nav_home: "होम", nav_track: "ट्रैक", nav_station: "स्टेशन", nav_plan: "प्लान", nav_alerts: "अलर्ट",
+    running: "चल रही है", late: "देरी", min: "मिनट",
+    updated: "अपडेट", ago: "पहले", now: "अभी",
+    cachedAt: "6:40 PM का सहेजा डेटा — नेटवर्क नहीं है",
+    departed: "रवाना", next: "अगला", est: "अनुमानित स्थिति",
+    day: "दिन", journey: "यात्रा",
+    predict: "आम तौर पर नर्मदापुरम तक ~20 मिनट देरी", predictWhy: "पिछली 30 यात्राओं के आधार पर",
+    alarm: "पहुँचने का अलार्म", speak: "स्थिति सुनें",
+    startWhen: "यह ट्रेन कब चली थी?", startToday: "आज चली", startYest: "कल चली",
+    autoDetect: "स्वतः पहचाना · अभी चल रही है", notRun: "कोई सक्रिय यात्रा नहीं",
+    coachTitle: "नर्मदापुरम पर कोच और प्लेटफ़ॉर्म", myCoach: "मेरा कोच", genMode: "जनरल कोच",
+    standHere: "यहाँ खड़े हों", genHint: "जनरल कोच यहाँ आगे और पीछे रुकते हैं",
+    reversed: "इटारसी पर दिशा बदलती है — इसके बाद कोच क्रम पलट जाता है",
+    front: "आगे", rear: "पीछे", destination: "गंतव्य",
+    chartNo: "चार्ट नहीं बना", chartHint: "तैयार होते ही हम बता देंगे।",
+    chartYes: "चार्ट तैयार", chartTap: "अलर्ट देखने के लिए टैप करें",
+    allConf: "चारों कन्फर्म", pushTitle: "Railcast · अभी",
+    pushBody: "चार्ट तैयार — गोवा एक्सप्रेस। चारों यात्री कन्फर्म, कोच A1।",
+    boardTitle: "जबलपुर पर लाइव", within: "अगले", hrs: "घंटे", plat: "PF",
+    cancelled: "रद्द", cancelHelp: "विकल्प देखें",
+    planTitle: "जबलपुर → नरसिंहपुर", planSub: "कल, 4 जुलाई",
+    quota: "कोटा", qGN: "सामान्य", qTQ: "तत्काल", qTQhint: "10 बजे", qSS: "वरिष्ठ नागरिक",
+    tatkalRemind: "तत्काल खुलने पर याद दिलाएँ",
+    seats: "सीटें", punctual: "समयबद्धता",
+    fareBreak: "किराया विवरण", base: "मूल किराया", resv: "आरक्षण", sf: "सुपरफ़ास्ट",
+    tatkalFee: "तत्काल शुल्क", gst: "GST", total: "कुल",
+    alertsTitle: "आपके अलर्ट", chartAlert: "चार्ट तैयार अलर्ट", chartAlertSub: "PNR ••••2882 · गोवा एक्सप्रेस",
+    arrAlert: "पहुँचने का अलार्म", arrAlertSub: "22188 · रानी कमलापति से 20 मिनट पहले",
+    delayAlert: "देरी और प्लेटफ़ॉर्म अलर्ट", delayAlertSub: "सभी सहेजी ट्रेनें",
+    quiet: "शांत घंटे", quietSub: "रात 11 – सुबह 6 · केवल अलार्म",
+    onT: "समय पर",
+    ob_sub: "ट्रेनें, लाइव। विज्ञापन कभी नहीं।",
+    ob_q: "आप क्या करना चाहते हैं?",
+    ob_track: "ट्रेन ट्रैक करें", ob_pnr: "PNR देखें", ob_near: "आस-पास की ट्रेनें",
+    ob_lang: "अपनी भाषा चुनें",
+    icx: "इंटरसिटी एक्सप्रेस", goa: "गोवा एक्सप्रेस", itarsi: "इटारसी", ndpm: "नर्मदापुरम"
+  }
+};
+function t(k) { return (STR[state.lang] && STR[state.lang][k]) || STR.en[k] || k; }
+
+/* ---------------- data ---------------- */
+var DIR_TRAINS = [
+  { no: "22188", en: "Intercity Express", hi: "इंटरसिटी एक्सप्रेस", route: "ADTL → RKMP" },
+  { no: "12780", en: "Goa Express", hi: "गोवा एक्सप्रेस", route: "NZM → VSG" },
+  { no: "12854", en: "Amarkantak Express", hi: "अमरकंटक एक्सप्रेस", route: "BPL → DURG" },
+  { no: "18234", en: "Narmada Express", hi: "नर्मदा एक्सप्रेस", route: "BSP → INDB" },
+  { no: "15206", en: "Chitrakoot Express", hi: "चित्रकूट एक्सप्रेस", route: "JBP → LJN" },
+  { no: "11447", en: "Shaktipunj Express", hi: "शक्तिपुंज एक्सप्रेस", route: "JBP → HWH" }
+];
+var DIR_STATIONS = [
+  { code: "JBP", en: "Jabalpur", hi: "जबलपुर" },
+  { code: "RKMP", en: "Rani Kamlapati", hi: "रानी कमलापति" },
+  { code: "BPL", en: "Bhopal Jn", hi: "भोपाल जं" },
+  { code: "NDLS", en: "New Delhi", hi: "नई दिल्ली" },
+  { code: "PUNE", en: "Pune Jn", hi: "पुणे जं" },
+  { code: "NU", en: "Narsinghpur", hi: "नरसिंहपुर" }
+];
+var ROUTE = [
+  { code: "ADTL", en: "Adhartal", hi: "अधारताल", d: 0, delay: 0, st: "passed", tm: "16:15" },
+  { code: "JBP", en: "Jabalpur", hi: "जबलपुर", d: 8, delay: 12, st: "passed", tm: "16:47" },
+  { code: "SRID", en: "Sridham", hi: "श्रीधाम", d: 61, delay: 22, st: "passed", tm: "17:40" },
+  { code: "NU", en: "Narsinghpur", hi: "नरसिंहपुर", d: 92, delay: 20, st: "passed", tm: "18:05" },
+  { code: "PPI", en: "Pipariya", hi: "पिपरिया", d: 186, delay: 40, st: "passed", tm: "19:35" },
+  { code: "ET", en: "Itarsi Jn", hi: "इटारसी जं", d: 253, delay: 17, st: "departed", tm: "20:47" },
+  { code: "NDPM", en: "Narmadapuram", hi: "नर्मदापुरम", d: 271, delay: 22, st: "next", tm: "21:12" },
+  { code: "RKMP", en: "Rani Kamlapati", hi: "रानी कमलापति", d: 339, delay: 0, st: "dest", tm: "22:23" }
+];
+var COACHES = ["ENG", "GEN", "GEN", "B1", "B2", "C1", "C2", "D1", "D2", "GEN", "GEN"];
+var BOARD = [
+  { no: "12854", name: "Amarkantak Exp", to: "Durg", toHi: "दुर्ग", pf: "6", tm: "21:52", delay: 17, st: "late" },
+  { no: "01143", name: "LTT–DNR Special", to: "Danapur", toHi: "दानापुर", pf: "—", tm: "02:25", delay: 0, st: "cancelled" },
+  { no: "11447", name: "Shaktipunj Exp", to: "Howrah Jn", toHi: "हावड़ा जं", pf: "2", tm: "22:25", delay: 0, st: "ontime" },
+  { no: "11056", name: "Godan Express", to: "Lokmanya Tilak T", toHi: "लोकमान्य तिलक", pf: "1", tm: "22:45", delay: 0, st: "ontime" },
+  { no: "22192", name: "JBP–INDB SF Exp", to: "Indore Jn", toHi: "इंदौर जं", pf: "6", tm: "23:30", delay: 0, st: "ontime" }
+];
+var PLAN = {
+  GN: [
+    { no: "22188", name: "Intercity Express", dep: "16:15", arr: "17:45", dur: "1h 30m", cls: "CC", seats: 56, pct: 78, fare: 320, fb: { base: 219, resv: 40, sf: 45, tq: 0, gst: 16 } },
+    { no: "15206", name: "Chitrakoot Express", dep: "20:50", arr: "22:14", dur: "1h 24m", cls: "SL", seats: 12, pct: 64, fare: 175, fb: { base: 140, resv: 20, sf: 0, tq: 0, gst: 15 } }
+  ],
+  TQ: [
+    { no: "22188", name: "Intercity Express", dep: "16:15", arr: "17:45", dur: "1h 30m", cls: "CC", seats: 14, pct: 90, fare: 435, fb: { base: 219, resv: 40, sf: 45, tq: 115, gst: 16 } },
+    { no: "15206", name: "Chitrakoot Express", dep: "20:50", arr: "22:14", dur: "1h 24m", cls: "SL", seats: 4, pct: 71, fare: 260, fb: { base: 140, resv: 20, sf: 0, tq: 85, gst: 15 } }
+  ],
+  SS: [
+    { no: "22188", name: "Intercity Express", dep: "16:15", arr: "17:45", dur: "1h 30m", cls: "CC", seats: 6, pct: 82, fare: 240, fb: { base: 164, resv: 40, sf: 45, tq: 0, gst: 12 } }
+  ]
+};
+
+/* ---------------- helpers ---------------- */
+function el(id) { return document.getElementById(id); }
+function freshText() {
+  if (state.offline) return "6:40 PM";
+  if (state.secs < 3) return t("now");
+  return t("updated") + " " + state.secs + "s " + t("ago");
+}
+function loc(item) { return state.lang === "hi" && item.hi ? item.hi : item.en; }
+
+/* ---------------- renderers ---------------- */
+function renderOb() {
+  var ob = el("ob");
+  if (state.onboard === "done") { ob.innerHTML = ""; ob.className = "hidden"; return; }
+  ob.className = "rc-ob";
+  var hero = '<div class="rc-ob-hero"><span class="rc-logo big"><span class="ic">🚆</span></span>' +
+    '<h1>Railcast</h1><p>' + t("ob_sub") + '</p></div>';
+  var body = "";
+  if (state.onboard === "lang") {
+    var langs = [["en", "English"], ["hi", "हिन्दी"], ["bn", "বাংলা"], ["ta", "தமிழ்"], ["te", "తెలుగు"], ["mr", "मराठी"]];
+    body = '<div class="rc-ob-body"><div class="rc-eyebrow center">' + t("ob_lang") + '</div><div class="rc-ob-langs">' +
+      langs.map(function (L) {
+        var avail = !!STR[L[0]];
+        return '<button class="rc-ob-lang ' + (state.lang === L[0] ? "on " : "") + (avail ? "" : "dim") + '" data-act="ob-lang" data-lang="' + L[0] + '">' +
+          L[1] + (avail ? "" : '<span class="rc-soon">demo: EN/HI</span>') + '</button>';
+      }).join("") + '</div></div>';
+  } else {
+    var intents = [["🧭", "ob_track", "track"], ["🎫", "ob_pnr", "home"], ["📍", "ob_near", "station"]];
+    body = '<div class="rc-ob-body"><button class="rc-ob-back" data-act="ob-back">‹</button>' +
+      '<div class="rc-eyebrow center">' + t("ob_q") + '</div><div class="rc-ob-intents">' +
+      intents.map(function (I) {
+        return '<button class="rc-ob-intent" data-act="ob-intent" data-dest="' + I[2] + '">' +
+          '<span class="ic" style="font-size:20px">' + I[0] + '</span><span class="grow">' + t(I[1]) + '</span><span class="rc-muted">›</span></button>';
+      }).join("") + '</div></div>';
+  }
+  ob.innerHTML = hero + body;
+}
+
+function renderChrome() {
+  el("app").setAttribute("data-theme", state.dark ? "dark" : "light");
+  el("themeic").textContent = state.dark ? "☀️" : "🌙";
+  el("langlabel").textContent = state.lang === "en" ? "EN" : "हिं";
+  el("btn-offline").className = "rc-icobtn" + (state.offline ? " warn" : "");
+  var strip = el("offlinestrip");
+  if (state.offline) {
+    strip.className = "rc-offline";
+    strip.innerHTML = '<span class="ic">📵</span> ' + t("cachedAt");
+  } else {
+    strip.className = "rc-offline hidden";
+  }
+}
+
+function renderNav() {
+  var tabs = [["home", "🏠", "nav_home"], ["track", "🧭", "nav_track"], ["station", "📍", "nav_station"], ["plan", "📅", "nav_plan"], ["alerts", "🔔", "nav_alerts"]];
+  el("nav").innerHTML = tabs.map(function (T) {
+    return '<button class="rc-tab ' + (state.tab === T[0] ? "on" : "") + '" data-act="tab" data-tab="' + T[0] + '">' +
+      '<span class="ic">' + T[1] + '</span><span>' + t(T[2]) + '</span></button>';
+  }).join("");
+  ["home", "track", "station", "plan", "alerts"].forEach(function (s) {
+    el("screen-" + s).className = "rc-screen" + (state.tab === s ? "" : " hidden");
+  });
+}
+
+function renderHome() {
+  var chart = state.chartReady
+    ? '<span class="ic">🎉</span> <b>' + t("chartYes") + '</b><span class="rc-demo-hint">' + t("chartTap") + '</span>'
+    : '<span class="ic">⚠️</span> ' + t("chartNo") + ' — <span class="rc-muted">' + t("chartHint") + '</span><span class="rc-demo-hint">' + t("chartTap") + '</span>';
+  el("screen-home").innerHTML =
+    '<div class="rc-hello"><h1>' + t("hello") + '</h1><p>' + t("sub") + '</p></div>' +
+    '<div class="rc-searchwrap">' +
+      '<div class="rc-search"><span class="ic">🔍</span>' +
+      '<input id="q" placeholder="' + t("searchPh") + '" autocomplete="off" />' +
+      '<button class="rc-mic" data-act="mic" aria-label="voice"><span class="ic">🎤</span></button></div>' +
+      '<div id="results"></div>' +
+    '</div>' +
+    '<div class="rc-sectionrow"><span class="rc-eyebrow">' + t("saved") + '</span>' +
+      '<span class="rc-livedot ' + (state.offline ? "" : "on") + '"><i></i></span></div>' +
+    '<button class="rc-card" data-act="open-datesheet">' +
+      '<div class="rc-livecard-top"><div class="rc-trainmeta"><span class="rc-trainno mono">22188</span>' +
+      '<span class="rc-trainname">' + t("icx") + '</span></div><span class="rc-muted">›</span></div>' +
+      '<div class="rc-livecard-status"><span class="rc-statusdot"></span>' +
+      '<span class="rc-statusbig">' + t("running") + ' · 17 ' + t("min") + ' ' + t("late") + '</span></div>' +
+      '<div class="rc-livecard-sub mono">' + t("departed") + ' ' + t("itarsi") + ' → ' + t("next") + ': ' + t("ndpm") + ' · <span class="js-fresh">' + freshText() + '</span></div>' +
+    '</button>' +
+    '<div class="rc-card">' +
+      '<div class="rc-livecard-top"><div class="rc-trainmeta"><span class="rc-trainno mono">PNR ••••2882</span>' +
+      '<span class="rc-trainname">' + t("goa") + ' · 12780</span></div></div>' +
+      '<div class="rc-pnrrow"><span class="rc-chip ok">✓ ' + t("allConf") + '</span>' +
+      '<span class="rc-chip mono">A1 · 14,15,16,18</span></div>' +
+      '<button class="rc-chartnote ' + (state.chartReady ? "ready" : "") + '" data-act="chart-demo">' + chart + '</button>' +
+    '</div>' +
+    '<button class="rc-nearbtn"><span class="ic">📍</span> ' + t("near") + '</button>';
+}
+
+function renderResults(q) {
+  var box = el("results");
+  if (!box) return;
+  q = (q || "").trim().toLowerCase();
+  if (q.length < 2) { box.innerHTML = ""; box.className = ""; return; }
+  var tr = DIR_TRAINS.filter(function (x) { return x.no.indexOf(q) >= 0 || x.en.toLowerCase().indexOf(q) >= 0 || x.hi.indexOf(q) >= 0; }).slice(0, 3);
+  var st = DIR_STATIONS.filter(function (x) { return x.code.toLowerCase().indexOf(q) >= 0 || x.en.toLowerCase().indexOf(q) >= 0 || x.hi.indexOf(q) >= 0; }).slice(0, 3);
+  if (!tr.length && !st.length) { box.innerHTML = ""; box.className = ""; return; }
+  var h = "";
+  if (tr.length) {
+    h += '<div class="rc-res-eyebrow">' + t("trains") + '</div>' + tr.map(function (x) {
+      return '<button class="rc-res" data-act="res-train"><span class="rc-res-ico"><span class="ic">🚆</span></span>' +
+        '<span class="rc-res-name">' + loc(x) + '</span><span class="rc-res-meta mono">' + x.no + ' · ' + x.route + '</span></button>';
+    }).join("");
+  }
+  if (st.length) {
+    h += '<div class="rc-res-eyebrow">' + t("stations") + '</div>' + st.map(function (x) {
+      return '<button class="rc-res" data-act="res-station"><span class="rc-res-ico"><span class="ic">📍</span></span>' +
+        '<span class="rc-res-name">' + loc(x) + '</span><span class="rc-res-meta mono">' + x.code + '</span></button>';
+    }).join("");
+  }
+  box.className = "rc-results";
+  box.innerHTML = h;
+}
+
+function renderTrack() {
+  var gen = state.coachMode === "gen";
+  var coaches = COACHES.map(function (c) {
+    var cls = "rc-coach mono";
+    if (c === "ENG") cls += " eng";
+    if (!gen && c === "B2") cls += " you";
+    if (gen && c === "GEN") cls += " gen";
+    return '<span class="' + cls + '">' + (c === "ENG" ? "▮" : c) + '</span>';
+  }).join("");
+  var stops = ROUTE.map(function (s, i) {
+    var meta;
+    if (s.st === "dest") meta = t("destination");
+    else if (s.st === "next") meta = '<span class="rc-next">' + t("next") + ' · ETA</span>';
+    else if (s.st === "departed") meta = t("departed");
+    else meta = s.d + " km";
+    if (s.delay > 0 && s.st !== "dest") meta += '<span class="rc-delay"> · +' + s.delay + " " + t("min") + '</span>';
+    return '<div class="rc-stop ' + s.st + '"><div class="rc-stopline"><span class="rc-stopdot"></span>' +
+      (i < ROUTE.length - 1 ? '<span class="rc-stoprail"></span>' : "") + '</div>' +
+      '<div class="rc-stopbody"><div class="rc-stoprow"><span class="rc-stopname">' + loc(s) + '</span>' +
+      '<span class="rc-stoptime mono">' + s.tm + '</span></div>' +
+      '<div class="rc-stopmeta mono">' + meta + '</div></div></div>';
+  }).join("");
+  el("screen-track").innerHTML =
+    '<button class="rc-runchip mono" data-act="open-datesheet"><span class="ic">📅</span> ' +
+      (state.runDate === "today" ? t("startToday") : t("startYest")) + ' · ' + t("day") + ' 1 <span>˅</span></button>' +
+    '<div class="rc-board' + (state.offline ? " stale" : "") + '">' +
+      '<div class="rc-board-head"><span class="mono rc-board-no">22188</span>' +
+      '<span class="rc-board-live">' + (state.offline ? "◌ CACHED" : "● LIVE") + '</span></div>' +
+      '<div class="rc-board-name mono">INTERCITY EXP · ADTL → RKMP</div>' +
+      '<div class="rc-board-status mono"><span class="rc-board-status-main">RUNNING · 17 MIN LATE</span></div>' +
+      '<div class="rc-board-flip mono"><span>DEP ITARSI 20:47</span><span class="rc-board-arrow">›</span><span>NDPM ~21:12</span></div>' +
+      '<div class="rc-board-foot mono"><span>◔ ' + t("est") + '</span>' +
+      '<button class="rc-refresh" data-act="refresh">↻ <span class="js-fresh">' + freshText() + '</span></button></div>' +
+    '</div>' +
+    '<div class="rc-predict"><span class="ic">🕐</span> ' + t("predict") +
+      ' <span class="rc-muted rc-basis">· ' + t("predictWhy") + '</span></div>' +
+    '<div class="rc-actions">' +
+      '<button class="rc-btn primary"><span class="ic">🔔</span> ' + t("alarm") + '</button>' +
+      '<button class="rc-btn ghost"><span class="ic">🔊</span> ' + t("speak") + '</button>' +
+      '<button class="rc-btn ghost sq" aria-label="share"><span class="ic">📤</span></button>' +
+    '</div>' +
+    '<div class="rc-eyebrow rc-mt">' + t("coachTitle") + '</div>' +
+    '<div class="rc-card rc-coachcard">' +
+      '<div class="rc-seg small">' +
+        '<button class="rc-segbtn ' + (!gen ? "on" : "") + '" data-act="coachmode" data-mode="mine">' + t("myCoach") + ' · B2</button>' +
+        '<button class="rc-segbtn ' + (gen ? "on" : "") + '" data-act="coachmode" data-mode="gen"><span class="ic">👥</span> ' + t("genMode") + '</button>' +
+      '</div>' +
+      '<div class="rc-platform"><span class="rc-platend mono">' + t("front") + '</span>' +
+      '<div class="rc-coaches">' + coaches + '</div>' +
+      '<span class="rc-platend mono">' + t("rear") + '</span></div>' +
+      '<div class="rc-youmark"><span class="rc-youpill mono">' +
+        (gen ? t("genHint") : "B2 · " + t("standHere") + " ↑") + '</span></div>' +
+      '<div class="rc-reversed"><span class="ic">⚠️</span> ' + t("reversed") + '</div>' +
+    '</div>' +
+    '<div class="rc-eyebrow rc-mt">' + t("journey") + ' · ' + t("day") + ' 1</div>' +
+    '<div class="rc-timeline">' + stops + '</div>';
+}
+
+function renderStation() {
+  var rows = BOARD.map(function (b) {
+    var badge;
+    if (b.st === "cancelled") badge = '<span class="rc-br-delay bad mono">✕ ' + t("cancelled") + '</span>';
+    else if (b.st === "late") badge = '<span class="rc-br-delay late mono">+' + b.delay + 'm</span>';
+    else badge = '<span class="rc-br-delay ok mono">' + t("onT") + '</span>';
+    var alt = b.st === "cancelled" ? '<button class="rc-altbtn" data-act="alt">' + t("cancelHelp") + ' →</button>' : "";
+    return '<div class="rc-boardrow' + (b.st === "cancelled" ? " dead" : "") + '">' +
+      '<div class="rc-br-time mono"><span class="rc-br-clock">' + b.tm + '</span>' + badge + '</div>' +
+      '<div class="rc-br-mid"><div class="rc-br-name">' + b.name + ' <span class="rc-muted mono">' + b.no + '</span></div>' +
+      '<div class="rc-br-to mono">→ ' + (state.lang === "hi" ? b.toHi : b.to) + '</div>' + alt + '</div>' +
+      '<div class="rc-br-pf"><span class="rc-pflabel">' + t("plat") + '</span><span class="rc-pfnum mono">' + b.pf + '</span></div>' +
+    '</div>';
+  }).join("");
+  var seg = [2, 4, 8].map(function (h) {
+    return '<button class="rc-segbtn mono ' + (state.hrs === h ? "on" : "") + '" data-act="hrs" data-hrs="' + h + '">' + h + " " + t("hrs") + '</button>';
+  }).join("");
+  el("screen-station").innerHTML =
+    '<div class="rc-stnhead"><div><span class="rc-eyebrow">' + t("boardTitle") + '</span>' +
+    '<div class="rc-stncode mono">JBP</div></div><span class="rc-fresh mono js-fresh">' + freshText() + '</span></div>' +
+    '<div class="rc-segwrap"><span class="rc-seglabel">' + t("within") + '</span><div class="rc-seg">' + seg + '</div></div>' +
+    '<div class="rc-boardlist">' + rows + '</div>';
+}
+
+function renderPlan() {
+  var seg =
+    '<button class="rc-segbtn ' + (state.quota === "GN" ? "on" : "") + '" data-act="quota" data-quota="GN">' + t("qGN") + '</button>' +
+    '<button class="rc-segbtn ' + (state.quota === "TQ" ? "on" : "") + '" data-act="quota" data-quota="TQ">' + t("qTQ") + ' <span class="rc-qhint">' + t("qTQhint") + '</span></button>' +
+    '<button class="rc-segbtn ' + (state.quota === "SS" ? "on" : "") + '" data-act="quota" data-quota="SS">' + t("qSS") + '</button>';
+  var remind = state.quota === "TQ" ? '<button class="rc-tqremind"><span class="ic">🔔</span> ' + t("tatkalRemind") + '</button>' : "";
+  var cards = PLAN[state.quota].map(function (p) {
+    var open = state.openRow === p.no;
+    var fare = "";
+    if (open) {
+      var lines = [["base", p.fb.base], ["resv", p.fb.resv], ["sf", p.fb.sf], ["tatkalFee", p.fb.tq], ["gst", p.fb.gst]]
+        .filter(function (L) { return L[1] > 0; })
+        .map(function (L) { return '<div class="rc-fareline"><span>' + t(L[0]) + '</span><span class="mono">₹' + L[1] + '</span></div>'; })
+        .join("");
+      fare = '<div class="rc-farebreak"><div class="rc-eyebrow">' + t("fareBreak") + '</div>' + lines +
+        '<div class="rc-fareline total"><span>' + t("total") + '</span><span class="mono">₹' + p.fare + '</span></div></div>';
+    }
+    return '<div class="rc-card rc-plancard">' +
+      '<button class="rc-planhead" data-act="planrow" data-no="' + p.no + '">' +
+        '<div class="rc-plantimes mono"><span class="rc-bigtime">' + p.dep + '</span><span class="rc-planarrow">→</span><span class="rc-bigtime">' + p.arr + '</span></div>' +
+        '<div class="rc-planmeta"><span class="rc-trainname">' + p.name + '</span><span class="rc-muted mono">' + p.no + ' · ' + p.dur + ' · ' + p.cls + '</span></div>' +
+        '<div class="rc-planstats"><span class="rc-chip ok mono">' + p.seats + " " + t("seats") + '</span><span class="rc-fare mono">₹' + p.fare + '</span></div>' +
+        '<div class="rc-punct"><div class="rc-punctbar"><i style="width:' + p.pct + '%"></i></div>' +
+        '<span class="rc-muted mono">' + p.pct + '% ' + t("punctual") + '</span><span class="rc-caret' + (open ? " up" : "") + '">˅</span></div>' +
+      '</button>' + fare + '</div>';
+  }).join("");
+  el("screen-plan").innerHTML =
+    '<div class="rc-hello sm"><h1>' + t("planTitle") + '</h1><p class="mono">' + t("planSub") + '</p></div>' +
+    '<div class="rc-segwrap"><span class="rc-seglabel">' + t("quota") + '</span><div class="rc-seg">' + seg + '</div></div>' +
+    remind + cards;
+}
+
+function renderAlerts() {
+  var rows = [
+    ["chart", "🎫", "chartAlert", "chartAlertSub"],
+    ["arr", "🕐", "arrAlert", "arrAlertSub"],
+    ["delay", "⚠️", "delayAlert", "delayAlertSub"],
+    ["quiet", "🌙", "quiet", "quietSub"]
+  ];
+  el("screen-alerts").innerHTML =
+    '<div class="rc-hello sm"><h1>' + t("alertsTitle") + '</h1></div>' +
+    rows.map(function (r) {
+      return '<div class="rc-card rc-alertrow"><span class="rc-alerticon"><span class="ic">' + r[1] + '</span></span>' +
+        '<div class="rc-alertbody"><span class="rc-alerttitle">' + t(r[2]) + '</span>' +
+        '<span class="rc-muted rc-alertsub">' + t(r[3]) + '</span></div>' +
+        '<button class="rc-toggle ' + (state.alerts[r[0]] ? "on" : "") + '" data-act="toggle-alert" data-id="' + r[0] + '"><span class="rc-knob"></span></button></div>';
+    }).join("");
+}
+
+function renderSheet() {
+  var s = el("sheet");
+  if (!state.dateSheet) { s.innerHTML = ""; return; }
+  s.innerHTML =
+    '<div class="rc-scrim" data-act="close-scrim"><div class="rc-sheet">' +
+      '<div class="rc-sheet-grab"></div>' +
+      '<div class="rc-sheet-title">22188 · ' + t("icx") + '</div>' +
+      '<div class="rc-eyebrow">' + t("startWhen") + '</div>' +
+      '<button class="rc-datebtn ' + (state.runDate === "today" ? "on" : "") + '" data-act="pick-date" data-date="today">' +
+        '<div class="rc-datebtn-main">' + t("startToday") + '</div>' +
+        '<span class="rc-datebtn-sub ok">● ' + t("autoDetect") + '</span></button>' +
+      '<button class="rc-datebtn ' + (state.runDate === "yest" ? "on" : "") + '" data-act="pick-date" data-date="yest">' +
+        '<div class="rc-datebtn-main">' + t("startYest") + '</div>' +
+        '<span class="rc-datebtn-sub">' + t("notRun") + '</span></button>' +
+    '</div></div>';
+}
+
+function showPush() {
+  var p = el("push");
+  p.innerHTML = '<div class="rc-push"><span class="rc-push-ico"><span class="ic">🎉</span></span>' +
+    '<div><div class="rc-push-title">' + t("pushTitle") + '</div>' +
+    '<div class="rc-push-body">' + t("pushBody") + '</div></div></div>';
+  setTimeout(function () { p.innerHTML = ""; }, 3800);
+}
+
+function renderAll() {
+  renderOb();
+  renderChrome();
+  renderNav();
+  renderHome();
+  renderTrack();
+  renderStation();
+  renderPlan();
+  renderAlerts();
+  renderSheet();
+}
+
+/* ---------------- events ---------------- */
+document.addEventListener("click", function (e) {
+  var btn = e.target.closest ? e.target.closest("[data-act]") : null;
+  if (!btn) return;
+  var act = btn.getAttribute("data-act");
+
+  if (act === "close-scrim") {
+    if (e.target === btn) { state.dateSheet = false; renderSheet(); }
+    return;
+  }
+  if (act === "tab") { state.tab = btn.getAttribute("data-tab"); renderNav(); return; }
+  if (act === "lang-toggle") { state.lang = state.lang === "en" ? "hi" : "en"; renderAll(); return; }
+  if (act === "theme") { state.dark = !state.dark; renderChrome(); return; }
+  if (act === "offline") { state.offline = !state.offline; renderAll(); return; }
+  if (act === "ob-lang") {
+    var L = btn.getAttribute("data-lang");
+    if (STR[L]) { state.lang = L; state.onboard = "intent"; renderAll(); }
+    return;
+  }
+  if (act === "ob-back") { state.onboard = "lang"; renderOb(); return; }
+  if (act === "ob-intent") { state.tab = btn.getAttribute("data-dest"); state.onboard = "done"; renderAll(); return; }
+  if (act === "open-datesheet") { state.dateSheet = true; renderSheet(); return; }
+  if (act === "pick-date") {
+    state.runDate = btn.getAttribute("data-date");
+    state.dateSheet = false; state.tab = "track";
+    renderTrack(); renderNav(); renderSheet();
+    return;
+  }
+  if (act === "chart-demo") {
+    state.chartReady = !state.chartReady;
+    renderHome();
+    if (state.chartReady) showPush();
+    return;
+  }
+  if (act === "mic") {
+    var q = el("q");
+    if (q) { q.value = state.lang === "hi" ? "गोवा" : "goa"; renderResults(q.value); }
+    return;
+  }
+  if (act === "res-train") { state.dateSheet = true; renderHome(); renderSheet(); return; }
+  if (act === "res-station") { state.tab = "station"; renderHome(); renderNav(); return; }
+  if (act === "refresh") { if (!state.offline) { state.secs = 0; tickFresh(); } return; }
+  if (act === "hrs") { state.hrs = parseInt(btn.getAttribute("data-hrs"), 10); renderStation(); return; }
+  if (act === "quota") { state.quota = btn.getAttribute("data-quota"); state.openRow = "22188"; renderPlan(); return; }
+  if (act === "planrow") {
+    var no = btn.getAttribute("data-no");
+    state.openRow = state.openRow === no ? "" : no;
+    renderPlan(); return;
+  }
+  if (act === "coachmode") { state.coachMode = btn.getAttribute("data-mode"); renderTrack(); return; }
+  if (act === "alt") { state.tab = "plan"; renderNav(); return; }
+  if (act === "toggle-alert") {
+    var id = btn.getAttribute("data-id");
+    state.alerts[id] = !state.alerts[id];
+    renderAlerts(); return;
+  }
+});
+
+document.addEventListener("input", function (e) {
+  if (e.target && e.target.id === "q") renderResults(e.target.value);
+});
+
+/* ---------------- ticker ---------------- */
+function tickFresh() {
+  var els = document.querySelectorAll(".js-fresh");
+  for (var i = 0; i < els.length; i++) els[i].textContent = freshText();
+}
+setInterval(function () {
+  if (state.secs < 300) state.secs += 1;
+  tickFresh();
+}, 1000);
+
+/* ---------------- boot ---------------- */
+renderAll();
+</script>
+</body>
+</html>

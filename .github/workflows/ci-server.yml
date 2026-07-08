@@ -1,0 +1,22 @@
+name: ci-server
+on:
+  push: { paths: ["packages/**", "docs/api-contracts.md"] }
+  pull_request: { paths: ["packages/**", "docs/api-contracts.md"] }
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      redis: { image: redis:7-alpine, ports: ["6379:6379"] }
+      postgres:
+        image: postgres:16-alpine
+        env: { POSTGRES_DB: railcast, POSTGRES_USER: railcast, POSTGRES_PASSWORD: railcast_dev }
+        ports: ["5432:5432"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: pnpm }
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm typecheck
+      - run: pnpm -F server test
+      - run: pnpm -F directory test

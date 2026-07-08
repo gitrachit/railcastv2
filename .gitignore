@@ -1,0 +1,12 @@
+node_modules/
+dist/
+.env
+.env.*
+*.local
+android/.gradle/
+android/build/
+android/app/build/
+android/local.properties
+*.keystore
+.claude/settings.local.json
+CLAUDE.local.md
