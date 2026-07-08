@@ -12,7 +12,7 @@ export interface WatchRow {
   entityKey: string;
   entity: WatchEntity;
   params: WatchSummary["params"];
-  stateHash: string | null;
+  delivered: string[]; // event signatures already pushed for this watch (2.2 dedup)
   expiresAt: Date;
 }
 
@@ -100,12 +100,34 @@ export class WatchRepo {
     return res.rows.map((r) => r.entity_key);
   }
 
-  async updateStateHash(watchIds: string[], stateHash: string): Promise<void> {
-    if (watchIds.length === 0) return;
-    await this.pool.query("UPDATE watch SET state_hash = $1 WHERE id = ANY($2::uuid[])", [
-      stateHash,
-      watchIds,
-    ]);
+  /** Previous normalized snapshot for an entity (null on first poll → baseline). */
+  async getEntityState<T>(entityKey: string): Promise<T | null> {
+    const res = await this.pool.query<{ state: T }>(
+      "SELECT state FROM watch_entity_state WHERE entity_key = $1",
+      [entityKey],
+    );
+    return res.rows[0]?.state ?? null;
+  }
+
+  async setEntityState(entityKey: string, state: unknown): Promise<void> {
+    await this.pool.query(
+      `INSERT INTO watch_entity_state (entity_key, state, updated_at)
+       VALUES ($1, $2, now())
+       ON CONFLICT (entity_key) DO UPDATE SET state = EXCLUDED.state, updated_at = now()`,
+      [entityKey, JSON.stringify(state)],
+    );
+  }
+
+  /** Record that these event signatures were delivered for a watch (dedup, 2.2). */
+  async markDelivered(watchId: string, signatures: string[]): Promise<void> {
+    if (signatures.length === 0) return;
+    await this.pool.query(
+      // array_cat + dedup keeps the set small and idempotent
+      `UPDATE watch SET delivered = (
+         SELECT ARRAY(SELECT DISTINCT unnest(delivered || $2::text[]))
+       ) WHERE id = $1`,
+      [watchId, signatures],
+    );
   }
 
   /** Tighten expiry (e.g. once the journey's arrival is known). Purge job support. */
@@ -151,7 +173,7 @@ function rowToWatch(r: {
   entity_key: string;
   entity_encrypted: string;
   params: WatchRow["params"];
-  state_hash: string | null;
+  delivered: string[] | null;
   expires_at: Date;
 }): WatchRow {
   return {
@@ -161,7 +183,7 @@ function rowToWatch(r: {
     entityKey: r.entity_key,
     entity: JSON.parse(decryptPnrBlob(r.entity_encrypted)) as WatchEntity,
     params: r.params,
-    stateHash: r.state_hash,
+    delivered: r.delivered ?? [],
     expiresAt: r.expires_at,
   };
 }

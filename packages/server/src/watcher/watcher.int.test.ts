@@ -81,7 +81,7 @@ describe.skipIf(!pgUp)("WatchRepo (postgres)", () => {
     expect(JSON.stringify(rows.rows)).not.toContain("8524132882");
   });
 
-  it("finds active watches per entity and updates state hashes", async () => {
+  it("finds active watches per entity; round-trips entity state and delivered dedup", async () => {
     const entity = { kind: "train" as const, trainNo: "22188", runDate: "2026-07-08" };
     await repo.create("d1", { type: "delay", entity, params: { delayThresholdMin: 15 } });
     await repo.create("d2", { type: "cancel", entity });
@@ -91,14 +91,19 @@ describe.skipIf(!pgUp)("WatchRepo (postgres)", () => {
     const active = await repo.activeForEntity(key);
     expect(active).toHaveLength(2);
     expect(active[0]!.entity).toEqual(entity);
+    expect(active[0]!.delivered).toEqual([]);
     expect(await repo.activeEntityKeys()).toEqual([key]);
 
-    await repo.updateStateHash(
-      active.map((w) => w.id),
-      "abc123",
-    );
-    const after = await repo.activeForEntity(key);
-    expect(after.every((w) => w.stateHash === "abc123")).toBe(true);
+    // entity state (prev normalized snapshot) round-trips
+    await repo.setEntityState(key, { kind: "train", state: "running", delayMin: 7 });
+    expect(await repo.getEntityState(key)).toMatchObject({ state: "running", delayMin: 7 });
+
+    // delivered signatures accumulate without duplicates
+    const id = active[0]!.id;
+    await repo.markDelivered(id, ["DELAY:15"]);
+    await repo.markDelivered(id, ["DELAY:15", "PLATFORM:ET:5"]);
+    const after = (await repo.activeForEntity(key)).find((w) => w.id === id)!;
+    expect([...after.delivered].sort()).toEqual(["DELAY:15", "PLATFORM:ET:5"]);
   });
 
   it("tightens expiry and purges past the grace window (FR-4.3)", async () => {
@@ -123,8 +128,28 @@ describe.skipIf(!pgUp)("EntityPoller lifecycle", () => {
   const entity = { kind: "train" as const, trainNo: "22188", runDate: "2026-07-08" };
   const key = entityKeyFor(entity);
 
+  // running fixture with a doctored delay at the last crossed stop (ADTL).
+  function delayedTrack(delayText: string): string {
+    const j = JSON.parse(fixture("trackTrain-22188-running.json"));
+    const adtl = j.data.timeline.find(
+      (e: { stationCode: string; type: string }) => e.stationCode === "ADTL" && e.type === "stoppage",
+    );
+    adtl.departure.delay = delayText;
+    return JSON.stringify(j);
+  }
+
+  function pollerCollecting(events: string[]): EntityPoller {
+    return new EntityPoller({
+      cache: new Cache(new MemoryStore()), // fresh cache → forces a refetch each poll
+      repo,
+      onEvent: async (e) => {
+        events.push(e.payload.kind);
+      },
+    });
+  }
+
   beforeEach(async () => {
-    await pool.query("TRUNCATE watch, device_push_token");
+    await pool.query("TRUNCATE watch, device_push_token, watch_entity_state");
     vi.stubGlobal(
       "fetch",
       vi.fn(() => Promise.resolve(new Response(fixture("trackTrain-22188-running.json")))),
@@ -135,50 +160,40 @@ describe.skipIf(!pgUp)("EntityPoller lifecycle", () => {
     vi.unstubAllGlobals();
   });
 
-  it("baselines silently, fires on transition, expires on arrival, stops when empty", async () => {
+  it("baselines silently, fires a delay crossing once (dedup)", async () => {
+    await repo.create("d1", { type: "delay", entity, params: { delayThresholdMin: 15 } });
+    const events: string[] = [];
+
+    // Poll 1: baseline (prev null, delay 0) — no event, entity state stored.
+    await pollerCollecting(events).poll(key);
+    expect(events).toHaveLength(0);
+    expect(await repo.getEntityState(key)).toBeTruthy();
+
+    // Poll 2: delay jumps to 30 min → upward crossing of 15 → one DELAY event.
+    vi.stubGlobal("fetch", vi.fn(() => Promise.resolve(new Response(delayedTrack("30 Min")))));
+    await pollerCollecting(events).poll(key);
+    expect(events).toEqual(["DELAY"]);
+
+    // Poll 3: still 30 min → no new crossing, deduped → still one event.
+    await pollerCollecting(events).poll(key);
+    expect(events).toEqual(["DELAY"]);
+  });
+
+  it("tightens expiry when the run completes and stops when no watches remain", async () => {
     await repo.create("d1", { type: "cancel", entity });
-    const changes: string[] = [];
-    const poller = new EntityPoller({
-      cache: new Cache(new MemoryStore()),
-      repo,
-      onStateChange: async (c) => {
-        changes.push(...c.changedWatches.map((w) => `${w.type}:${c.state.kind}`));
-      },
-    });
 
-    // Poll 1: baseline — hash stored, no notification for a brand-new watch.
-    const r1 = await poller.poll(key);
-    expect(r1?.nextDelayS).toBe(300);
-    expect(changes).toHaveLength(0);
-
-    // Poll 2: same state — no change, no notification. Fresh cache instance
-    // forces a refetch of the same fixture.
-    const r2 = await poller.poll(key);
-    expect(r2?.nextDelayS).toBe(300);
-    expect(changes).toHaveLength(0);
-
-    // Poll 3: the run completes → transition fires + expiry tightens to ~+24h.
+    await pollerCollecting([]).poll(key); // baseline (running)
     vi.stubGlobal(
       "fetch",
-      vi.fn(() => Promise.resolve(new Response(fixture("trackTrain-22188.json")))),
+      vi.fn(() => Promise.resolve(new Response(fixture("trackTrain-22188.json")))), // arrived
     );
-    const freshPoller = new EntityPoller({
-      cache: new Cache(new MemoryStore()),
-      repo,
-      onStateChange: async (c) => {
-        changes.push(...c.changedWatches.map((w) => `${w.type}:${c.state.kind}`));
-      },
-    });
-    await freshPoller.poll(key);
-    expect(changes).toEqual(["cancel:train"]);
+    await pollerCollecting([]).poll(key); // fresh cache → refetch arrived → settles
 
     const rows = await pool.query("SELECT expires_at FROM watch");
-    const expiry = new Date(rows.rows[0].expires_at).getTime();
-    expect(expiry).toBeLessThan(Date.now() + 25 * 3600_000);
+    expect(new Date(rows.rows[0].expires_at).getTime()).toBeLessThan(Date.now() + 25 * 3600_000);
 
-    // No active watches (delete them) → the chain reports "stop".
-    await pool.query("TRUNCATE watch");
-    expect(await freshPoller.poll(key)).toBeNull();
+    await pool.query("TRUNCATE watch"); // no active watches → chain ends
+    expect(await pollerCollecting([]).poll(key)).toBeNull();
   });
 });
 

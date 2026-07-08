@@ -1,41 +1,36 @@
 // One poll of one entity: fetch through the SHARED cache (watcher polls warm
-// the same keys foreground screens read — PRD §6.5), normalize, hash, diff
-// against each watch's last-seen hash, tighten expiry once the journey
-// settles, and report the adaptive next-poll delay.
-import type { WatchEntity } from "@railcast/shared";
+// the same keys foreground screens read — PRD §6.5), normalize, diff prev→next
+// per watch into typed events (2.2), deliver the fresh ones, dedup, tighten
+// expiry once the journey settles, and report the adaptive next-poll delay.
+import type { PushPayload, WatchEntity } from "@railcast/shared";
 import { Cache, CACHE_TTLS } from "../cache/index.js";
 import { parseDelayMin, parseUpstreamTime } from "../railkit/dates.js";
 import { checkPnrStatus, trackTrain } from "../railkit/endpoints.js";
 import type { RawPnrStatus, RawTrackTrain } from "../railkit/types.js";
 import { decryptPnrBlob, encryptPnrBlob, pnrCacheKey } from "../privacy/crypto.js";
 import { nextPollDelayS, type EntitySnapshot } from "./cadence.js";
-import {
-  normalizePnr,
-  normalizeTrain,
-  stateHash,
-  type NormalizedEntity,
-} from "./normalize.js";
+import { detectWatchEvents } from "./diff.js";
+import { normalizePnr, normalizeTrain, type NormalizedEntity } from "./normalize.js";
 import type { WatchRepo, WatchRow } from "./repo.js";
 
 const SETTLED_GRACE_MS = 24 * 3600_000; // keep watches a day past journey end, then purge
 const UPSTREAM_BACKOFF_S = 120; // retry cadence while the upstream is failing
 
-export interface StateChange {
-  entityKey: string;
-  state: NormalizedEntity;
-  raw: RawTrackTrain | RawPnrStatus;
-  changedWatches: WatchRow[];
+export interface WatchEvent {
+  watch: WatchRow;
+  payload: PushPayload;
+  signature: string;
 }
 
-/** 2.2's diff engine plugs in here to turn state changes into typed push events. */
-export type OnStateChange = (change: StateChange) => Promise<void>;
+/** 2.3's FCM fan-out plugs in here: one typed event, ready to push. */
+export type OnEvent = (event: WatchEvent) => Promise<void>;
 
 export class EntityPoller {
   constructor(
     private readonly deps: {
       cache: Cache;
       repo: WatchRepo;
-      onStateChange?: OnStateChange;
+      onEvent?: OnEvent;
       now?: () => Date;
     },
   ) {}
@@ -53,25 +48,33 @@ export class EntityPoller {
       fetched = await this.fetchState(entity, now);
     } catch (e) {
       // An upstream failure must NOT kill the poll chain (NFR-2 at-least-once):
-      // back off and try again; hashes stay untouched so no event is lost.
-      console.info(`watcher poll ${entityKey} upstream failure, backing off: ${(e as Error).message}`);
+      // back off and retry; prev state is untouched so no transition is lost.
+      console.info(
+        `watcher poll ${entityKey} upstream failure, backing off: ${(e as Error).message}`,
+      );
       return { nextDelayS: UPSTREAM_BACKOFF_S };
     }
-    const { state, raw, snapshot, settledAt } = fetched;
-    const hash = stateHash(state);
+    const { state: next, raw, snapshot, settledAt } = fetched;
 
-    const changed = watches.filter((w) => w.stateHash !== hash);
-    if (changed.length > 0) {
-      // Baseline-setting (stateHash null) is silent; real transitions notify.
-      const transitions = changed.filter((w) => w.stateHash !== null);
-      if (transitions.length > 0 && this.deps.onStateChange) {
-        await this.deps.onStateChange({ entityKey, state, raw, changedWatches: transitions });
+    const prev = await this.deps.repo.getEntityState<NormalizedEntity>(entityKey);
+    if (prev) {
+      // First poll for an entity is a silent baseline (prev === null): a watch
+      // never fires for a condition that was already true when it was created.
+      for (const watch of watches) {
+        const detected = detectWatchEvents({ prev, next, raw, watch, now });
+        const fresh = detected.filter((e) => !watch.delivered.includes(e.signature));
+        for (const e of fresh) {
+          await this.deps.onEvent?.({ watch, payload: e.payload, signature: e.signature });
+        }
+        if (fresh.length > 0) {
+          await this.deps.repo.markDelivered(
+            watch.id,
+            fresh.map((e) => e.signature),
+          );
+        }
       }
-      await this.deps.repo.updateStateHash(
-        changed.map((w) => w.id),
-        hash,
-      );
     }
+    await this.deps.repo.setEntityState(entityKey, next);
 
     if (settledAt) {
       await this.deps.repo.setEntityExpiry(entityKey, new Date(settledAt + SETTLED_GRACE_MS));

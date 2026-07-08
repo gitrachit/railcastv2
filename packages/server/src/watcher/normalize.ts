@@ -10,7 +10,8 @@ export interface NormalizedTrain {
   kind: "train";
   state: "not_started" | "running" | "arrived" | "cancelled" | "diverted" | "rescheduled";
   lastStationCode: string | null;
-  delayBucket: number | null; // 15-min buckets — threshold events, not jitter
+  delayMin: number | null; // actual delay — drives threshold crossing (2.2)
+  delayBucket: number | null; // 15-min buckets — coarse, for change detection
   platforms: Record<string, string>; // stationCode → platform (change events)
 }
 
@@ -55,6 +56,7 @@ export function normalizeTrain(track: RawTrackTrain): NormalizedTrain {
     kind: "train",
     state,
     lastStationCode: lastCrossed?.stationCode ?? null,
+    delayMin: delay,
     delayBucket: delay === null ? null : Math.floor(delay / 15),
     platforms,
   };
