@@ -1,6 +1,7 @@
 import type { ErrorCode } from "@railcast/shared";
 import { railkitApiKey, railkitBaseUrl } from "./config.js";
 import { RailkitError } from "./errors.js";
+import { sdkSignatureHeaders } from "./signature.js";
 
 const TIMEOUT_MS = 10_000;
 
@@ -25,7 +26,11 @@ export async function upstreamGet<T>(path: string, opts: GetOptions = {}): Promi
   let res: Response;
   try {
     res = await fetch(railkitBaseUrl() + path, {
-      headers: { "x-api-key": key, accept: "application/json" },
+      headers: {
+        "x-api-key": key,
+        accept: "application/json",
+        ...sdkSignatureHeaders("GET", path, key),
+      },
       signal: AbortSignal.timeout(TIMEOUT_MS),
     });
   } catch {
