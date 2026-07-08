@@ -1,0 +1,732 @@
+{
+  "success": true,
+  "data": {
+    "trainNo": "22188",
+    "trainName": "INTERCITY EXP",
+    "date": "08-Jul-2026",
+    "statusNote": "Departed from ADHARTAL(ADTL) at 16:15 08-Jul (On Time)",
+    "lastUpdate": "08-Jul-2026 16:17",
+    "totalStations": 13,
+    "coachPosition": [
+      {
+        "type": "ENG",
+        "number": "ENG",
+        "position": "0"
+      },
+      {
+        "type": "SLRD",
+        "number": "SLRD",
+        "position": "1"
+      },
+      {
+        "type": "GEN",
+        "number": "GEN",
+        "position": "2"
+      },
+      {
+        "type": "GEN",
+        "number": "GEN",
+        "position": "3"
+      },
+      {
+        "type": "2S",
+        "number": "D9",
+        "position": "4"
+      },
+      {
+        "type": "2S",
+        "number": "D8",
+        "position": "5"
+      },
+      {
+        "type": "2S",
+        "number": "D7",
+        "position": "6"
+      },
+      {
+        "type": "2S",
+        "number": "D6",
+        "position": "7"
+      },
+      {
+        "type": "2S",
+        "number": "D5",
+        "position": "8"
+      },
+      {
+        "type": "2S",
+        "number": "D4",
+        "position": "9"
+      },
+      {
+        "type": "2S",
+        "number": "D3",
+        "position": "10"
+      },
+      {
+        "type": "2S",
+        "number": "D2",
+        "position": "11"
+      },
+      {
+        "type": "2S",
+        "number": "D1",
+        "position": "12"
+      },
+      {
+        "type": "CC",
+        "number": "C2",
+        "position": "13"
+      },
+      {
+        "type": "CC",
+        "number": "C1",
+        "position": "14"
+      },
+      {
+        "type": "3A",
+        "number": "B2",
+        "position": "15"
+      },
+      {
+        "type": "3A",
+        "number": "B1",
+        "position": "16"
+      },
+      {
+        "type": "GEN",
+        "number": "GEN",
+        "position": "17"
+      },
+      {
+        "type": "GEN",
+        "number": "GEN",
+        "position": "18"
+      },
+      {
+        "type": "GEN",
+        "number": "GEN",
+        "position": "19"
+      },
+      {
+        "type": "GEN",
+        "number": "GEN",
+        "position": "20"
+      },
+      {
+        "type": "LPR",
+        "number": "LPR",
+        "position": "21"
+      }
+    ],
+    "coachPositionTimeline": [
+      {
+        "fromStationCode": "ADTL",
+        "fromStationName": "ADHARTAL",
+        "coachPosition": [
+          {
+            "type": "ENG",
+            "number": "ENG",
+            "position": "0"
+          },
+          {
+            "type": "SLRD",
+            "number": "SLRD",
+            "position": "1"
+          },
+          {
+            "type": "GEN",
+            "number": "GEN",
+            "position": "2"
+          },
+          {
+            "type": "GEN",
+            "number": "GEN",
+            "position": "3"
+          },
+          {
+            "type": "2S",
+            "number": "D9",
+            "position": "4"
+          },
+          {
+            "type": "2S",
+            "number": "D8",
+            "position": "5"
+          },
+          {
+            "type": "2S",
+            "number": "D7",
+            "position": "6"
+          },
+          {
+            "type": "2S",
+            "number": "D6",
+            "position": "7"
+          },
+          {
+            "type": "2S",
+            "number": "D5",
+            "position": "8"
+          },
+          {
+            "type": "2S",
+            "number": "D4",
+            "position": "9"
+          },
+          {
+            "type": "2S",
+            "number": "D3",
+            "position": "10"
+          },
+          {
+            "type": "2S",
+            "number": "D2",
+            "position": "11"
+          },
+          {
+            "type": "2S",
+            "number": "D1",
+            "position": "12"
+          },
+          {
+            "type": "CC",
+            "number": "C2",
+            "position": "13"
+          },
+          {
+            "type": "CC",
+            "number": "C1",
+            "position": "14"
+          },
+          {
+            "type": "3A",
+            "number": "B2",
+            "position": "15"
+          },
+          {
+            "type": "3A",
+            "number": "B1",
+            "position": "16"
+          },
+          {
+            "type": "GEN",
+            "number": "GEN",
+            "position": "17"
+          },
+          {
+            "type": "GEN",
+            "number": "GEN",
+            "position": "18"
+          },
+          {
+            "type": "GEN",
+            "number": "GEN",
+            "position": "19"
+          },
+          {
+            "type": "GEN",
+            "number": "GEN",
+            "position": "20"
+          },
+          {
+            "type": "LPR",
+            "number": "LPR",
+            "position": "21"
+          }
+        ]
+      },
+      {
+        "fromStationCode": "ET",
+        "fromStationName": "ITARSI JN",
+        "coachPosition": [
+          {
+            "type": "ENG",
+            "number": "ENG",
+            "position": "0"
+          },
+          {
+            "type": "LPR",
+            "number": "LPR",
+            "position": "1"
+          },
+          {
+            "type": "GEN",
+            "number": "GEN",
+            "position": "2"
+          },
+          {
+            "type": "GEN",
+            "number": "GEN",
+            "position": "3"
+          },
+          {
+            "type": "GEN",
+            "number": "GEN",
+            "position": "4"
+          },
+          {
+            "type": "GEN",
+            "number": "GEN",
+            "position": "5"
+          },
+          {
+            "type": "3A",
+            "number": "B1",
+            "position": "6"
+          },
+          {
+            "type": "3A",
+            "number": "B2",
+            "position": "7"
+          },
+          {
+            "type": "CC",
+            "number": "C1",
+            "position": "8"
+          },
+          {
+            "type": "CC",
+            "number": "C2",
+            "position": "9"
+          },
+          {
+            "type": "2S",
+            "number": "D1",
+            "position": "10"
+          },
+          {
+            "type": "2S",
+            "number": "D2",
+            "position": "11"
+          },
+          {
+            "type": "2S",
+            "number": "D3",
+            "position": "12"
+          },
+          {
+            "type": "2S",
+            "number": "D4",
+            "position": "13"
+          },
+          {
+            "type": "2S",
+            "number": "D5",
+            "position": "14"
+          },
+          {
+            "type": "2S",
+            "number": "D6",
+            "position": "15"
+          },
+          {
+            "type": "2S",
+            "number": "D7",
+            "position": "16"
+          },
+          {
+            "type": "2S",
+            "number": "D8",
+            "position": "17"
+          },
+          {
+            "type": "2S",
+            "number": "D9",
+            "position": "18"
+          },
+          {
+            "type": "GEN",
+            "number": "GEN",
+            "position": "19"
+          },
+          {
+            "type": "GEN",
+            "number": "GEN",
+            "position": "20"
+          },
+          {
+            "type": "SLRD",
+            "number": "SLRD",
+            "position": "21"
+          }
+        ]
+      }
+    ],
+    "timeline": [
+      {
+        "type": "stoppage",
+        "status": "current",
+        "stationCode": "ADTL",
+        "stationName": "ADHARTAL",
+        "platform": "1",
+        "distanceKm": "",
+        "arrival": {
+          "scheduled": "SRC",
+          "actual": "SRC",
+          "delay": ""
+        },
+        "departure": {
+          "scheduled": "16:15 08-Jul",
+          "actual": "16:15 08-Jul",
+          "delay": "On Time"
+        }
+      },
+      {
+        "type": "stoppage",
+        "status": "upcoming",
+        "stationCode": "JBP",
+        "stationName": "JABALPUR",
+        "platform": "1",
+        "distanceKm": "8",
+        "arrival": {
+          "scheduled": "16:27 08-Jul",
+          "actual": "--",
+          "delay": ""
+        },
+        "departure": {
+          "scheduled": "16:35 08-Jul",
+          "actual": "16:35 08-Jul*",
+          "delay": "On Time"
+        }
+      },
+      {
+        "type": "stoppage",
+        "status": "upcoming",
+        "stationCode": "MML",
+        "stationName": "MADAN MAHAL",
+        "platform": "1",
+        "distanceKm": "11",
+        "arrival": {
+          "scheduled": "16:44 08-Jul",
+          "actual": "16:44 08-Jul*",
+          "delay": "On Time"
+        },
+        "departure": {
+          "scheduled": "16:46 08-Jul",
+          "actual": "16:46 08-Jul*",
+          "delay": "On Time"
+        }
+      },
+      {
+        "type": "intermediate",
+        "status": "upcoming",
+        "stationCode": "KEQ",
+        "stationName": ""
+      },
+      {
+        "type": "intermediate",
+        "status": "upcoming",
+        "stationCode": "BRGT",
+        "stationName": "BHERAGHAT"
+      },
+      {
+        "type": "intermediate",
+        "status": "upcoming",
+        "stationCode": "BHTN",
+        "stationName": "BHITONI"
+      },
+      {
+        "type": "intermediate",
+        "status": "upcoming",
+        "stationCode": "BMR",
+        "stationName": "BIKRAMPUR"
+      },
+      {
+        "type": "stoppage",
+        "status": "upcoming",
+        "stationCode": "SRID",
+        "stationName": "SRIDHAM",
+        "platform": "3",
+        "distanceKm": "61",
+        "arrival": {
+          "scheduled": "17:16 08-Jul",
+          "actual": "17:16 08-Jul*",
+          "delay": "On Time"
+        },
+        "departure": {
+          "scheduled": "17:18 08-Jul",
+          "actual": "17:18 08-Jul*",
+          "delay": "On Time"
+        }
+      },
+      {
+        "type": "intermediate",
+        "status": "upcoming",
+        "stationCode": "KKB",
+        "stationName": "KARAK BEL"
+      },
+      {
+        "type": "intermediate",
+        "status": "upcoming",
+        "stationCode": "BELD",
+        "stationName": "BELKHERA"
+      },
+      {
+        "type": "intermediate",
+        "status": "upcoming",
+        "stationCode": "GPC",
+        "stationName": "GHATPINDRAI"
+      },
+      {
+        "type": "stoppage",
+        "status": "upcoming",
+        "stationCode": "NU",
+        "stationName": "NARSINGHPUR",
+        "platform": "2",
+        "distanceKm": "92",
+        "arrival": {
+          "scheduled": "17:43 08-Jul",
+          "actual": "17:43 08-Jul*",
+          "delay": "On Time"
+        },
+        "departure": {
+          "scheduled": "17:45 08-Jul",
+          "actual": "17:45 08-Jul*",
+          "delay": "On Time"
+        }
+      },
+      {
+        "type": "stoppage",
+        "status": "upcoming",
+        "stationCode": "KY",
+        "stationName": "KARELI",
+        "platform": "1",
+        "distanceKm": "108",
+        "arrival": {
+          "scheduled": "17:59 08-Jul",
+          "actual": "17:59 08-Jul*",
+          "delay": "On Time"
+        },
+        "departure": {
+          "scheduled": "18:00 08-Jul",
+          "actual": "18:00 08-Jul*",
+          "delay": "On Time"
+        }
+      },
+      {
+        "type": "intermediate",
+        "status": "upcoming",
+        "stationCode": "KFY",
+        "stationName": "KARAPGAON"
+      },
+      {
+        "type": "stoppage",
+        "status": "upcoming",
+        "stationCode": "BNE",
+        "stationName": "BOHANI",
+        "platform": "1",
+        "distanceKm": "124",
+        "arrival": {
+          "scheduled": "18:11 08-Jul",
+          "actual": "18:11 08-Jul*",
+          "delay": "On Time"
+        },
+        "departure": {
+          "scheduled": "18:12 08-Jul",
+          "actual": "18:12 08-Jul*",
+          "delay": "On Time"
+        }
+      },
+      {
+        "type": "intermediate",
+        "status": "upcoming",
+        "stationCode": "BNJH",
+        "stationName": ""
+      },
+      {
+        "type": "stoppage",
+        "status": "upcoming",
+        "stationCode": "GAR",
+        "stationName": "GADARWARA",
+        "platform": "2",
+        "distanceKm": "136",
+        "arrival": {
+          "scheduled": "18:19 08-Jul",
+          "actual": "18:19 08-Jul*",
+          "delay": "On Time"
+        },
+        "departure": {
+          "scheduled": "18:20 08-Jul",
+          "actual": "18:20 08-Jul*",
+          "delay": "On Time"
+        }
+      },
+      {
+        "type": "intermediate",
+        "status": "upcoming",
+        "stationCode": "SCKR",
+        "stationName": "SALICHAUKA ROAD"
+      },
+      {
+        "type": "intermediate",
+        "status": "upcoming",
+        "stationCode": "JHT",
+        "stationName": "JUNEHTA"
+      },
+      {
+        "type": "intermediate",
+        "status": "upcoming",
+        "stationCode": "BKH",
+        "stationName": "BANKHEDI"
+      },
+      {
+        "type": "stoppage",
+        "status": "upcoming",
+        "stationCode": "PPI",
+        "stationName": "PIPARIYA",
+        "platform": "2",
+        "distanceKm": "186",
+        "arrival": {
+          "scheduled": "18:53 08-Jul",
+          "actual": "18:53 08-Jul*",
+          "delay": "On Time"
+        },
+        "departure": {
+          "scheduled": "18:55 08-Jul",
+          "actual": "18:55 08-Jul*",
+          "delay": "On Time"
+        }
+      },
+      {
+        "type": "intermediate",
+        "status": "upcoming",
+        "stationCode": "SXF",
+        "stationName": "SOBHAPUR"
+      },
+      {
+        "type": "intermediate",
+        "status": "upcoming",
+        "stationCode": "SGP",
+        "stationName": "SOHAGPUR"
+      },
+      {
+        "type": "intermediate",
+        "status": "upcoming",
+        "stationCode": "GMD",
+        "stationName": "GURAMKHEDI"
+      },
+      {
+        "type": "intermediate",
+        "status": "upcoming",
+        "stationCode": "BGTA",
+        "stationName": "BAGRA TAWA"
+      },
+      {
+        "type": "intermediate",
+        "status": "upcoming",
+        "stationCode": "SQL",
+        "stationName": "SONTALAI"
+      },
+      {
+        "type": "intermediate",
+        "status": "upcoming",
+        "stationCode": "GRO",
+        "stationName": "GURRA"
+      },
+      {
+        "type": "stoppage",
+        "status": "upcoming",
+        "stationCode": "ET",
+        "stationName": "ITARSI JN",
+        "platform": "4",
+        "distanceKm": "253",
+        "arrival": {
+          "scheduled": "20:15 08-Jul",
+          "actual": "20:15 08-Jul*",
+          "delay": "On Time"
+        },
+        "departure": {
+          "scheduled": "20:30 08-Jul",
+          "actual": "20:30 08-Jul*",
+          "delay": "On Time"
+        }
+      },
+      {
+        "type": "intermediate",
+        "status": "upcoming",
+        "stationCode": "PRKD",
+        "stationName": "POWERKHEDA"
+      },
+      {
+        "type": "stoppage",
+        "status": "upcoming",
+        "stationCode": "NDPM",
+        "stationName": "NARMADAPURAM",
+        "platform": "1",
+        "distanceKm": "271",
+        "arrival": {
+          "scheduled": "20:48 08-Jul",
+          "actual": "20:48 08-Jul*",
+          "delay": "On Time"
+        },
+        "departure": {
+          "scheduled": "20:50 08-Jul",
+          "actual": "20:50 08-Jul*",
+          "delay": "On Time"
+        }
+      },
+      {
+        "type": "intermediate",
+        "status": "upcoming",
+        "stationCode": "BNI",
+        "stationName": "BUDNI"
+      },
+      {
+        "type": "intermediate",
+        "status": "upcoming",
+        "stationCode": "MIG",
+        "stationName": "MIDGHAT"
+      },
+      {
+        "type": "intermediate",
+        "status": "upcoming",
+        "stationCode": "CHQ",
+        "stationName": "CHOKA"
+      },
+      {
+        "type": "intermediate",
+        "status": "upcoming",
+        "stationCode": "BKA",
+        "stationName": "BARKHERA"
+      },
+      {
+        "type": "intermediate",
+        "status": "upcoming",
+        "stationCode": "ODG",
+        "stationName": "OBAIDULLA GANJ"
+      },
+      {
+        "type": "intermediate",
+        "status": "upcoming",
+        "stationCode": "MDDP",
+        "stationName": "MANDI DIP"
+      },
+      {
+        "type": "intermediate",
+        "status": "upcoming",
+        "stationCode": "MSO",
+        "stationName": "MISROD"
+      },
+      {
+        "type": "stoppage",
+        "status": "upcoming",
+        "stationCode": "RKMP",
+        "stationName": "RANI KAMALAPATI",
+        "platform": "3",
+        "distanceKm": "339",
+        "arrival": {
+          "scheduled": "22:23 08-Jul",
+          "actual": "22:23 08-Jul*",
+          "delay": "On Time"
+        },
+        "departure": {
+          "scheduled": "DSTN",
+          "actual": "DSTN",
+          "delay": ""
+        }
+      }
+    ],
+    "currentStationCode": "ADTL"
+  }
+}

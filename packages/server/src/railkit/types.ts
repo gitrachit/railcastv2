@@ -59,14 +59,15 @@ export interface RawTrackTrain {
 }
 
 export interface RawTimelineEntry {
-  type: string; // "stoppage" | passing points
-  status: string; // "passed" | ...
+  type: "stoppage" | "intermediate";
+  status: "passed" | "current" | "upcoming";
   stationCode: string;
-  stationName: string;
-  platform: string;
-  distanceKm: string;
-  arrival: { scheduled: string; actual: string; delay: string }; // "SRC" at origin
-  departure: { scheduled: string; actual: string; delay: string }; // "16:15 07-Jul"
+  stationName: string; // "" on intermediate entries
+  // The fields below exist only on stoppage entries.
+  platform?: string;
+  distanceKm?: string;
+  arrival?: { scheduled: string | null; actual: string | null; delay: string }; // "SRC" at origin
+  departure?: { scheduled: string | null; actual: string | null; delay: string }; // "16:15 07-Jul"
 }
 
 // /api/trainHistory/:trainNo/:date — 404 until the journey completes
