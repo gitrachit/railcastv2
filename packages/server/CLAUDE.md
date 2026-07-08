@@ -10,6 +10,8 @@ Fastify + TypeScript (strict). Redis (cache, BullMQ), Postgres (users/watches/PN
 - `RAILKIT_API_KEY` — upstream key (invariant 1)
 - `AUTH_TOKEN_SECRET` — HMAC secret for device tokens (rotating it invalidates all tokens)
 - `PNR_ENCRYPTION_KEY` — 64 hex chars; AES-256-GCM for PNR data at rest + HMAC cache keys (rotating it drops cached PNRs)
+- `DATABASE_URL` (default postgres://railcast:railcast_dev@127.0.0.1:5432/railcast)
+- `RAILKIT_SDK_SIGNING_SECRET` — optional; overrides the built-in SDK signing secret if upstream rotates it
 - `REDIS_URL` (default redis://127.0.0.1:6379) · `PORT` (default 3000)
 
 ## Module map

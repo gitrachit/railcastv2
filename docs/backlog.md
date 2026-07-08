@@ -24,7 +24,7 @@ Use **plan mode** for every item marked ⚠ (structural — review the plan befo
 - [x] **1.7 `/screen/plan` + row hydration** [FR-6.1–6.4]: quota-aware, `pending` rows, `/screen/plan/row`.
 
 ## M2 — Watcher (the crown jewel — build before the app UI)
-- [ ] ⚠ **2.1 Watch model + scheduler** [FR-7.1, FR-7.5]: Postgres schema, BullMQ repeatable job **per entity** (dedup across users), adaptive cadence (PNR 5 min → 60 s in chart window; arrival watches tighten near ETA), auto-expiry.
+- [x] ⚠ **2.1 Watch model + scheduler** [FR-7.1, FR-7.5]: Postgres schema, BullMQ repeatable job **per entity** (dedup across users), adaptive cadence (PNR 5 min → 60 s in chart window; arrival watches tighten near ETA), auto-expiry.
 - [ ] ⚠ **2.2 Diff engine + events** [FR-7.2]: normalize → hash → diff → typed events (chart_prepared, delay_threshold, platform_change, cancelled, arrival_due). Fixture-driven tests for each transition.
 - [ ] **2.3 Push fan-out** [FR-7.3, FR-7.4]: FCM data messages per contracts §5; quiet hours (arrival alarm bypasses); delivery latency logging (the ≥95% ≤5 min metric).
 - [ ] **2.4 Watch API**: POST/GET/DELETE /watch, /device/push-token.

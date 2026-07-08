@@ -44,3 +44,9 @@ export function pnrCacheKey(pnr: string): string {
   const digest = createHmac("sha256", key()).update(`pnr-cache-key:${pnr}`).digest("hex");
   return `rk:pnr:${digest.slice(0, 32)}`;
 }
+
+/** Watch entity dedup key (watch.entity_key) — same PNR, same key, never the PNR. */
+export function pnrEntityKey(pnr: string): string {
+  const digest = createHmac("sha256", key()).update(`pnr-entity-key:${pnr}`).digest("hex");
+  return `pnr:${digest.slice(0, 32)}`;
+}
