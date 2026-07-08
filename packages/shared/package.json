@@ -8,6 +8,7 @@
     ".": "./src/index.ts"
   },
   "scripts": {
+    "check:drift": "node scripts/check-drift.mjs",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {

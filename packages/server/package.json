@@ -9,6 +9,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@railcast/shared": "workspace:*",
     "fastify": "^5.3.2"
   },
   "devDependencies": {

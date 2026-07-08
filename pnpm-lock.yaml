@@ -25,6 +25,9 @@ importers:
 
   packages/server:
     dependencies:
+      '@railcast/shared':
+        specifier: workspace:*
+        version: link:../shared
       fastify:
         specifier: ^5.3.2
         version: 5.10.0
