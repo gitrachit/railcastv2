@@ -11,6 +11,6 @@ Recorded real responses from the upstream API, used by packages/server tests (ra
 - fareLookup-22188.json        — fare breakdown
 - trainHistory-notfound.json   — the HTTP 404 body for an incomplete journey (drives NOT_YET_AVAILABLE mapping)
 
-Recorded 2026-07-08 against the live API (train 22188 ADTL→RKMP, station JBP, search JBP→NU).
-checkPNRStatus-sample.json still needs a real PNR to record — mask the PNR before committing.
+Recorded 2026-07-08 against the live API (train 22188 ADTL→RKMP, station JBP, search JBP→NU,
+PNR from a real GOA EXPRESS booking with the PNR number replaced by a fake one before commit).
 packages/server/src/railkit/__fixtures__/ mirrors this directory; keep them in sync.

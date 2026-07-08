@@ -162,6 +162,19 @@ describe("fareLookup", () => {
 });
 
 describe("checkPnrStatus", () => {
+  it("parses the PNR payload (sanitized fixture)", async () => {
+    vi.spyOn(console, "info").mockImplementation(() => {});
+    fetchMock.mockResolvedValue(jsonResponse(fixture("checkPNRStatus-sample.json")));
+    const pnrStatus = await checkPnrStatus("8524132882");
+    expect(requestedUrl()).toBe(
+      "https://railkit-api.rajivdubey.dev/api/checkPNRStatus/8524132882",
+    );
+    expect(pnrStatus.train.number).toBe("12780");
+    expect(pnrStatus.chart.status).toBe("Chart Prepared");
+    expect(pnrStatus.passengers).toHaveLength(4);
+    expect(pnrStatus.passengers[0]?.current.status).toBe("CNF");
+  });
+
   it("rejects a malformed PNR without calling upstream", async () => {
     await expectRailkitError(checkPnrStatus("12345"), "INVALID_INPUT");
     expect(fetchMock).not.toHaveBeenCalled();

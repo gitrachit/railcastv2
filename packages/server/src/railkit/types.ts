@@ -187,6 +187,36 @@ export interface RawFareLookup {
   totalFare: number;
 }
 
-// /api/checkPNRStatus/:pnr — TODO(fixtures): type from checkPNRStatus-sample.json
-// once a real PNR is recorded; until then callers get an opaque object.
-export type RawPnrStatus = Record<string, unknown>;
+// /api/checkPNRStatus/:pnr — CONTAINS THE RAW PNR. Must not leave the
+// screens layer unmasked (FR-4.3). Dates here are a third upstream format:
+// "Jul 4, 2026 5:10:00 PM".
+export interface RawPnrStatus {
+  pnr: string;
+  train: { number: string; name: string };
+  journey: {
+    dateOfJourney: string;
+    class: string;
+    quota: string;
+    source: { code: string; name: string };
+    destination: { code: string; name: string };
+    boardingPoint: { code: string; name: string };
+    distance: number;
+    arrivalDate: string;
+  };
+  chart: { status: string }; // "Chart Prepared" | "Chart Not Prepared"
+  booking: { fare: number; ticketFare: number; bookingDate: string };
+  passengers: Array<{
+    serialNumber: string; // "Passenger 1"
+    coachPosition: number;
+    booking: RawPassengerState;
+    current: RawPassengerState;
+  }>;
+}
+
+export interface RawPassengerState {
+  status: string; // "CNF" | "WL 12" | ...
+  coach: string | null;
+  berthNo: number | null;
+  berthCode: string | null;
+  details: string; // "CNF/A1/14/UB"
+}
