@@ -6,6 +6,11 @@ Fastify + TypeScript (strict). Redis (cache, BullMQ), Postgres (users/watches/PN
 - `pnpm -F server dev` · `pnpm -F server test` (vitest) · `pnpm -F server typecheck`
 - Local deps: `docker compose -f ../../infra/docker-compose.yml up -d`
 
+## Env (.env is gitignored; dev script loads it)
+- `RAILKIT_API_KEY` — upstream key (invariant 1)
+- `AUTH_TOKEN_SECRET` — HMAC secret for device tokens (rotating it invalidates all tokens)
+- `REDIS_URL` (default redis://127.0.0.1:6379) · `PORT` (default 3000)
+
 ## Module map
 - src/railkit/ — the ONLY place that talks upstream or knows DD-MM-YYYY. Typed wrapper per endpoint; validates before calling; fixtures in __fixtures__/ mirror docs/fixtures/.
 - src/cache/ — Redis TTL cache + single-flight + SWR. TTLs from docs/api-contracts.md §10 (constant table CACHE_TTLS, one place).
