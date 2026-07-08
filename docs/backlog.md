@@ -15,7 +15,7 @@ Use **plan mode** for every item marked ⚠ (structural — review the plan befo
 - [x] **0.2 Shared types**: generate `packages/shared` TS types from docs/api-contracts.md §0–§8. Server imports them; add a CI check that fails when contracts doc and types drift (hash comment).
 
 ## M1 — Server core
-- [ ] ⚠ **1.1 RailKit client** [PRD §6]: typed wrapper per upstream endpoint; input validation (5-digit train, 10-digit PNR, date conversion YYYY-MM-DD ↔ upstream DD-MM-YYYY); `RAILKIT_API_KEY` from env only; fixtures in `src/railkit/__fixtures__/` (use the recorded sample payloads in docs/fixtures/); `trainHistory` 404 → `NOT_YET_AVAILABLE`.
+- [x] ⚠ **1.1 RailKit client** *(done except checkPNRStatus fixture — pending a real PNR)* [PRD §6]: typed wrapper per upstream endpoint; input validation (5-digit train, 10-digit PNR, date conversion YYYY-MM-DD ↔ upstream DD-MM-YYYY); `RAILKIT_API_KEY` from env only; fixtures in `src/railkit/__fixtures__/` (use the recorded sample payloads in docs/fixtures/); `trainHistory` 404 → `NOT_YET_AVAILABLE`.
 - [ ] ⚠ **1.2 Cache layer**: Redis TTL cache per §10 of contracts; single-flight (one upstream call per key across concurrent waiters); stale-while-revalidate with `meta.stale`; unit tests incl. concurrency test.
 - [ ] **1.3 Auth**: `POST /auth/device` anonymous tokens; Bearer middleware; per-device rate limit.
 - [ ] ⚠ **1.4 `/screen/train`** [FR-2.1–2.4]: run-date probe (`run=auto` checks today & yesterday, picks active), merge track+route+coords, position interpolation, cancelled/diverted states, coach guide with reversal detection from coach-position timeline [FR-3.1–3.2].
