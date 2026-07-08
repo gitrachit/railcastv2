@@ -1,0 +1,584 @@
+{
+  "success": true,
+  "data": {
+    "summary": "23 Trains departing from/arriving at JBP- JABALPUR in next 4 Hrs.",
+    "totalTrains": 23,
+    "trains": [
+      {
+        "trainNo": "11265",
+        "trainName": "JBP ABKP EXPRESS",
+        "source": "JBP",
+        "sourceName": "JABALPUR",
+        "dest": "ABKP",
+        "destName": "AMBIKAPUR",
+        "trainType": "MAIL EXPRESS",
+        "classes": "3A,CC,SL,2S,GEN,PWD",
+        "runDate": "08-Jul-2026",
+        "platform": "1",
+        "cancelled": null,
+        "arrival": {
+          "actual": "SRC",
+          "scheduled": "",
+          "delay": "",
+          "delayed": false
+        },
+        "departure": {
+          "actual": "12:45",
+          "scheduled": "12:45",
+          "delay": "On Time",
+          "delayed": false
+        }
+      },
+      {
+        "trainNo": "09026",
+        "trainName": "DNR BL SPL",
+        "source": "DNR",
+        "sourceName": "DANAPUR",
+        "dest": "BL",
+        "destName": "VALSAD",
+        "trainType": "TRAIN ON DEMAND",
+        "classes": "",
+        "runDate": "07-Jul-2026",
+        "platform": "2",
+        "cancelled": null,
+        "arrival": {
+          "actual": "12:41",
+          "scheduled": "06:00",
+          "delay": "06:41 Hrs.",
+          "delayed": true
+        },
+        "departure": {
+          "actual": "12:46",
+          "scheduled": "06:10",
+          "delay": "06:36 Hrs.",
+          "delayed": true
+        }
+      },
+      {
+        "trainNo": "20903",
+        "trainName": "BSB MAHAMANA",
+        "source": "EKNR",
+        "sourceName": "EKTA NAGAR",
+        "dest": "BSB",
+        "destName": "VARANASI JN",
+        "trainType": "SUPERFAST",
+        "classes": "1A,2A,3A,SL,GEN,PWD",
+        "runDate": "07-Jul-2026",
+        "platform": "2",
+        "cancelled": null,
+        "arrival": {
+          "actual": "12:54",
+          "scheduled": "12:50",
+          "delay": "4 Mins.",
+          "delayed": true
+        },
+        "departure": {
+          "actual": "13:00",
+          "scheduled": "13:00",
+          "delay": "On Time",
+          "delayed": false
+        }
+      },
+      {
+        "trainNo": "02197",
+        "trainName": "CBE JBP SF SPL",
+        "source": "CBE",
+        "sourceName": "COIMBATORE JN",
+        "dest": "JBP",
+        "destName": "JABALPUR",
+        "trainType": "TRAIN ON DEMAND",
+        "classes": "",
+        "runDate": "06-Jul-2026",
+        "platform": "4",
+        "cancelled": null,
+        "arrival": {
+          "actual": "13:25",
+          "scheduled": "08:45",
+          "delay": "04:40 Hrs.",
+          "delayed": true
+        },
+        "departure": {
+          "actual": "DSTN",
+          "scheduled": "",
+          "delay": "",
+          "delayed": false
+        }
+      },
+      {
+        "trainNo": "11401",
+        "trainName": "PUNE SUPAUL EXP",
+        "source": "PUNE",
+        "sourceName": "PUNE JN",
+        "dest": "SOU",
+        "destName": "SUPAUL JUNCTION",
+        "trainType": "MAIL EXPRESS",
+        "classes": "2A,3A,SL,GEN,PWD",
+        "runDate": "07-Jul-2026",
+        "platform": "2",
+        "cancelled": null,
+        "arrival": {
+          "actual": "13:35",
+          "scheduled": "13:35",
+          "delay": "On Time",
+          "delayed": false
+        },
+        "departure": {
+          "actual": "13:45",
+          "scheduled": "13:45",
+          "delay": "On Time",
+          "delayed": false
+        }
+      },
+      {
+        "trainNo": "01144",
+        "trainName": "DNR LTT SPL",
+        "source": "DNR",
+        "sourceName": "DANAPUR",
+        "dest": "LTT",
+        "destName": "LOKMANYATILAK T",
+        "trainType": "TRAIN ON DEMAND",
+        "classes": "",
+        "runDate": "07-Jul-2026",
+        "platform": "",
+        "cancelled": true,
+        "arrival": {
+          "actual": "Cancelled",
+          "scheduled": "13:45",
+          "delay": "",
+          "delayed": false
+        },
+        "departure": {
+          "actual": "Cancelled",
+          "scheduled": "13:50",
+          "delay": "",
+          "delayed": false
+        }
+      },
+      {
+        "trainNo": "11464",
+        "trainName": "JBP SOMNATH EXP",
+        "source": "JBP",
+        "sourceName": "JABALPUR",
+        "dest": "VRL",
+        "destName": "VERAVAL",
+        "trainType": "MAIL EXPRESS",
+        "classes": "1A,2A,3A,3E,SL,GEN,PWD",
+        "runDate": "08-Jul-2026",
+        "platform": "6",
+        "cancelled": null,
+        "arrival": {
+          "actual": "SRC",
+          "scheduled": "",
+          "delay": "",
+          "delayed": false
+        },
+        "departure": {
+          "actual": "14:00",
+          "scheduled": "14:00",
+          "delay": "On Time",
+          "delayed": false
+        }
+      },
+      {
+        "trainNo": "01449",
+        "trainName": "PUNE DNR SPECIAL",
+        "source": "PUNE",
+        "sourceName": "PUNE JN",
+        "dest": "DNR",
+        "destName": "DANAPUR",
+        "trainType": "TRAIN ON DEMAND",
+        "classes": "2A,3A,SL,GEN",
+        "runDate": "07-Jul-2026",
+        "platform": "-",
+        "cancelled": null,
+        "arrival": {
+          "actual": "14:00",
+          "scheduled": "09:05",
+          "delay": "04:55 Hrs.",
+          "delayed": true
+        },
+        "departure": {
+          "actual": "14:05",
+          "scheduled": "09:15",
+          "delay": "04:50 Hrs.",
+          "delayed": true
+        }
+      },
+      {
+        "trainNo": "11463",
+        "trainName": "SMNH JBP EXP",
+        "source": "VRL",
+        "sourceName": "VERAVAL",
+        "dest": "JBP",
+        "destName": "JABALPUR",
+        "trainType": "MAIL EXPRESS",
+        "classes": "1A,2A,3A,3E,SL,GEN,PWD",
+        "runDate": "07-Jul-2026",
+        "platform": "4",
+        "cancelled": null,
+        "arrival": {
+          "actual": "14:10",
+          "scheduled": "14:10",
+          "delay": "On Time",
+          "delayed": false
+        },
+        "departure": {
+          "actual": "DSTN",
+          "scheduled": "",
+          "delay": "",
+          "delayed": false
+        }
+      },
+      {
+        "trainNo": "22132",
+        "trainName": "GYAN GANGA EXP",
+        "source": "BNRS",
+        "sourceName": "BANARAS",
+        "dest": "PUNE",
+        "destName": "PUNE JN",
+        "trainType": "SUPERFAST",
+        "classes": "2A,3A,SL,GEN,PWD",
+        "runDate": "08-Jul-2026",
+        "platform": "1",
+        "cancelled": null,
+        "arrival": {
+          "actual": "14:00",
+          "scheduled": "14:00",
+          "delay": "On Time",
+          "delayed": false
+        },
+        "departure": {
+          "actual": "14:10",
+          "scheduled": "14:10",
+          "delay": "On Time",
+          "delayed": false
+        }
+      },
+      {
+        "trainNo": "05557",
+        "trainName": "RXL LTT SF SPL",
+        "source": "RXL",
+        "sourceName": "RAXAUL JN",
+        "dest": "LTT",
+        "destName": "LOKMANYATILAK T",
+        "trainType": "TRAIN ON DEMAND",
+        "classes": "1A,2A,3A,SL,GEN,PWD",
+        "runDate": "07-Jul-2026",
+        "platform": "1",
+        "cancelled": null,
+        "arrival": {
+          "actual": "14:14",
+          "scheduled": "14:05",
+          "delay": "9 Mins.",
+          "delayed": true
+        },
+        "departure": {
+          "actual": "14:19",
+          "scheduled": "14:15",
+          "delay": "4 Mins.",
+          "delayed": true
+        }
+      },
+      {
+        "trainNo": "13201",
+        "trainName": "RGD LTT EXP",
+        "source": "RGD",
+        "sourceName": "RAJGIR",
+        "dest": "LTT",
+        "destName": "LOKMANYATILAK T",
+        "trainType": "MAIL EXPRESS",
+        "classes": "1A,2A,3A,3E,SL,GEN,PWD",
+        "runDate": "07-Jul-2026",
+        "platform": "1",
+        "cancelled": null,
+        "arrival": {
+          "actual": "14:30",
+          "scheduled": "14:30",
+          "delay": "On Time",
+          "delayed": false
+        },
+        "departure": {
+          "actual": "14:40",
+          "scheduled": "14:40",
+          "delay": "On Time",
+          "delayed": false
+        }
+      },
+      {
+        "trainNo": "11448",
+        "trainName": "SHAKTIPUNJ EXP",
+        "source": "HWH",
+        "sourceName": "HOWRAH JN",
+        "dest": "JBP",
+        "destName": "JABALPUR",
+        "trainType": "MAIL EXPRESS",
+        "classes": "1A,2A,3A,3E,SL,GEN,PWD",
+        "runDate": "07-Jul-2026",
+        "platform": "2",
+        "cancelled": null,
+        "arrival": {
+          "actual": "14:42",
+          "scheduled": "14:20",
+          "delay": "22 Mins.",
+          "delayed": true
+        },
+        "departure": {
+          "actual": "DSTN",
+          "scheduled": "",
+          "delay": "",
+          "delayed": false
+        }
+      },
+      {
+        "trainNo": "12141",
+        "trainName": "PATLIPUTRA EXP",
+        "source": "LTT",
+        "sourceName": "LOKMANYATILAK T",
+        "dest": "PPTA",
+        "destName": "PATLIPUTRA",
+        "trainType": "SUPERFAST",
+        "classes": "1A,2A,3A,SL,GEN,PWD",
+        "runDate": "07-Jul-2026",
+        "platform": "5",
+        "cancelled": null,
+        "arrival": {
+          "actual": "14:46",
+          "scheduled": "14:20",
+          "delay": "26 Mins.",
+          "delayed": true
+        },
+        "departure": {
+          "actual": "14:51",
+          "scheduled": "14:30",
+          "delay": "21 Mins.",
+          "delayed": true
+        }
+      },
+      {
+        "trainNo": "12167",
+        "trainName": "LTT BANARAS EXP",
+        "source": "LTT",
+        "sourceName": "LOKMANYATILAK T",
+        "dest": "BNRS",
+        "destName": "BANARAS",
+        "trainType": "SUPERFAST",
+        "classes": "1A,2A,3A,SL,GEN,PWD",
+        "runDate": "07-Jul-2026",
+        "platform": "5",
+        "cancelled": null,
+        "arrival": {
+          "actual": "14:48",
+          "scheduled": "14:00",
+          "delay": "48 Mins.",
+          "delayed": true
+        },
+        "departure": {
+          "actual": "14:53",
+          "scheduled": "14:10",
+          "delay": "43 Mins.",
+          "delayed": true
+        }
+      },
+      {
+        "trainNo": "11266",
+        "trainName": "ABKP JBP EXP",
+        "source": "ABKP",
+        "sourceName": "AMBIKAPUR",
+        "dest": "JBP",
+        "destName": "JABALPUR",
+        "trainType": "MAIL EXPRESS",
+        "classes": "3A,CC,SL,2S,GEN,PWD",
+        "runDate": "08-Jul-2026",
+        "platform": "4",
+        "cancelled": null,
+        "arrival": {
+          "actual": "15:05",
+          "scheduled": "15:05",
+          "delay": "On Time",
+          "delayed": false
+        },
+        "departure": {
+          "actual": "DSTN",
+          "scheduled": "",
+          "delay": "",
+          "delayed": false
+        }
+      },
+      {
+        "trainNo": "12322",
+        "trainName": "KOLKATA MAIL",
+        "source": "CSMT",
+        "sourceName": "C SHIVAJI MAH T",
+        "dest": "HWH",
+        "destName": "HOWRAH JN",
+        "trainType": "SUPERFAST",
+        "classes": "1A,2A,3A,3E,SL,GEN,PWD",
+        "runDate": "07-Jul-2026",
+        "platform": "5",
+        "cancelled": null,
+        "arrival": {
+          "actual": "15:09",
+          "scheduled": "13:20",
+          "delay": "01:49 Hrs.",
+          "delayed": true
+        },
+        "departure": {
+          "actual": "15:14",
+          "scheduled": "13:30",
+          "delay": "01:44 Hrs.",
+          "delayed": true
+        }
+      },
+      {
+        "trainNo": "22181",
+        "trainName": "JBP NZM SF EXP",
+        "source": "JBP",
+        "sourceName": "JABALPUR",
+        "dest": "NZM",
+        "destName": "H NIZAMUDDIN",
+        "trainType": "SUPERFAST",
+        "classes": "1A,2A,3A,3E,SL,GEN,PWD",
+        "runDate": "08-Jul-2026",
+        "platform": "6",
+        "cancelled": null,
+        "arrival": {
+          "actual": "SRC",
+          "scheduled": "",
+          "delay": "",
+          "delayed": false
+        },
+        "departure": {
+          "actual": "15:15",
+          "scheduled": "15:15",
+          "delay": "On Time",
+          "delayed": false
+        }
+      },
+      {
+        "trainNo": "11651",
+        "trainName": "SGRL INTERCITY",
+        "source": "JBP",
+        "sourceName": "JABALPUR",
+        "dest": "SGRL",
+        "destName": "SINGRAULI",
+        "trainType": "MAIL EXPRESS",
+        "classes": "3A,CC,SL,2S,GEN,PWD",
+        "runDate": "08-Jul-2026",
+        "platform": "3",
+        "cancelled": null,
+        "arrival": {
+          "actual": "SRC",
+          "scheduled": "",
+          "delay": "",
+          "delayed": false
+        },
+        "departure": {
+          "actual": "15:45",
+          "scheduled": "15:45",
+          "delay": "On Time",
+          "delayed": false
+        }
+      },
+      {
+        "trainNo": "61618",
+        "trainName": "KTE-ET MEMU",
+        "source": "KTE",
+        "sourceName": "KATNI",
+        "dest": "ET",
+        "destName": "ITARSI JN",
+        "trainType": "MEMU",
+        "classes": "GEN",
+        "runDate": "08-Jul-2026",
+        "platform": "1",
+        "cancelled": null,
+        "arrival": {
+          "actual": "15:40",
+          "scheduled": "15:40",
+          "delay": "On Time",
+          "delayed": false
+        },
+        "departure": {
+          "actual": "15:45",
+          "scheduled": "15:45",
+          "delay": "On Time",
+          "delayed": false
+        }
+      },
+      {
+        "trainNo": "22177",
+        "trainName": "MAHANAGARI EXP",
+        "source": "CSMT",
+        "sourceName": "C SHIVAJI MAH T",
+        "dest": "BNRS",
+        "destName": "BANARAS",
+        "trainType": "SUPERFAST",
+        "classes": "1A,2A,3A,SL,GEN,PWD",
+        "runDate": "08-Jul-2026",
+        "platform": "5",
+        "cancelled": null,
+        "arrival": {
+          "actual": "16:13",
+          "scheduled": "15:40",
+          "delay": "33 Mins.",
+          "delayed": true
+        },
+        "departure": {
+          "actual": "16:18",
+          "scheduled": "15:50",
+          "delay": "28 Mins.",
+          "delayed": true
+        }
+      },
+      {
+        "trainNo": "03252",
+        "trainName": "SMVB DNR SPL",
+        "source": "SMVB",
+        "sourceName": "SMVT BENGALURU",
+        "dest": "DNR",
+        "destName": "DANAPUR",
+        "trainType": "TRAIN ON DEMAND",
+        "classes": "",
+        "runDate": "06-Jul-2026",
+        "platform": "5",
+        "cancelled": null,
+        "arrival": {
+          "actual": "17:36",
+          "scheduled": "09:05",
+          "delay": "08:31 Hrs.",
+          "delayed": true
+        },
+        "departure": {
+          "actual": "17:41",
+          "scheduled": "09:15",
+          "delay": "08:26 Hrs.",
+          "delayed": true
+        }
+      },
+      {
+        "trainNo": "04102",
+        "trainName": "LTT PRYJ SPECIAL",
+        "source": "LTT",
+        "sourceName": "LOKMANYATILAK T",
+        "dest": "PRYJ",
+        "destName": "PRAYAGRAJ JN.",
+        "trainType": "TRAIN ON DEMAND",
+        "classes": "",
+        "runDate": "07-Jul-2026",
+        "platform": "-",
+        "cancelled": null,
+        "arrival": {
+          "actual": "19:12",
+          "scheduled": "09:35",
+          "delay": "09:37 Hrs.",
+          "delayed": true
+        },
+        "departure": {
+          "actual": "19:17",
+          "scheduled": "09:45",
+          "delay": "09:32 Hrs.",
+          "delayed": true
+        }
+      }
+    ]
+  }
+}

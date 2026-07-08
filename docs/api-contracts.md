@@ -211,6 +211,15 @@ body: {
 
 GET    /watch                    → Ok<{ watches: WatchSummary[] }>
 DELETE /watch/:watchId           → Ok<{}>
+
+interface WatchSummary {
+  watchId: string;
+  type: "chart" | "delay" | "platform" | "cancel" | "arrival";
+  entity: { kind: "pnr"; pnrMasked: string }                 // masked per FR-4.3
+        | { kind: "train"; trainNo: string; runDate: string };
+  params?: { delayThresholdMin?: number; stationCode?: string; leadMin?: number };
+  expiresAt: string;
+}
 ```
 
 **Push payloads (FCM `data` messages; app renders localized notifications):**

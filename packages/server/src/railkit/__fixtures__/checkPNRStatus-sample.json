@@ -1,0 +1,111 @@
+{
+  "success": true,
+  "data": {
+    "pnr": "8524132882",
+    "train": {
+      "number": "12780",
+      "name": "GOA EXPRESS"
+    },
+    "journey": {
+      "dateOfJourney": "Jul 4, 2026 5:10:00 PM",
+      "class": "2A",
+      "quota": "TQ",
+      "source": {
+        "code": "PUNE",
+        "name": "PUNE JN"
+      },
+      "destination": {
+        "code": "VSG",
+        "name": "VASCO DA GAMA"
+      },
+      "boardingPoint": {
+        "code": "PUNE",
+        "name": "PUNE JN"
+      },
+      "distance": 613,
+      "arrivalDate": "Jul 5, 2026 7:00:00 AM"
+    },
+    "chart": {
+      "status": "Chart Prepared"
+    },
+    "booking": {
+      "fare": 7380,
+      "ticketFare": 7380,
+      "bookingDate": "Jul 2, 2026 10:06:38 AM"
+    },
+    "passengers": [
+      {
+        "serialNumber": "Passenger 1",
+        "coachPosition": 5,
+        "booking": {
+          "status": "CNF",
+          "coach": "A1",
+          "berthNo": 14,
+          "berthCode": "UB",
+          "details": "CNF/A1/14/UB"
+        },
+        "current": {
+          "status": "CNF",
+          "coach": "A1",
+          "berthNo": 14,
+          "berthCode": "UB",
+          "details": "CNF/A1/14/UB"
+        }
+      },
+      {
+        "serialNumber": "Passenger 2",
+        "coachPosition": 5,
+        "booking": {
+          "status": "CNF",
+          "coach": "A1",
+          "berthNo": 15,
+          "berthCode": "LB",
+          "details": "CNF/A1/15/LB"
+        },
+        "current": {
+          "status": "CNF",
+          "coach": "A1",
+          "berthNo": 15,
+          "berthCode": "LB",
+          "details": "CNF/A1/15/LB"
+        }
+      },
+      {
+        "serialNumber": "Passenger 3",
+        "coachPosition": 5,
+        "booking": {
+          "status": "CNF",
+          "coach": "A1",
+          "berthNo": 16,
+          "berthCode": "UB",
+          "details": "CNF/A1/16/UB"
+        },
+        "current": {
+          "status": "CNF",
+          "coach": "A1",
+          "berthNo": 16,
+          "berthCode": "UB",
+          "details": "CNF/A1/16/UB"
+        }
+      },
+      {
+        "serialNumber": "Passenger 4",
+        "coachPosition": 5,
+        "booking": {
+          "status": "CNF",
+          "coach": "A1",
+          "berthNo": 18,
+          "berthCode": "SU",
+          "details": "CNF/A1/18/SU"
+        },
+        "current": {
+          "status": "CNF",
+          "coach": "A1",
+          "berthNo": 18,
+          "berthCode": "SU",
+          "details": "CNF/A1/18/SU"
+        }
+      }
+    ]
+  }
+}

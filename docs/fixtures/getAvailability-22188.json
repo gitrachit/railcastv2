@@ -1,0 +1,79 @@
+{
+  "success": true,
+  "data": {
+    "train": {
+      "trainNo": "22188",
+      "trainName": "INTERCITY EXP",
+      "from": "JBP",
+      "to": "RKMP",
+      "fromStationName": "Jabalpur Junction",
+      "toStationName": "Rani Kamlapati(Bhopal)",
+      "distance": 338,
+      "travelClass": "CC",
+      "quota": "GN"
+    },
+    "fare": {
+      "baseFare": 434,
+      "reservationCharge": 40,
+      "superfastCharge": 45,
+      "serviceTax": 26,
+      "totalFare": 545
+    },
+    "availability": [
+      {
+        "date": "15-7-2026",
+        "status": "AVAILABLE",
+        "availabilityText": "AVL 107",
+        "rawStatus": "AVAILABLE-0107",
+        "prediction": "Available",
+        "predictionPercentage": 100,
+        "canBook": true
+      },
+      {
+        "date": "16-7-2026",
+        "status": "AVAILABLE",
+        "availabilityText": "AVL 108",
+        "rawStatus": "AVAILABLE-0108",
+        "prediction": "Available",
+        "predictionPercentage": 100,
+        "canBook": true
+      },
+      {
+        "date": "17-7-2026",
+        "status": "AVAILABLE",
+        "availabilityText": "AVL 105",
+        "rawStatus": "AVAILABLE-0105",
+        "prediction": "Available",
+        "predictionPercentage": 100,
+        "canBook": true
+      },
+      {
+        "date": "18-7-2026",
+        "status": "AVAILABLE",
+        "availabilityText": "AVL 98",
+        "rawStatus": "AVAILABLE-0098",
+        "prediction": "Available",
+        "predictionPercentage": 100,
+        "canBook": true
+      },
+      {
+        "date": "19-7-2026",
+        "status": "AVAILABLE",
+        "availabilityText": "AVL 109",
+        "rawStatus": "AVAILABLE-0109",
+        "prediction": "Available",
+        "predictionPercentage": 100,
+        "canBook": true
+      },
+      {
+        "date": "20-7-2026",
+        "status": "AVAILABLE",
+        "availabilityText": "AVL 108",
+        "rawStatus": "AVAILABLE-0108",
+        "prediction": "Available",
+        "predictionPercentage": 100,
+        "canBook": true
+      }
+    ]
+  }
+}

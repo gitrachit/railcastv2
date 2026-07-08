@@ -9,6 +9,8 @@ Recorded real responses from the upstream API, used by packages/server tests (ra
 - searchBetween-JBP.json       — A→B results
 - getAvailability-22188.json   — availability + prediction
 - fareLookup-22188.json        — fare breakdown
+- trainHistory-notfound.json   — the HTTP 404 body for an incomplete journey (drives NOT_YET_AVAILABLE mapping)
 
-Paste the corresponding JSON bodies from the API console into these filenames before running server tests.
-(They were captured during product research; regenerate anytime from the provider dashboard.)
+Recorded 2026-07-08 against the live API (train 22188 ADTL→RKMP, station JBP, search JBP→NU,
+PNR from a real GOA EXPRESS booking with the PNR number replaced by a fake one before commit).
+packages/server/src/railkit/__fixtures__/ mirrors this directory; keep them in sync.

@@ -1,0 +1,201 @@
+{
+  "success": true,
+  "data": {
+    "trainInfo": {
+      "train_no": "22188",
+      "train_name": "INTERCITY EXP",
+      "from_stn_name": "Adhartal",
+      "from_stn_code": "ADTL",
+      "to_stn_name": "Rani Kamlapati(Bhopal)",
+      "to_stn_code": "RKMP",
+      "from_time": "16:15",
+      "to_time": "22:23",
+      "travel_time": "06:08 hrs",
+      "running_days": "1111111",
+      "type": "SUPERFAST",
+      "train_id": "15831"
+    },
+    "route": [
+      {
+        "stnCode": "ADTL",
+        "stnName": "Adhartal",
+        "arrival": "--",
+        "departure": "16:15",
+        "halt": "0 min",
+        "haltMinutes": 0,
+        "distance": "0",
+        "day": "1",
+        "platform": "",
+        "coordinates": {
+          "latitude": 23.2277805299293,
+          "longitude": 79.9729156494141
+        }
+      },
+      {
+        "stnCode": "JBP",
+        "stnName": "Jabalpur",
+        "arrival": "16:27",
+        "departure": "16:35",
+        "halt": "8 min",
+        "haltMinutes": 8,
+        "distance": "9",
+        "day": "1",
+        "platform": "3,4",
+        "coordinates": {
+          "latitude": 23.1649725156114,
+          "longitude": 79.9508571624756
+        }
+      },
+      {
+        "stnCode": "MML",
+        "stnName": "Madan Mahal",
+        "arrival": "16:44",
+        "departure": "16:46",
+        "halt": "2 min",
+        "haltMinutes": 2,
+        "distance": "12",
+        "day": "1",
+        "platform": 1,
+        "coordinates": {
+          "latitude": 23.1600898285716,
+          "longitude": 79.9207037687302
+        }
+      },
+      {
+        "stnCode": "SRID",
+        "stnName": "Shridham",
+        "arrival": "17:16",
+        "departure": "17:18",
+        "halt": "2 min",
+        "haltMinutes": 2,
+        "distance": "62",
+        "day": "1",
+        "platform": 3,
+        "coordinates": {
+          "latitude": 23.0343117561284,
+          "longitude": 79.4847106933594
+        }
+      },
+      {
+        "stnCode": "NU",
+        "stnName": "Narsinghpur",
+        "arrival": "17:43",
+        "departure": "17:45",
+        "halt": "2 min",
+        "haltMinutes": 2,
+        "distance": "93",
+        "day": "1",
+        "platform": 2,
+        "coordinates": {
+          "latitude": 22.9429416996766,
+          "longitude": 79.2147195339203
+        }
+      },
+      {
+        "stnCode": "KY",
+        "stnName": "Kareli",
+        "arrival": "17:59",
+        "departure": "18:00",
+        "halt": "1 min",
+        "haltMinutes": 1,
+        "distance": "108",
+        "day": "1",
+        "platform": 2,
+        "coordinates": {
+          "latitude": 22.931835994365,
+          "longitude": 79.0656852722168
+        }
+      },
+      {
+        "stnCode": "BNE",
+        "stnName": "Bohani",
+        "arrival": "18:11",
+        "departure": "18:12",
+        "halt": "1 min",
+        "haltMinutes": 1,
+        "distance": "124",
+        "day": "1",
+        "platform": "",
+        "coordinates": {
+          "latitude": 22.9132783444043,
+          "longitude": 78.9157176017761
+        }
+      },
+      {
+        "stnCode": "GAR",
+        "stnName": "Gadarwara",
+        "arrival": "18:19",
+        "departure": "18:20",
+        "halt": "1 min",
+        "haltMinutes": 1,
+        "distance": "137",
+        "day": "1",
+        "platform": 2,
+        "coordinates": {
+          "latitude": 22.9003319402759,
+          "longitude": 78.7928509712219
+        }
+      },
+      {
+        "stnCode": "PPI",
+        "stnName": "Pipariya",
+        "arrival": "18:53",
+        "departure": "18:55",
+        "halt": "2 min",
+        "haltMinutes": 2,
+        "distance": "186",
+        "day": "1",
+        "platform": 2,
+        "coordinates": {
+          "latitude": 22.7541249605465,
+          "longitude": 78.3547711372375
+        }
+      },
+      {
+        "stnCode": "ET",
+        "stnName": "Itarsi Jn (Rev)",
+        "arrival": "20:15",
+        "departure": "20:30",
+        "halt": "15 min",
+        "haltMinutes": 15,
+        "distance": "254",
+        "day": "1",
+        "platform": 3,
+        "coordinates": {
+          "latitude": 22.6083456911452,
+          "longitude": 77.7667987346649
+        }
+      },
+      {
+        "stnCode": "NDPM",
+        "stnName": "Narmadapuram",
+        "arrival": "20:48",
+        "departure": "20:50",
+        "halt": "2 min",
+        "haltMinutes": 2,
+        "distance": "271",
+        "day": "1",
+        "platform": "",
+        "coordinates": {
+          "latitude": 22.7527744441223,
+          "longitude": 77.7171778678894
+        }
+      },
+      {
+        "stnCode": "RKMP",
+        "stnName": "Rani Kamlapati(Bhopal)",
+        "arrival": "22:23",
+        "departure": "--",
+        "halt": "0 min",
+        "haltMinutes": 0,
+        "distance": "346",
+        "day": "1",
+        "platform": "",
+        "coordinates": {
+          "latitude": 23.2219338951766,
+          "longitude": 77.4395477771759
+        }
+      }
+    ]
+  }
+}
