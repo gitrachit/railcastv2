@@ -11,7 +11,7 @@ Use **plan mode** for every item marked ⚠ (structural — review the plan befo
 ---
 
 ## M0 — Foundations
-- [ ] ⚠ **0.1 Scaffold monorepo**: pnpm workspace (`packages/server`, `packages/directory`, `packages/shared`), Android Gradle project (`android/`, package `app.railcast`, Compose, minSdk 24), `infra/docker-compose.yml` (postgres+redis), GitHub Actions stubs (`ci-server`, `ci-android`). Everything builds green.
+- [x] ⚠ **0.1 Scaffold monorepo**: pnpm workspace (`packages/server`, `packages/directory`, `packages/shared`), Android Gradle project (`android/`, package `app.railcast`, Compose, minSdk 24), `infra/docker-compose.yml` (postgres+redis), GitHub Actions stubs (`ci-server`, `ci-android`). Everything builds green.
 - [ ] **0.2 Shared types**: generate `packages/shared` TS types from docs/api-contracts.md §0–§8. Server imports them; add a CI check that fails when contracts doc and types drift (hash comment).
 
 ## M1 — Server core
