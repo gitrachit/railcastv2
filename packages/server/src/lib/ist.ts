@@ -8,6 +8,27 @@ export function istDateString(now: Date, dayOffset = 0): string {
     .slice(0, 10);
 }
 
+/**
+ * Station boards give bare "HH:mm" times. Anchor to the IST calendar day
+ * (yesterday/today/tomorrow) closest to now — boards only span a few hours.
+ */
+export function nearestIstIsoForTime(hhmm: string, now: Date): string | null {
+  const m = /^(\d{1,2}):(\d{2})$/.exec(hhmm.trim());
+  if (!m) return null;
+  const time = `${m[1]!.padStart(2, "0")}:${m[2]}:00+05:30`;
+  let best: string | null = null;
+  let bestDiff = Number.POSITIVE_INFINITY;
+  for (const offset of [-1, 0, 1]) {
+    const iso = `${istDateString(now, offset)}T${time}`;
+    const diff = Math.abs(Date.parse(iso) - now.getTime());
+    if (diff < bestDiff) {
+      bestDiff = diff;
+      best = iso;
+    }
+  }
+  return best;
+}
+
 /** Shift an ISO timestamp by N minutes, keeping its +05:30 offset. */
 export function shiftIsoMinutes(iso: string, minutes: number): string {
   const shifted = new Date(Date.parse(iso) + minutes * 60_000);

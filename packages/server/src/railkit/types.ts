@@ -108,11 +108,12 @@ export interface RawStationBoardTrain {
   dest: string;
   destName: string;
   trainType: string;
-  classes: string; // "3A,CC,SL,2S,GEN,PWD"
+  classes: string; // "3A,CC,SL,2S,GEN,PWD" — "" on specials
   runDate: string; // "08-Jul-2026"
-  platform: string;
-  cancelled: unknown; // null when running; exact cancelled shape TBD from a cancelled capture
-  arrival: { actual: string; scheduled: string; delay: string; delayed: boolean }; // actual "SRC" when originates here
+  platform: string; // "" or "-" when unknown
+  cancelled: boolean | null; // true when cancelled, null otherwise
+  // actual: "HH:mm" | "SRC" (originates here) | "DSTN" (terminates) | "Cancelled"
+  arrival: { actual: string; scheduled: string; delay: string; delayed: boolean };
   departure: { actual: string; scheduled: string; delay: string; delayed: boolean };
 }
 

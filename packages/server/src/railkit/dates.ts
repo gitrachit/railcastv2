@@ -68,10 +68,15 @@ export function parseUpstreamPnrDateTime(value: string | null | undefined): stri
   return `${m[3]}-${pad(month)}-${pad(m[2]!)}T${pad(hour)}:${m[5]}:${m[6]}+05:30`;
 }
 
-/** Upstream delay strings: "" → null, "On Time" → 0, "3 Min" → 3, "1 Hr 5 Min" → 65. */
+/**
+ * Upstream delay strings: "" → null, "On Time" → 0, "3 Min" → 3, "4 Mins." → 4,
+ * "1 Hr 5 Min" → 65, and the station board's "04:40 Hrs." (HH:MM) → 280.
+ */
 export function parseDelayMin(value: string | null | undefined): number | null {
   if (!value) return null;
   if (/on\s*time/i.test(value)) return 0;
+  const hhmm = /^(\d{1,2}):(\d{2})\s*hrs?\.?$/i.exec(value.trim());
+  if (hhmm) return Number(hhmm[1]) * 60 + Number(hhmm[2]);
   const hr = /(\d+)\s*hr/i.exec(value);
   const min = /(\d+)\s*min/i.exec(value);
   if (!hr && !min) return null;

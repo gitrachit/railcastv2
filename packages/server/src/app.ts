@@ -4,6 +4,7 @@ import { registerAuth, type AuthOptions } from "./auth/plugin.js";
 import { MemoryRateStore } from "./auth/rate-limit.js";
 import { Cache, MemoryStore, type CacheStore } from "./cache/index.js";
 import { registerPnrScreen } from "./screens/pnr.js";
+import { registerStationScreen } from "./screens/station.js";
 import { registerTrainScreen } from "./screens/train.js";
 
 const startedAt = Date.now();
@@ -45,6 +46,7 @@ export function buildApp(opts: AppOptions = {}): FastifyInstance {
 
   registerTrainScreen(app, { cache, now: opts.now });
   registerPnrScreen(app, { cache, now: opts.now });
+  registerStationScreen(app, { cache, now: opts.now });
 
   // Contracts §9. `upstream` becomes a real probe when watcher health lands (M2).
   app.get("/health", async (): Promise<Ok<Health>> => ({
