@@ -50,7 +50,7 @@ describe.skipIf(!pgUp)("WatchRepo (postgres)", () => {
   const repo = new WatchRepo(pool);
 
   beforeEach(async () => {
-    await pool.query("TRUNCATE watch, device_push_token");
+    await pool.query("TRUNCATE watch, device_push_token, device_prefs, push_delivery_log");
   });
 
   it("creates, dedups, lists (masked), deletes", async () => {
@@ -120,6 +120,41 @@ describe.skipIf(!pgUp)("WatchRepo (postgres)", () => {
     await repo.setPushToken("d1", "tok-1");
     await repo.setPushToken("d1", "tok-2");
     expect(await repo.pushTokensFor(["d1"])).toEqual(new Map([["d1", "tok-2"]]));
+    await repo.deletePushToken("d1");
+    expect(await repo.pushTokenFor("d1")).toBeNull();
+  });
+
+  it("round-trips notification prefs and defaults when absent (FR-7.4)", async () => {
+    expect(await repo.prefsFor("nobody")).toMatchObject({ quietStartHour: null, mutedKinds: [] });
+    await repo.setPrefs("d1", {
+      quietStartHour: 22,
+      quietEndHour: 7,
+      mutedKinds: ["DELAY"],
+      mutedEntityKeys: ["train:22188:2026-07-08"],
+    });
+    expect(await repo.prefsFor("d1")).toEqual({
+      quietStartHour: 22,
+      quietEndHour: 7,
+      mutedKinds: ["DELAY"],
+      mutedEntityKeys: ["train:22188:2026-07-08"],
+    });
+  });
+
+  it("logs delivery and computes the chart-push latency stat (§2 metric)", async () => {
+    const base = {
+      watchId: null as unknown as string,
+      deviceId: "d1",
+      kind: "CHART_PREPARED",
+      entityKey: "pnr:x",
+      signature: "CHART_PREPARED",
+      detectedAt: new Date(),
+    };
+    await repo.logDelivery({ ...base, deliveredAt: new Date(), latencyMs: 2000, status: "delivered" });
+    await repo.logDelivery({ ...base, deliveredAt: new Date(), latencyMs: 9 * 60_000, status: "delivered" });
+    await repo.logDelivery({ ...base, deliveredAt: null, latencyMs: null, status: "suppressed:quiet_hours" });
+
+    const stats = await repo.deliveryStats("CHART_PREPARED", 5 * 60_000);
+    expect(stats).toEqual({ total: 2, withinBudget: 1 }); // 2 delivered, one under 5 min
   });
 });
 

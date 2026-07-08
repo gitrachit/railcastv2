@@ -4,6 +4,7 @@ import type { CreateWatchRequest, WatchEntity, WatchSummary } from "@railcast/sh
 import type pg from "pg";
 import { decryptPnrBlob, encryptPnrBlob, pnrEntityKey } from "../privacy/crypto.js";
 import { maskPnr } from "../privacy/mask.js";
+import { DEFAULT_PREFS, type NotificationPrefs } from "./push/quiet-hours.js";
 
 export interface WatchRow {
   id: string;
@@ -164,6 +165,99 @@ export class WatchRepo {
     );
     return new Map(res.rows.map((r) => [r.device_id, r.fcm_token]));
   }
+
+  async pushTokenFor(deviceId: string): Promise<string | null> {
+    return (await this.pushTokensFor([deviceId])).get(deviceId) ?? null;
+  }
+
+  async deletePushToken(deviceId: string): Promise<void> {
+    await this.pool.query("DELETE FROM device_push_token WHERE device_id = $1", [deviceId]);
+  }
+
+  // ── notification prefs (FR-7.4) ──────────────────────────────────────────
+  async prefsFor(deviceId: string): Promise<NotificationPrefs> {
+    const res = await this.pool.query<{
+      quiet_start_hour: number | null;
+      quiet_end_hour: number | null;
+      muted_kinds: NotificationPrefs["mutedKinds"];
+      muted_entity_keys: string[];
+    }>(
+      "SELECT quiet_start_hour, quiet_end_hour, muted_kinds, muted_entity_keys FROM device_prefs WHERE device_id = $1",
+      [deviceId],
+    );
+    const row = res.rows[0];
+    if (!row) return DEFAULT_PREFS;
+    return {
+      quietStartHour: row.quiet_start_hour,
+      quietEndHour: row.quiet_end_hour,
+      mutedKinds: row.muted_kinds,
+      mutedEntityKeys: row.muted_entity_keys,
+    };
+  }
+
+  async setPrefs(deviceId: string, prefs: NotificationPrefs): Promise<void> {
+    await this.pool.query(
+      `INSERT INTO device_prefs (device_id, quiet_start_hour, quiet_end_hour, muted_kinds, muted_entity_keys, updated_at)
+       VALUES ($1, $2, $3, $4, $5, now())
+       ON CONFLICT (device_id) DO UPDATE SET
+         quiet_start_hour = EXCLUDED.quiet_start_hour,
+         quiet_end_hour = EXCLUDED.quiet_end_hour,
+         muted_kinds = EXCLUDED.muted_kinds,
+         muted_entity_keys = EXCLUDED.muted_entity_keys,
+         updated_at = now()`,
+      [
+        deviceId,
+        prefs.quietStartHour,
+        prefs.quietEndHour,
+        prefs.mutedKinds,
+        prefs.mutedEntityKeys,
+      ],
+    );
+  }
+
+  // ── delivery log (the §2 chart-push latency metric) ──────────────────────
+  async logDelivery(entry: DeliveryLogEntry): Promise<void> {
+    await this.pool.query(
+      `INSERT INTO push_delivery_log
+         (watch_id, device_id, kind, entity_key, signature, detected_at, delivered_at, latency_ms, status)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
+      [
+        entry.watchId,
+        entry.deviceId,
+        entry.kind,
+        entry.entityKey,
+        entry.signature,
+        entry.detectedAt,
+        entry.deliveredAt ?? null,
+        entry.latencyMs ?? null,
+        entry.status,
+      ],
+    );
+  }
+
+  /** Fraction of delivered pushes of a kind under a latency budget (§2 metric). */
+  async deliveryStats(kind: string, budgetMs: number): Promise<{ total: number; withinBudget: number }> {
+    const res = await this.pool.query<{ total: string; within: string }>(
+      `SELECT count(*) AS total,
+              count(*) FILTER (WHERE latency_ms <= $2) AS within
+         FROM push_delivery_log
+        WHERE kind = $1 AND status = 'delivered'`,
+      [kind, budgetMs],
+    );
+    return { total: Number(res.rows[0]!.total), withinBudget: Number(res.rows[0]!.within) };
+  }
+}
+
+export interface DeliveryLogEntry {
+  watchId: string;
+  deviceId: string;
+  kind: string;
+  entityKey: string;
+  signature: string;
+  detectedAt: Date;
+  deliveredAt: Date | null;
+  latencyMs: number | null;
+  status: string;
 }
 
 function rowToWatch(r: {

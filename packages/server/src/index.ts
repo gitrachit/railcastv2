@@ -4,7 +4,7 @@ import { buildApp } from "./app.js";
 import { Cache, RedisStore } from "./cache/index.js";
 import { migrate } from "./db/migrate.js";
 import { createPool } from "./db/pool.js";
-import { EntityPoller, WatchRepo, WatchScheduler } from "./watcher/index.js";
+import { createSender, EntityPoller, PushFanout, WatchRepo, WatchScheduler } from "./watcher/index.js";
 
 const redisUrl = process.env.REDIS_URL ?? "redis://127.0.0.1:6379";
 const redis = new Redis(redisUrl);
@@ -19,13 +19,14 @@ const app = buildApp({
 // Watcher service (FR-7.1): entity poll chains; the diff engine (2.2) plugs
 // into EntityPoller.onStateChange, push fan-out (2.3) consumes its events.
 const repo = new WatchRepo(pool);
+const fanout = new PushFanout({
+  store: repo,
+  sender: createSender((msg) => app.log.info(msg)),
+});
 const poller = new EntityPoller({
   cache: new Cache(new RedisStore(redis)),
   repo,
-  // 2.3 replaces this with FCM fan-out (quiet hours, delivery logging).
-  onEvent: async ({ watch, payload }) => {
-    app.log.info({ watchId: watch.id, kind: payload.kind }, "watch event detected");
-  },
+  onEvent: (event) => fanout.deliver(event),
 });
 const scheduler = new WatchScheduler(redisUrl);
 scheduler.start((entityKey) => poller.poll(entityKey));

@@ -20,6 +20,7 @@ export interface WatchEvent {
   watch: WatchRow;
   payload: PushPayload;
   signature: string;
+  detectedAt: Date; // when this poll observed the change (for delivery-latency logging)
 }
 
 /** 2.3's FCM fan-out plugs in here: one typed event, ready to push. */
@@ -64,7 +65,12 @@ export class EntityPoller {
         const detected = detectWatchEvents({ prev, next, raw, watch, now });
         const fresh = detected.filter((e) => !watch.delivered.includes(e.signature));
         for (const e of fresh) {
-          await this.deps.onEvent?.({ watch, payload: e.payload, signature: e.signature });
+          await this.deps.onEvent?.({
+            watch,
+            payload: e.payload,
+            signature: e.signature,
+            detectedAt: now,
+          });
         }
         if (fresh.length > 0) {
           await this.deps.repo.markDelivered(
