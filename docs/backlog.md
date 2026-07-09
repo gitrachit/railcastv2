@@ -31,7 +31,7 @@ Use **plan mode** for every item marked ⚠ (structural — review the plan befo
 - [x] **2.5 Share scaffold** [FR-8]: token create/revoke + minimal `/t/:token` HTML page from cache.
 
 ## M3 — Android core (parallel with M2)
-- [ ] ⚠ **3.1 App shell**: single-activity Compose, bottom nav (Home/Track/Station/Plan/Alerts), design tokens ported from docs/prototype (colors, type, board-hero component, status chip = icon+word+color [FR-10.2]), dark theme.
+- [x] ⚠ **3.1 App shell**: single-activity Compose, bottom nav (Home/Track/Station/Plan/Alerts), design tokens ported from docs/prototype (colors, type, board-hero component, status chip = icon+word+color [FR-10.2]), dark theme.
 - [ ] **3.2 i18n**: EN + HI full string parity, runtime switch, no hardcoded strings rule enforced by lint [FR-10.1].
 - [ ] ⚠ **3.3 Networking + SWR**: Retrofit/Ktor client from contracts; Room entity cache per key; repository pattern "emit cached → fetch → emit fresh"; freshness timestamps surfaced [FR-2.5, FR-9.1].
 - [ ] ⚠ **3.4 PollController**: single lifecycle-aware controller owning ALL refresh loops — register(screenKey, cadence), back-off on identical payloads, stop on background, refresh on resume [PRD §6.4]. Unit-tested.
