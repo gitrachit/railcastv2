@@ -22,3 +22,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "railcast"
 include(":app")
+include(":core:design")
