@@ -1,0 +1,131 @@
+{
+  "note": "Recent entities not in the 2016 datameet snapshot; merged over the CC0 base by build.ts. Sourced from live RailKit responses.",
+  "stations": [
+    {
+      "code": "ADTL",
+      "name": "Adhartal",
+      "city": "Adhartal",
+      "state": "",
+      "lat": 23.2277805299293,
+      "lng": 79.9729156494141
+    },
+    {
+      "code": "JBP",
+      "name": "Jabalpur",
+      "city": "Jabalpur",
+      "state": "",
+      "lat": 23.1649725156114,
+      "lng": 79.9508571624756
+    },
+    {
+      "code": "MML",
+      "name": "Madan Mahal",
+      "city": "Madan Mahal",
+      "state": "",
+      "lat": 23.1600898285716,
+      "lng": 79.9207037687302
+    },
+    {
+      "code": "SRID",
+      "name": "Shridham",
+      "city": "Shridham",
+      "state": "",
+      "lat": 23.0343117561284,
+      "lng": 79.4847106933594
+    },
+    {
+      "code": "NU",
+      "name": "Narsinghpur",
+      "city": "Narsinghpur",
+      "state": "",
+      "lat": 22.9429416996766,
+      "lng": 79.2147195339203
+    },
+    {
+      "code": "KY",
+      "name": "Kareli",
+      "city": "Kareli",
+      "state": "",
+      "lat": 22.931835994365,
+      "lng": 79.0656852722168
+    },
+    {
+      "code": "BNE",
+      "name": "Bohani",
+      "city": "Bohani",
+      "state": "",
+      "lat": 22.9132783444043,
+      "lng": 78.9157176017761
+    },
+    {
+      "code": "GAR",
+      "name": "Gadarwara",
+      "city": "Gadarwara",
+      "state": "",
+      "lat": 22.9003319402759,
+      "lng": 78.7928509712219
+    },
+    {
+      "code": "PPI",
+      "name": "Pipariya",
+      "city": "Pipariya",
+      "state": "",
+      "lat": 22.7541249605465,
+      "lng": 78.3547711372375
+    },
+    {
+      "code": "ET",
+      "name": "Itarsi Jn (Rev)",
+      "city": "Itarsi Jn",
+      "state": "",
+      "lat": 22.6083456911452,
+      "lng": 77.7667987346649
+    },
+    {
+      "code": "NDPM",
+      "name": "Narmadapuram",
+      "city": "Narmadapuram",
+      "state": "",
+      "lat": 22.7527744441223,
+      "lng": 77.7171778678894
+    },
+    {
+      "code": "RKMP",
+      "name": "Rani Kamlapati(Bhopal)",
+      "city": "Rani Kamlapati",
+      "state": "",
+      "lat": 23.2219338951766,
+      "lng": 77.4395477771759
+    },
+    {
+      "code": "PUNE",
+      "name": "Pune Jn",
+      "city": "Pune Jn",
+      "state": "",
+      "lat": null,
+      "lng": null
+    },
+    {
+      "code": "VSG",
+      "name": "Vasco Da Gama",
+      "city": "Vasco Da Gama",
+      "state": "",
+      "lat": null,
+      "lng": null
+    }
+  ],
+  "trains": [
+    {
+      "number": "22188",
+      "name": "Intercity Exp",
+      "fromCode": "ADTL",
+      "toCode": "RKMP"
+    },
+    {
+      "number": "12780",
+      "name": "Goa Express",
+      "fromCode": "PUNE",
+      "toCode": "VSG"
+    }
+  ]
+}

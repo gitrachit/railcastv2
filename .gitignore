@@ -13,3 +13,4 @@ CLAUDE.local.md
 
 # Redis persistence artifact (redis-server writes it to cwd during local runs)
 dump.rdb
+packages/directory/ingest/raw/

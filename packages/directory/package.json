@@ -6,7 +6,8 @@
   "scripts": {
     "build": "tsx src/build.ts",
     "test": "vitest run",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "ingest": "tsx ingest/fetch.mjs"
   },
   "devDependencies": {
     "@types/node": "^22.13.4",
