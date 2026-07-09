@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name" translatable="false">Railcast</string>
+    <string name="nav_home">Home</string>
+    <string name="nav_track">Track</string>
+    <string name="nav_station">Station</string>
+    <string name="nav_plan">Plan</string>
+    <string name="nav_alerts">Alerts</string>
 </resources>

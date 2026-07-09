@@ -1,0 +1,4 @@
+<resources>
+    <!-- Dark window background before Compose draws — no white flash. -->
+    <style name="Theme.Railcast" parent="android:Theme.Material.NoActionBar" />
+</resources>
