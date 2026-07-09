@@ -10,6 +10,10 @@ import app.railcast.core.net.DeviceSession
 import app.railcast.core.net.DeviceTokenStore
 import app.railcast.core.net.NetworkModule
 import app.railcast.core.net.RailcastApi
+import app.railcast.core.poll.PollController
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 
 /**
  * Manual composition root (no DI framework — keeps the app lean, NFR-1). Holds
@@ -35,5 +39,11 @@ class AppContainer(context: Context) {
     val screens: ScreenRepository = ScreenRepository(
         api = api,
         cache = RoomScreenCache(database.screenCacheDao()),
+    )
+
+    // The one poll controller for the whole app (PRD §6.4). Main-confined so
+    // register/foreground/background and loop mutations never race.
+    val poller: PollController = PollController(
+        CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate),
     )
 }
