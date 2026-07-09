@@ -35,7 +35,7 @@ Use **plan mode** for every item marked ⚠ (structural — review the plan befo
 - [x] **3.2 i18n**: EN + HI full string parity, runtime switch, no hardcoded strings rule enforced by lint [FR-10.1].
 - [x] ⚠ **3.3 Networking + SWR**: Retrofit/Ktor client from contracts; Room entity cache per key; repository pattern "emit cached → fetch → emit fresh"; freshness timestamps surfaced [FR-2.5, FR-9.1].
 - [x] ⚠ **3.4 PollController**: single lifecycle-aware controller owning ALL refresh loops — register(screenKey, cadence), back-off on identical payloads, stop on background, refresh on resume [PRD §6.4]. Unit-tested.
-- [ ] ⚠ **3.5 Directory v1** [FR-1.1–1.5]: `packages/directory` pipeline (source→clean→index), bundled index in assets, fuzzy search (name/number/code), voice input via SpeechRecognizer, client-side format validation.
+- [x] ⚠ **3.5 Directory v1** [FR-1.1–1.5]: `packages/directory` pipeline (source→clean→index), bundled index in assets, fuzzy search (name/number/code), voice input via SpeechRecognizer, client-side format validation.
 
 ## M4 — Android features
 - [ ] **4.1 Onboarding** [FR-10.5]: native-script language picker → one intent question → in. No login, no tutorial.

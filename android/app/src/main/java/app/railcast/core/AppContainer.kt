@@ -11,6 +11,7 @@ import app.railcast.core.net.DeviceTokenStore
 import app.railcast.core.net.NetworkModule
 import app.railcast.core.net.RailcastApi
 import app.railcast.core.poll.PollController
+import app.railcast.directory.Directory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -40,6 +41,10 @@ class AppContainer(context: Context) {
         api = api,
         cache = RoomScreenCache(database.screenCacheDao()),
     )
+
+    // Bundled train/station directory: offline fuzzy search, name→code/number
+    // resolution before any API call (FR-1.1). Index loads lazily off-main.
+    val directory: Directory = Directory(appContext)
 
     // The one poll controller for the whole app (PRD §6.4). Main-confined so
     // register/foreground/background and loop mutations never race.

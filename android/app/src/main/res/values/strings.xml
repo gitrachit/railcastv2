@@ -22,4 +22,13 @@
 
     <!-- Language (full picker is the onboarding flow, 4.1) -->
     <string name="settings_language">Language</string>
+
+    <!-- Directory search + voice + inline format hints (FR-1.1, FR-1.4, FR-1.5) -->
+    <string name="search_hint">Train name or number</string>
+    <string name="search_voice">Search by voice</string>
+    <string name="search_voice_prompt">Speak a train or station</string>
+    <string name="search_voice_unavailable">Voice search isn\'t available on this device</string>
+    <string name="validation_train_length">A train number has 5 digits</string>
+    <string name="validation_pnr_length">A PNR has 10 digits</string>
+    <string name="validation_digits_only">Use digits only</string>
 </resources>
