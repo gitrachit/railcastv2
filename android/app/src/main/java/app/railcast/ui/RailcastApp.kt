@@ -14,7 +14,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import app.railcast.R
-import app.railcast.core.design.RailcastTheme
+import app.railcast.core.i18n.AppLanguage
 import app.railcast.feature.alerts.AlertsScreen
 import app.railcast.feature.home.HomeScreen
 import app.railcast.feature.plan.PlanScreen
@@ -35,7 +35,10 @@ enum class Destination(val route: String, @StringRes val label: Int, val icon: S
 }
 
 @Composable
-fun RailcastApp() {
+fun RailcastApp(
+    language: AppLanguage,
+    onLanguageChange: (AppLanguage) -> Unit,
+) {
     val navController = rememberNavController()
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = backStackEntry?.destination
@@ -63,7 +66,9 @@ fun RailcastApp() {
             composable(Destination.TRACK.route) { TrackScreen() }
             composable(Destination.STATION.route) { StationScreen() }
             composable(Destination.PLAN.route) { PlanScreen() }
-            composable(Destination.ALERTS.route) { AlertsScreen() }
+            composable(Destination.ALERTS.route) {
+                AlertsScreen(language = language, onLanguageChange = onLanguageChange)
+            }
         }
     }
 }

@@ -19,4 +19,7 @@
     <string name="placeholder_station">Pick a station for live arrivals and departures.</string>
     <string name="placeholder_plan">Find trains between two stations with fares and seats.</string>
     <string name="placeholder_alerts">Your saved trains, PNRs, and alarms will appear here.</string>
+
+    <!-- Language (full picker is the onboarding flow, 4.1) -->
+    <string name="settings_language">Language</string>
 </resources>
