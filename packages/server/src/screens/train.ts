@@ -1,7 +1,7 @@
 // GET /screen/train/:trainNo?run=auto — the Track screen [FR-2.1–2.4, FR-3.1–3.2].
 // Composes trackTrain (probed run dates, FR-2.3) + getTrainInfo (route/coords)
 // through the cache; never calls railkit directly.
-import type { CoachGuide, RouteStop, RunChoice, TrainScreen, TrainStatus } from "@railcast/shared";
+import type { CoachGuide, Meta, RouteStop, RunChoice, TrainScreen, TrainStatus } from "@railcast/shared";
 import { TRAIN_NO_PATTERN } from "@railcast/shared";
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { Cache, CACHE_TTLS, type CachedResult } from "../cache/index.js";
@@ -21,72 +21,9 @@ export function registerTrainScreen(app: FastifyInstance, deps: TrainScreenDeps)
   app.get("/screen/train/:trainNo", async (req: FastifyRequest, reply: FastifyReply) => {
     const { trainNo } = req.params as { trainNo: string };
     const run = ((req.query as { run?: string }).run ?? "auto") as RunChoice;
-
-    if (!TRAIN_NO_PATTERN.test(trainNo)) {
-      return reply
-        .status(HTTP_STATUS.INVALID_INPUT)
-        .send(err("INVALID_INPUT", "train number must be exactly 5 digits", false));
-    }
-    if (run !== "auto" && run !== "today" && run !== "yesterday") {
-      return reply
-        .status(HTTP_STATUS.INVALID_INPUT)
-        .send(err("INVALID_INPUT", "run must be auto, today or yesterday", false));
-    }
-
-    const now = deps.now?.() ?? new Date();
-    const today = istDateString(now);
-    const yesterday = istDateString(now, -1);
-
     try {
-      // Probe both candidate runs (FR-2.3); the cache makes the second look cheap.
-      // allSettled: a flaky probe for the run we don't end up showing must not
-      // fail the screen — it just reads as active:false.
-      const [todaySettled, yesterdaySettled, infoRes] = await Promise.all([
-        settle(fetchTrack(deps.cache, trainNo, today)),
-        settle(fetchTrack(deps.cache, trainNo, yesterday)),
-        deps.cache.getOrFetch(`rk:trainInfo:${trainNo}`, CACHE_TTLS.trainInfo, () =>
-          getTrainInfo(trainNo),
-        ),
-      ]);
-
-      const choices: TrainScreen["runDateChoices"] = [
-        {
-          runDate: today,
-          label: "today",
-          active: todaySettled.ok && isActiveRun(todaySettled.result.value),
-        },
-        {
-          runDate: yesterday,
-          label: "yesterday",
-          active: yesterdaySettled.ok && isActiveRun(yesterdaySettled.result.value),
-        },
-      ];
-
-      const resolved =
-        run === "today"
-          ? today
-          : run === "yesterday"
-            ? yesterday
-            : choices.find((c) => c.active)?.runDate ??
-              (todaySettled.ok ? today : yesterday);
-      const settled = resolved === today ? todaySettled : yesterdaySettled;
-      if (!settled.ok) throw settled.error; // the run we must show is unavailable
-      const trackRes = settled.result;
-
-      const screen = composeTrainScreen({
-        trainNo,
-        runDate: resolved,
-        choices,
-        track: trackRes.value,
-        info: infoRes.value,
-        now,
-      });
-
-      return ok(screen, {
-        fetchedAt: trackRes.fetchedAt,
-        stale: trackRes.stale || infoRes.stale,
-        ttlSeconds: CACHE_TTLS.trackTrain,
-      });
+      const { screen, meta } = await loadTrainScreen(deps.cache, trainNo, run, deps.now?.() ?? new Date());
+      return ok(screen, meta);
     } catch (e) {
       if (e instanceof RailkitError) {
         return reply.status(HTTP_STATUS[e.code]).send(err(e.code, e.message, e.retryable));
@@ -97,6 +34,74 @@ export function registerTrainScreen(app: FastifyInstance, deps: TrainScreenDeps)
         .send(err("UPSTREAM_DOWN", "unexpected error composing train screen", true));
     }
   });
+}
+
+/**
+ * Compose the Track screen (probe + merge) — shared by the /screen/train
+ * endpoint and the shared-journey web page (FR-8). Throws RailkitError on
+ * invalid input or when the resolved run is unavailable.
+ */
+export async function loadTrainScreen(
+  cache: Cache,
+  trainNo: string,
+  run: RunChoice,
+  now: Date,
+): Promise<{ screen: TrainScreen; meta: Meta }> {
+  if (!TRAIN_NO_PATTERN.test(trainNo)) {
+    throw new RailkitError("INVALID_INPUT", "train number must be exactly 5 digits", false);
+  }
+  if (run !== "auto" && run !== "today" && run !== "yesterday") {
+    throw new RailkitError("INVALID_INPUT", "run must be auto, today or yesterday", false);
+  }
+
+  const today = istDateString(now);
+  const yesterday = istDateString(now, -1);
+
+  // Probe both candidate runs (FR-2.3); the cache makes the second look cheap.
+  // A flaky probe for the run we don't end up showing must not fail the
+  // screen — it just reads as active:false.
+  const [todaySettled, yesterdaySettled, infoRes] = await Promise.all([
+    settle(fetchTrack(cache, trainNo, today)),
+    settle(fetchTrack(cache, trainNo, yesterday)),
+    cache.getOrFetch(`rk:trainInfo:${trainNo}`, CACHE_TTLS.trainInfo, () => getTrainInfo(trainNo)),
+  ]);
+
+  const choices: TrainScreen["runDateChoices"] = [
+    { runDate: today, label: "today", active: todaySettled.ok && isActiveRun(todaySettled.result.value) },
+    {
+      runDate: yesterday,
+      label: "yesterday",
+      active: yesterdaySettled.ok && isActiveRun(yesterdaySettled.result.value),
+    },
+  ];
+
+  const resolved =
+    run === "today"
+      ? today
+      : run === "yesterday"
+        ? yesterday
+        : choices.find((c) => c.active)?.runDate ?? (todaySettled.ok ? today : yesterday);
+  const settled = resolved === today ? todaySettled : yesterdaySettled;
+  if (!settled.ok) throw settled.error; // the run we must show is unavailable
+  const trackRes = settled.result;
+
+  const screen = composeTrainScreen({
+    trainNo,
+    runDate: resolved,
+    choices,
+    track: trackRes.value,
+    info: infoRes.value,
+    now,
+  });
+
+  return {
+    screen,
+    meta: {
+      fetchedAt: trackRes.fetchedAt,
+      stale: trackRes.stale || infoRes.stale,
+      ttlSeconds: CACHE_TTLS.trackTrain,
+    },
+  };
 }
 
 type Settled<T> = { ok: true; result: T } | { ok: false; error: unknown };

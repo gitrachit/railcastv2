@@ -7,6 +7,8 @@ import { registerPlanScreen } from "./screens/plan.js";
 import { registerPnrScreen } from "./screens/pnr.js";
 import { registerStationScreen } from "./screens/station.js";
 import { registerTrainScreen } from "./screens/train.js";
+import { registerWatchRoutes, type WatchRoutesDeps } from "./watcher/routes.js";
+import { registerShareRoutes, type ShareRoutesDeps } from "./web/share.js";
 
 const startedAt = Date.now();
 
@@ -15,6 +17,10 @@ export interface AppOptions {
   cacheStore?: CacheStore;
   /** Injectable clock for tests (run-date probing is IST-time-dependent). */
   now?: () => Date;
+  /** Watcher API (2.4) — omitted when the server runs without Postgres. */
+  watch?: Omit<WatchRoutesDeps, "repo"> & { repo: WatchRoutesDeps["repo"] };
+  /** Share API (2.5) — omitted when the server runs without Postgres. */
+  share?: Pick<ShareRoutesDeps, "repo" | "publicBaseUrl">;
 }
 
 /** PNRs never reach log lines, including request-URL logging (FR-4.3). */
@@ -49,6 +55,11 @@ export function buildApp(opts: AppOptions = {}): FastifyInstance {
   registerPnrScreen(app, { cache, now: opts.now });
   registerStationScreen(app, { cache, now: opts.now });
   registerPlanScreen(app, { cache });
+
+  if (opts.watch) registerWatchRoutes(app, opts.watch);
+  if (opts.share) {
+    registerShareRoutes(app, { ...opts.share, cache, now: opts.now });
+  }
 
   // Contracts §9. `upstream` becomes a real probe when watcher health lands (M2).
   app.get("/health", async (): Promise<Ok<Health>> => ({

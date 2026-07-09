@@ -27,8 +27,8 @@ Use **plan mode** for every item marked ⚠ (structural — review the plan befo
 - [x] ⚠ **2.1 Watch model + scheduler** [FR-7.1, FR-7.5]: Postgres schema, BullMQ repeatable job **per entity** (dedup across users), adaptive cadence (PNR 5 min → 60 s in chart window; arrival watches tighten near ETA), auto-expiry.
 - [x] ⚠ **2.2 Diff engine + events** [FR-7.2]: normalize → hash → diff → typed events (chart_prepared, delay_threshold, platform_change, cancelled, arrival_due). Fixture-driven tests for each transition.
 - [x] **2.3 Push fan-out** [FR-7.3, FR-7.4]: FCM data messages per contracts §5; quiet hours (arrival alarm bypasses); delivery latency logging (the ≥95% ≤5 min metric).
-- [ ] **2.4 Watch API**: POST/GET/DELETE /watch, /device/push-token.
-- [ ] **2.5 Share scaffold** [FR-8]: token create/revoke + minimal `/t/:token` HTML page from cache.
+- [x] **2.4 Watch API**: POST/GET/DELETE /watch, /device/push-token.
+- [x] **2.5 Share scaffold** [FR-8]: token create/revoke + minimal `/t/:token` HTML page from cache.
 
 ## M3 — Android core (parallel with M2)
 - [ ] ⚠ **3.1 App shell**: single-activity Compose, bottom nav (Home/Track/Station/Plan/Alerts), design tokens ported from docs/prototype (colors, type, board-hero component, status chip = icon+word+color [FR-10.2]), dark theme.

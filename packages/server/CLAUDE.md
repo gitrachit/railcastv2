@@ -13,6 +13,7 @@ Fastify + TypeScript (strict). Redis (cache, BullMQ), Postgres (users/watches/PN
 - `DATABASE_URL` (default postgres://railcast:railcast_dev@127.0.0.1:5432/railcast)
 - `RAILKIT_SDK_SIGNING_SECRET` — optional; overrides the built-in SDK signing secret if upstream rotates it
 - `FIREBASE_SERVICE_ACCOUNT` or `FIREBASE_SERVICE_ACCOUNT_PATH` — optional (2.3); absent → NoopSender, server still boots
+- `PUBLIC_BASE_URL` (default https://railcast.app) — base for shared-journey links
 - `REDIS_URL` (default redis://127.0.0.1:6379) · `PORT` (default 3000)
 
 ## Module map
