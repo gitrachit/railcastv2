@@ -23,4 +23,13 @@
 
     <!-- Language -->
     <string name="settings_language">भाषा</string>
+
+    <!-- Directory search + voice + inline format hints (FR-1.1, FR-1.4, FR-1.5) -->
+    <string name="search_hint">ट्रेन का नाम या नंबर</string>
+    <string name="search_voice">आवाज़ से खोजें</string>
+    <string name="search_voice_prompt">ट्रेन या स्टेशन बोलें</string>
+    <string name="search_voice_unavailable">इस डिवाइस पर आवाज़ खोज उपलब्ध नहीं है</string>
+    <string name="validation_train_length">ट्रेन नंबर में 5 अंक होते हैं</string>
+    <string name="validation_pnr_length">PNR में 10 अंक होते हैं</string>
+    <string name="validation_digits_only">केवल अंक इस्तेमाल करें</string>
 </resources>
