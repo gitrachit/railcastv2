@@ -10,3 +10,6 @@ android/local.properties
 *.keystore
 .claude/settings.local.json
 CLAUDE.local.md
+
+# Redis persistence artifact (redis-server writes it to cwd during local runs)
+dump.rdb

@@ -17,18 +17,18 @@ Use **plan mode** for every item marked ⚠ (structural — review the plan befo
 ## M1 — Server core
 - [x] ⚠ **1.1 RailKit client** [PRD §6]: typed wrapper per upstream endpoint; input validation (5-digit train, 10-digit PNR, date conversion YYYY-MM-DD ↔ upstream DD-MM-YYYY); `RAILKIT_API_KEY` from env only; fixtures in `src/railkit/__fixtures__/` (use the recorded sample payloads in docs/fixtures/); `trainHistory` 404 → `NOT_YET_AVAILABLE`.
 - [x] ⚠ **1.2 Cache layer**: Redis TTL cache per §10 of contracts; single-flight (one upstream call per key across concurrent waiters); stale-while-revalidate with `meta.stale`; unit tests incl. concurrency test.
-- [ ] **1.3 Auth**: `POST /auth/device` anonymous tokens; Bearer middleware; per-device rate limit.
-- [ ] ⚠ **1.4 `/screen/train`** [FR-2.1–2.4]: run-date probe (`run=auto` checks today & yesterday, picks active), merge track+route+coords, position interpolation, cancelled/diverted states, coach guide with reversal detection from coach-position timeline [FR-3.1–3.2].
-- [ ] **1.5 `/screen/pnr`** [FR-4.1, FR-4.3]: masked responses, AES-encrypted at rest, purge job (post-journey + N days), join live status.
-- [ ] **1.6 `/screen/station`** [FR-5.1]: window param, cancelled rows.
-- [ ] **1.7 `/screen/plan` + row hydration** [FR-6.1–6.4]: quota-aware, `pending` rows, `/screen/plan/row`.
+- [x] **1.3 Auth**: `POST /auth/device` anonymous tokens; Bearer middleware; per-device rate limit.
+- [x] ⚠ **1.4 `/screen/train`** [FR-2.1–2.4]: run-date probe (`run=auto` checks today & yesterday, picks active), merge track+route+coords, position interpolation, cancelled/diverted states, coach guide with reversal detection from coach-position timeline [FR-3.1–3.2].
+- [x] **1.5 `/screen/pnr`** [FR-4.1, FR-4.3]: masked responses, AES-encrypted at rest, purge job (post-journey + N days), join live status.
+- [x] **1.6 `/screen/station`** [FR-5.1]: window param, cancelled rows.
+- [x] **1.7 `/screen/plan` + row hydration** [FR-6.1–6.4]: quota-aware, `pending` rows, `/screen/plan/row`.
 
 ## M2 — Watcher (the crown jewel — build before the app UI)
-- [ ] ⚠ **2.1 Watch model + scheduler** [FR-7.1, FR-7.5]: Postgres schema, BullMQ repeatable job **per entity** (dedup across users), adaptive cadence (PNR 5 min → 60 s in chart window; arrival watches tighten near ETA), auto-expiry.
-- [ ] ⚠ **2.2 Diff engine + events** [FR-7.2]: normalize → hash → diff → typed events (chart_prepared, delay_threshold, platform_change, cancelled, arrival_due). Fixture-driven tests for each transition.
-- [ ] **2.3 Push fan-out** [FR-7.3, FR-7.4]: FCM data messages per contracts §5; quiet hours (arrival alarm bypasses); delivery latency logging (the ≥95% ≤5 min metric).
-- [ ] **2.4 Watch API**: POST/GET/DELETE /watch, /device/push-token.
-- [ ] **2.5 Share scaffold** [FR-8]: token create/revoke + minimal `/t/:token` HTML page from cache.
+- [x] ⚠ **2.1 Watch model + scheduler** [FR-7.1, FR-7.5]: Postgres schema, BullMQ repeatable job **per entity** (dedup across users), adaptive cadence (PNR 5 min → 60 s in chart window; arrival watches tighten near ETA), auto-expiry.
+- [x] ⚠ **2.2 Diff engine + events** [FR-7.2]: normalize → hash → diff → typed events (chart_prepared, delay_threshold, platform_change, cancelled, arrival_due). Fixture-driven tests for each transition.
+- [x] **2.3 Push fan-out** [FR-7.3, FR-7.4]: FCM data messages per contracts §5; quiet hours (arrival alarm bypasses); delivery latency logging (the ≥95% ≤5 min metric).
+- [x] **2.4 Watch API**: POST/GET/DELETE /watch, /device/push-token.
+- [x] **2.5 Share scaffold** [FR-8]: token create/revoke + minimal `/t/:token` HTML page from cache.
 
 ## M3 — Android core (parallel with M2)
 - [ ] ⚠ **3.1 App shell**: single-activity Compose, bottom nav (Home/Track/Station/Plan/Alerts), design tokens ported from docs/prototype (colors, type, board-hero component, status chip = icon+word+color [FR-10.2]), dark theme.
