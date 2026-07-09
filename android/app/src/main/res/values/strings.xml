@@ -23,6 +23,17 @@
     <!-- Language (full picker is the onboarding flow, 4.1) -->
     <string name="settings_language">Language</string>
 
+    <!-- Onboarding (first run): language → one intent question → in (FR-10.5) -->
+    <string name="onboarding_language_title">Choose your language</string>
+    <string name="onboarding_continue">Continue</string>
+    <string name="onboarding_intent_title">What brings you here?</string>
+    <string name="onboarding_intent_track">Track a train</string>
+    <string name="onboarding_intent_track_sub">Live running status by name or number</string>
+    <string name="onboarding_intent_pnr">Check a PNR</string>
+    <string name="onboarding_intent_pnr_sub">Booking and chart status</string>
+    <string name="onboarding_intent_nearby">Trains near me</string>
+    <string name="onboarding_intent_nearby_sub">Live arrivals and departures at a station</string>
+
     <!-- Directory search + voice + inline format hints (FR-1.1, FR-1.4, FR-1.5) -->
     <string name="search_hint">Train name or number</string>
     <string name="search_voice">Search by voice</string>

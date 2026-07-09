@@ -38,6 +38,7 @@ enum class Destination(val route: String, @StringRes val label: Int, val icon: S
 fun RailcastApp(
     language: AppLanguage,
     onLanguageChange: (AppLanguage) -> Unit,
+    startRoute: String? = null,
 ) {
     val navController = rememberNavController()
     val backStackEntry by navController.currentBackStackEntryAsState()
@@ -59,7 +60,10 @@ fun RailcastApp(
     ) { padding ->
         NavHost(
             navController = navController,
-            startDestination = Destination.HOME.route,
+            // Onboarding drops the user on the tab matching their chosen intent
+            // (PRD §7); otherwise Home. Unknown routes fall back to Home.
+            startDestination = Destination.entries.firstOrNull { it.route == startRoute }?.route
+                ?: Destination.HOME.route,
             modifier = Modifier.fillMaxSize().padding(padding),
         ) {
             composable(Destination.HOME.route) { HomeScreen() }

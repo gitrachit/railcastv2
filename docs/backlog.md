@@ -38,7 +38,7 @@ Use **plan mode** for every item marked ⚠ (structural — review the plan befo
 - [x] ⚠ **3.5 Directory v1** [FR-1.1–1.5]: `packages/directory` pipeline (source→clean→index), bundled index in assets, fuzzy search (name/number/code), voice input via SpeechRecognizer, client-side format validation.
 
 ## M4 — Android features
-- [ ] **4.1 Onboarding** [FR-10.5]: native-script language picker → one intent question → in. No login, no tutorial.
+- [x] **4.1 Onboarding** [FR-10.5]: native-script language picker → one intent question → in. No login, no tutorial.
 - [ ] **4.2 Home**: search + results, saved cards with live refresh via PollController.
 - [ ] ⚠ **4.3 Track** [FR-2.x]: run-date sheet (auto-detected default, never a raw date field), board hero, timeline w/ day labels, map with interpolated marker labelled "estimated", cancelled/diverted full-screen states → alternatives CTA.
 - [ ] **4.4 Coach guide** [FR-3.x]: platform diagram, reversal note, GEN mode toggle.
