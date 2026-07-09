@@ -72,6 +72,7 @@ dependencies {
 
     // Networking + SWR (backlog 3.3)
     implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.retrofit)
     implementation(libs.retrofit.serialization)
