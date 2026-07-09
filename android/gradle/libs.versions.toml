@@ -4,6 +4,8 @@ kotlin = "2.1.21"
 coreKtx = "1.16.0"
 activityCompose = "1.10.1"
 composeBom = "2025.05.00"
+navigationCompose = "2.8.9"
+datastore = "1.1.7"
 junit = "4.13.2"
 
 [libraries]
@@ -12,6 +14,8 @@ androidx-activity-compose = { group = "androidx.activity", name = "activity-comp
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
 androidx-compose-ui = { group = "androidx.compose.ui", name = "ui" }
 androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3" }
+androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
+androidx-datastore-preferences = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "datastore" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 
 [plugins]

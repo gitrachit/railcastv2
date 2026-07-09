@@ -1,0 +1,74 @@
+package app.railcast.ui
+
+import androidx.annotation.StringRes
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Scaffold
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
+import androidx.navigation.NavDestination.Companion.hierarchy
+import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
+import app.railcast.R
+import app.railcast.core.i18n.AppLanguage
+import app.railcast.feature.alerts.AlertsScreen
+import app.railcast.feature.home.HomeScreen
+import app.railcast.feature.plan.PlanScreen
+import app.railcast.feature.station.StationScreen
+import app.railcast.feature.track.TrackScreen
+
+/**
+ * The five tabs (PRD §7). Nothing important deeper than two taps; icons are
+ * always labelled. Emoji glyphs match the prototype and keep the APK lean
+ * (no icon font — NFR-1).
+ */
+enum class Destination(val route: String, @StringRes val label: Int, val icon: String) {
+    HOME("home", R.string.nav_home, "🏠"),
+    TRACK("track", R.string.nav_track, "🧭"),
+    STATION("station", R.string.nav_station, "📍"),
+    PLAN("plan", R.string.nav_plan, "📅"),
+    ALERTS("alerts", R.string.nav_alerts, "🔔"),
+}
+
+@Composable
+fun RailcastApp(
+    language: AppLanguage,
+    onLanguageChange: (AppLanguage) -> Unit,
+) {
+    val navController = rememberNavController()
+    val backStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = backStackEntry?.destination
+
+    Scaffold(
+        bottomBar = {
+            RailcastBottomBar(
+                selected = { dest -> currentRoute?.hierarchy?.any { it.route == dest.route } == true },
+                onSelect = { dest ->
+                    navController.navigate(dest.route) {
+                        popUpTo(navController.graph.findStartDestination().id) { saveState = true }
+                        launchSingleTop = true
+                        restoreState = true
+                    }
+                },
+            )
+        },
+    ) { padding ->
+        NavHost(
+            navController = navController,
+            startDestination = Destination.HOME.route,
+            modifier = Modifier.fillMaxSize().padding(padding),
+        ) {
+            composable(Destination.HOME.route) { HomeScreen() }
+            composable(Destination.TRACK.route) { TrackScreen() }
+            composable(Destination.STATION.route) { StationScreen() }
+            composable(Destination.PLAN.route) { PlanScreen() }
+            composable(Destination.ALERTS.route) {
+                AlertsScreen(language = language, onLanguageChange = onLanguageChange)
+            }
+        }
+    }
+}

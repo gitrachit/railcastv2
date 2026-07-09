@@ -37,6 +37,22 @@ android {
     buildFeatures {
         compose = true
     }
+
+    // Ship every language in the base APK so the in-app switch works offline
+    // and without Play Core downloads (FR-10.1, FR-9.x).
+    bundle {
+        language {
+            enableSplit = false
+        }
+    }
+
+    lint {
+        // No hardcoded user-facing strings (FR-10.1); missing translations fail
+        // the build so EN and HI never drift apart. Compose string literals are
+        // additionally guarded by StringsParityTest + review (no stock lint yet).
+        warningsAsErrors = false
+        error += setOf("HardcodedText", "MissingTranslation", "ExtraTranslation")
+    }
 }
 
 dependencies {
@@ -45,5 +61,7 @@ dependencies {
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.datastore.preferences)
     testImplementation(libs.junit)
 }

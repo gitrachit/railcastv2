@@ -1,0 +1,26 @@
+<resources>
+    <!-- Hindi (हिन्दी) — full parity with values/strings.xml (FR-10.1).
+         app_name is translatable="false" (brand) so it is intentionally absent. -->
+
+    <!-- Bottom navigation -->
+    <string name="nav_home">होम</string>
+    <string name="nav_track">ट्रैक</string>
+    <string name="nav_station">स्टेशन</string>
+    <string name="nav_plan">प्लान</string>
+    <string name="nav_alerts">अलर्ट</string>
+
+    <!-- Home -->
+    <string name="home_greeting">कहाँ जाना है?</string>
+    <string name="home_demo_train">गोवा एक्सप्रेस · 12780</string>
+    <string name="home_demo_status">चल रही है · समय पर</string>
+    <string name="freshness_demo">अभी अपडेट किया गया</string>
+
+    <!-- Placeholder copy until each feature lands (M4) -->
+    <string name="placeholder_track">लाइव स्थिति देखने के लिए ट्रेन का नाम या नंबर खोजें।</string>
+    <string name="placeholder_station">लाइव आगमन और प्रस्थान के लिए स्टेशन चुनें।</string>
+    <string name="placeholder_plan">किराया और सीटों के साथ दो स्टेशनों के बीच ट्रेनें खोजें।</string>
+    <string name="placeholder_alerts">आपकी सहेजी गई ट्रेनें, PNR और अलार्म यहाँ दिखेंगे।</string>
+
+    <!-- Language -->
+    <string name="settings_language">भाषा</string>
+</resources>

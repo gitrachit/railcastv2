@@ -1,3 +1,25 @@
 <resources>
     <string name="app_name" translatable="false">Railcast</string>
+
+    <!-- Bottom navigation (i18n parity enforced in 3.2; EN baseline here) -->
+    <string name="nav_home">Home</string>
+    <string name="nav_track">Track</string>
+    <string name="nav_station">Station</string>
+    <string name="nav_plan">Plan</string>
+    <string name="nav_alerts">Alerts</string>
+
+    <!-- Home -->
+    <string name="home_greeting">Where to?</string>
+    <string name="home_demo_train">Goa Express · 12780</string>
+    <string name="home_demo_status">Running · on time</string>
+    <string name="freshness_demo">Updated just now</string>
+
+    <!-- Placeholder copy until each feature lands (M4) -->
+    <string name="placeholder_track">Search a train by name or number to see live status.</string>
+    <string name="placeholder_station">Pick a station for live arrivals and departures.</string>
+    <string name="placeholder_plan">Find trains between two stations with fares and seats.</string>
+    <string name="placeholder_alerts">Your saved trains, PNRs, and alarms will appear here.</string>
+
+    <!-- Language (full picker is the onboarding flow, 4.1) -->
+    <string name="settings_language">Language</string>
 </resources>
