@@ -38,7 +38,7 @@ export class EntityPoller {
 
   /** Returns the next delay, or null to end this entity's poll chain. */
   async poll(entityKey: string): Promise<{ nextDelayS: number } | null> {
-    const watches = await this.deps.repo.activeForEntity(entityKey);
+    const watches = await this.deps.repo.activeForEntity(entityKey, this.deps.now?.() ?? new Date());
     if (watches.length === 0) return null; // last watch gone — chain ends (FR-7.5)
 
     const entity = watches[0]!.entity;

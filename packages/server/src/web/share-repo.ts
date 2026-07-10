@@ -29,8 +29,10 @@ export class ShareRepo {
     return { token, expiresAt: expiresAt.toISOString() };
   }
 
-  /** Live token for public rendering; null when unknown, expired, or revoked. */
-  async getActive(token: string): Promise<ShareToken | null> {
+  /** Live token for public rendering; null when unknown, expired, or revoked.
+   *  [now] defaults to real time in production; callers inject the app clock so
+   *  expiry is deterministic under a fixed test clock. */
+  async getActive(token: string, now: Date = new Date()): Promise<ShareToken | null> {
     const res = await this.pool.query<{
       token: string;
       train_no: string;
@@ -42,7 +44,7 @@ export class ShareRepo {
       [token],
     );
     const row = res.rows[0];
-    if (!row || row.revoked || row.expires_at.getTime() <= Date.now()) return null;
+    if (!row || row.revoked || row.expires_at.getTime() <= now.getTime()) return null;
     return {
       token: row.token,
       trainNo: row.train_no,

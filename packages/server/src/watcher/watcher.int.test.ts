@@ -14,6 +14,10 @@ import { WatchScheduler } from "./scheduler.js";
 process.env.PNR_ENCRYPTION_KEY = "c".repeat(64);
 process.env.RAILKIT_API_KEY = "test-api-key";
 
+// Fixed clock aligned with the fixtures' run date (2026-07-08). Read-side expiry
+// now honours the injected clock, so watches stay active regardless of real time.
+const NOW = new Date("2026-07-08T16:21:00+05:30");
+
 const pool = new pg.Pool({
   connectionString:
     process.env.DATABASE_URL ?? "postgres://railcast:railcast_dev@127.0.0.1:5432/railcast",
@@ -88,11 +92,11 @@ describe.skipIf(!pgUp)("WatchRepo (postgres)", () => {
 
     const key = entityKeyFor(entity);
     expect(key).toBe("train:22188:2026-07-08");
-    const active = await repo.activeForEntity(key);
+    const active = await repo.activeForEntity(key, NOW);
     expect(active).toHaveLength(2);
     expect(active[0]!.entity).toEqual(entity);
     expect(active[0]!.delivered).toEqual([]);
-    expect(await repo.activeEntityKeys()).toEqual([key]);
+    expect(await repo.activeEntityKeys(NOW)).toEqual([key]);
 
     // entity state (prev normalized snapshot) round-trips
     await repo.setEntityState(key, { kind: "train", state: "running", delayMin: 7 });
@@ -102,7 +106,7 @@ describe.skipIf(!pgUp)("WatchRepo (postgres)", () => {
     const id = active[0]!.id;
     await repo.markDelivered(id, ["DELAY:15"]);
     await repo.markDelivered(id, ["DELAY:15", "PLATFORM:ET:5"]);
-    const after = (await repo.activeForEntity(key)).find((w) => w.id === id)!;
+    const after = (await repo.activeForEntity(key, NOW)).find((w) => w.id === id)!;
     expect([...after.delivered].sort()).toEqual(["DELAY:15", "PLATFORM:ET:5"]);
   });
 
@@ -177,6 +181,7 @@ describe.skipIf(!pgUp)("EntityPoller lifecycle", () => {
     return new EntityPoller({
       cache: new Cache(new MemoryStore()), // fresh cache → forces a refetch each poll
       repo,
+      now: () => NOW,
       onEvent: async (e) => {
         events.push(e.payload.kind);
       },
