@@ -24,6 +24,10 @@
     <!-- Language -->
     <string name="settings_language">भाषा</string>
 
+    <!-- Privacy / analytics opt-out (backlog 5.5, FR-11.3) -->
+    <string name="privacy_title">गोपनीयता</string>
+    <string name="privacy_analytics">अनाम उपयोग डेटा साझा करें</string>
+
     <!-- Shared states (backlog 5.1, PRD §7) -->
     <string name="state_error_title">लोड नहीं हो सका</string>
     <string name="state_error_body">अपना कनेक्शन जाँचें और दोबारा कोशिश करें।</string>

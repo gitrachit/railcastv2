@@ -91,6 +91,15 @@ fun AlertsScreen(
 
         OemGuidanceSection()
 
+        // Analytics opt-out (FR-11.3): honoured immediately; events are numeric-only.
+        val analyticsOn by alerts.analyticsEnabled.collectAsState(initial = true)
+        SectionTitle(stringResource(R.string.privacy_title))
+        ToggleRow(
+            label = stringResource(R.string.privacy_analytics),
+            checked = analyticsOn,
+            onChange = { alerts.setAnalyticsEnabled(it) },
+        )
+
         SectionTitle(stringResource(R.string.settings_language))
         LanguagePicker(current = language, onSelect = onLanguageChange)
     }

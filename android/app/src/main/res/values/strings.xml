@@ -23,6 +23,10 @@
     <!-- Language (full picker is the onboarding flow, 4.1) -->
     <string name="settings_language">Language</string>
 
+    <!-- Privacy / analytics opt-out (backlog 5.5, FR-11.3) -->
+    <string name="privacy_title">Privacy</string>
+    <string name="privacy_analytics">Share anonymous usage data</string>
+
     <!-- Shared states (backlog 5.1, PRD §7) -->
     <string name="state_error_title">Couldn\'t load</string>
     <string name="state_error_body">Check your connection and try again.</string>
