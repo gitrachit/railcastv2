@@ -53,7 +53,7 @@ import app.railcast.directory.VoiceSearchContract
  * so nothing blanks offline (FR-9.1).
  */
 @Composable
-fun HomeScreen(home: HomeViewModel, modifier: Modifier = Modifier) {
+fun HomeScreen(home: HomeViewModel, onCheckPnr: () -> Unit, modifier: Modifier = Modifier) {
     val state by home.state.collectAsState()
     val context = LocalContext.current
     val voiceLabel = stringResource(R.string.search_voice)
@@ -98,19 +98,42 @@ fun HomeScreen(home: HomeViewModel, modifier: Modifier = Modifier) {
                     }
                 })
             }
-        } else if (state.saved.isNotEmpty()) {
-            item {
-                Text(
-                    text = stringResource(R.string.home_saved_title),
-                    fontSize = 15.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    color = RailcastTheme.colors.ink2,
-                )
-            }
-            items(state.saved, key = { it.trainNo }) { card ->
-                SavedCardView(card.trainNo, card.resource, onRemove = { home.onRemoveTrain(card.trainNo) })
+        } else {
+            item { CheckPnrRow(onCheckPnr) }
+            if (state.saved.isNotEmpty()) {
+                item {
+                    Text(
+                        text = stringResource(R.string.home_saved_title),
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = RailcastTheme.colors.ink2,
+                    )
+                }
+                items(state.saved, key = { it.trainNo }) { card ->
+                    SavedCardView(card.trainNo, card.resource, onRemove = { home.onRemoveTrain(card.trainNo) })
+                }
             }
         }
+    }
+}
+
+@Composable
+private fun CheckPnrRow(onClick: () -> Unit) {
+    val colors = RailcastTheme.colors
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(12.dp))
+            .clickable(onClick = onClick)
+            .background(colors.surface)
+            .border(1.dp, colors.line, RoundedCornerShape(12.dp))
+            .heightIn(min = 56.dp)
+            .padding(horizontal = 16.dp, vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        Text("🎫", fontSize = 20.sp)
+        Text(stringResource(R.string.home_check_pnr), fontSize = 16.sp, fontWeight = FontWeight.SemiBold, color = colors.ink)
     }
 }
 

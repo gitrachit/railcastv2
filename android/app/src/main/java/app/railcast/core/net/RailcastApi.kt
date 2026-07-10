@@ -21,4 +21,12 @@ interface RailcastApi {
         @Path("trainNo") trainNo: String,
         @Query("run") run: String = "auto",
     ): Response<EnvelopeDto<TrainScreen>>
+
+    // The full PNR travels only here, in the TLS request path (FR-4.3). No HTTP
+    // logging interceptor is installed (NetworkModule), so it is never logged.
+    @GET("screen/pnr/{pnr}")
+    suspend fun pnrScreen(@Path("pnr") pnr: String): Response<EnvelopeDto<PnrScreen>>
+
+    @POST("watch")
+    suspend fun createWatch(@Body body: WatchRequest): Response<EnvelopeDto<WatchCreated>>
 }

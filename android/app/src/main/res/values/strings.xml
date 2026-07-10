@@ -58,7 +58,29 @@
     <string name="coach_stand_middle">Coach %1$s · stand in the middle</string>
     <string name="coach_stand_rear">Coach %1$s · stand near the rear</string>
 
+    <!-- PNR (backlog 4.5, FR-4.x) — masked everywhere (invariant 2) -->
+    <string name="pnr_title">Check PNR</string>
+    <string name="pnr_hint">10-digit PNR</string>
+    <string name="pnr_check">Check</string>
+    <string name="pnr_loading">Fetching your PNR…</string>
+    <string name="pnr_chart_prepared">Chart prepared</string>
+    <string name="pnr_chart_waiting">Chart not prepared yet</string>
+    <string name="pnr_chart_celebration">Chart prepared!</string>
+    <string name="pnr_passengers">Passengers</string>
+    <string name="pnr_passenger">Passenger %1$d</string>
+    <string name="pnr_route">%1$s → %2$s</string>
+    <string name="pnr_class_quota">%1$s · %2$s</string>
+    <string name="pnr_boarding">Boarding: %1$s</string>
+    <string name="pnr_fare">Fare: ₹%1$s</string>
+    <string name="pnr_save">Save &amp; alert me on chart</string>
+    <string name="pnr_saving">Saving…</string>
+    <string name="pnr_saved">Watching for chart update</string>
+    <string name="pnr_save_failed">Couldn\'t save — tap to retry</string>
+    <string name="pnr_privacy_link">How we handle your PNR</string>
+    <string name="pnr_privacy_body">Your PNR is shown masked, never stored in full on your device, sent only over a secure connection, encrypted on our server, and deleted after your journey.</string>
+
     <!-- Home: search results + saved live cards (backlog 4.2) -->
+    <string name="home_check_pnr">Check a PNR</string>
     <string name="home_saved_title">Saved trains</string>
     <string name="home_card_loading">Loading %1$s…</string>
     <string name="search_result_train">Train</string>

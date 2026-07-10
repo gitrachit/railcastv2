@@ -93,3 +93,62 @@ data class TrainScreen(
     val coach: CoachGuide? = null,
     val prediction: Prediction? = null,
 )
+
+// ─── §2 PNR ───────────────────────────────────────────────────────────────
+// The full PNR travels ONLY in the request path (TLS); responses carry the
+// masked form. Never model or store the raw PNR here (FR-4.3, invariant 2).
+@Serializable
+data class PnrTrainRef(val no: String, val name: String)
+
+@Serializable
+data class PnrJourney(
+    val date: String,
+    val from: StationRef,
+    val to: StationRef,
+    val boardingPoint: StationRef,
+    val cls: String,
+    val quota: String,
+    val arrivalEta: String? = null,
+)
+
+@Serializable
+data class ChartStatus(val prepared: Boolean)
+
+@Serializable
+data class PnrPassenger(
+    val idx: Int,
+    val bookingStatus: String,
+    val currentStatus: String,
+    val coach: String? = null,
+    val berth: Int? = null,
+    val berthType: String? = null,
+)
+
+@Serializable
+data class PnrFare(val total: Double)
+
+@Serializable
+data class PnrScreen(
+    val pnrMasked: String, // "••••2882" — the only PNR form the client renders/stores
+    val train: PnrTrainRef,
+    val journey: PnrJourney,
+    val chart: ChartStatus,
+    val passengers: List<PnrPassenger>,
+    val fare: PnrFare? = null,
+    val live: TrainStatus? = null, // joined when the train is currently running
+)
+
+// ─── §5 Watch (create only in P1; list/delete land with 4.8 Alerts) ─────────
+@Serializable
+data class WatchEntity(
+    val kind: String, // "pnr" | "train"
+    val pnr: String? = null, // raw PNR — request path/body only, never persisted client-side
+    val trainNo: String? = null,
+    val runDate: String? = null,
+)
+
+@Serializable
+data class WatchRequest(val type: String, val entity: WatchEntity)
+
+@Serializable
+data class WatchCreated(val watchId: String, val expiresAt: String)

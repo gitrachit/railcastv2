@@ -18,6 +18,8 @@ import app.railcast.core.i18n.AppLanguage
 import app.railcast.feature.alerts.AlertsScreen
 import app.railcast.feature.home.HomeScreen
 import app.railcast.feature.home.HomeViewModel
+import app.railcast.feature.pnr.PnrScreen
+import app.railcast.feature.pnr.PnrViewModel
 import app.railcast.feature.track.TrackViewModel
 import app.railcast.feature.plan.PlanScreen
 import app.railcast.feature.station.StationScreen
@@ -28,6 +30,10 @@ import app.railcast.feature.track.TrackScreen
  * always labelled. Emoji glyphs match the prototype and keep the APK lean
  * (no icon font — NFR-1).
  */
+/** PNR is reached from Home, not a bottom tab (PRD's five tabs), so it's a
+ *  plain nested route rather than a [Destination]. */
+private const val PNR_ROUTE = "pnr"
+
 enum class Destination(val route: String, @StringRes val label: Int, val icon: String) {
     HOME("home", R.string.nav_home, "🏠"),
     TRACK("track", R.string.nav_track, "🧭"),
@@ -40,6 +46,7 @@ enum class Destination(val route: String, @StringRes val label: Int, val icon: S
 fun RailcastApp(
     home: HomeViewModel,
     track: TrackViewModel,
+    pnr: PnrViewModel,
     language: AppLanguage,
     onLanguageChange: (AppLanguage) -> Unit,
     startRoute: String? = null,
@@ -70,7 +77,10 @@ fun RailcastApp(
                 ?: Destination.HOME.route,
             modifier = Modifier.fillMaxSize().padding(padding),
         ) {
-            composable(Destination.HOME.route) { HomeScreen(home) }
+            composable(Destination.HOME.route) {
+                HomeScreen(home, onCheckPnr = { navController.navigate(PNR_ROUTE) { launchSingleTop = true } })
+            }
+            composable(PNR_ROUTE) { PnrScreen(pnr, onBack = { navController.popBackStack() }) }
             composable(Destination.TRACK.route) {
                 TrackScreen(
                     track = track,

@@ -69,6 +69,7 @@ class MainActivity : ComponentActivity() {
                         true -> RailcastApp(
                             home = container.home,
                             track = container.track,
+                            pnr = container.pnr,
                             language = language,
                             onLanguageChange = { scope.launch { store.setLanguage(it) } },
                             startRoute = startRoute,
