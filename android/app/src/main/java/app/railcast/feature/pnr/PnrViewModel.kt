@@ -76,6 +76,11 @@ class PnrViewModel(
 
     fun dismissCelebration() { _state.update { it.copy(chartJustPrepared = false) } }
 
+    /** Re-fetch the current PNR after an error (PRD §7 "next step"). */
+    fun retry() {
+        rawPnr?.let { startWatchingLive(it) }
+    }
+
     /** Back to the input field; drops the in-memory PNR and stops polling. */
     fun clear() {
         loopKey?.let { poller.unregister(it) }

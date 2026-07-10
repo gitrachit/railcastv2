@@ -79,6 +79,12 @@ class TrackViewModel(
     fun openRunSheet() { _state.update { it.copy(showRunSheet = true) } }
     fun dismissRunSheet() { _state.update { it.copy(showRunSheet = false) } }
 
+    /** Re-fetch the current train after an error (PRD §7 "next step"). */
+    fun retry() {
+        val s = _state.value
+        s.trainNo?.let { startTracking(it, s.selectedRun) }
+    }
+
     /** Leave the tracked train, back to search. */
     fun back() {
         loopKey?.let { poller.unregister(it) }

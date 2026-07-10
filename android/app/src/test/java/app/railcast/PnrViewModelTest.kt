@@ -123,6 +123,19 @@ class PnrViewModelTest {
         assertEquals(SaveState.Failed, pnr.state.value.saveState)
     }
 
+    @Test fun `retry re-fetches the current pnr`() = runTest {
+        var fetches = 0
+        val pnr = vm(backgroundScope, pnrScreen = {
+            fetches++
+            flow { emit(Resource(null, null, stale = false, loading = false, error = null)) }
+        })
+        pnr.onInputChange("2458692882")
+        pnr.lookup(); runCurrent()
+        assertEquals(1, fetches)
+        pnr.retry(); runCurrent()
+        assertEquals(2, fetches)
+    }
+
     @Test fun `clear drops the pnr and resets state`() = runTest {
         val pnr = vm(backgroundScope)
         pnr.onInputChange("2458692882")

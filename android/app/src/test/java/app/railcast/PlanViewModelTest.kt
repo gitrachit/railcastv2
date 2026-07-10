@@ -135,6 +135,25 @@ class PlanViewModelTest {
         assertEquals(null, plan.state.value.expanded)
     }
 
+    @Test fun `retry re-runs the current search`() = runTest {
+        var searches = 0
+        val plan = PlanViewModel(
+            search = PlanFakeSearch(emptyList()),
+            planScreen = { _, _, _, _ ->
+                searches++
+                flow { emit(Resource(null, null, stale = false, loading = false, error = null)) }
+            },
+            planRow = { _, _, _, _, _, _ -> null },
+            scope = backgroundScope,
+            initialDate = "2026-07-10",
+        )
+        plan.selectFrom(stationA); plan.selectTo(stationB)
+        plan.search(); runCurrent()
+        assertEquals(1, searches)
+        plan.retry(); runCurrent()
+        assertEquals(2, searches)
+    }
+
     @Test fun `quota selection is retained`() = runTest {
         val plan = vm(backgroundScope)
         plan.setQuota(PlanQuota.TATKAL)

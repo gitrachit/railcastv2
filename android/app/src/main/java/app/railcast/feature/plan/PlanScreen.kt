@@ -41,6 +41,8 @@ import app.railcast.core.net.FareCell
 import app.railcast.core.net.PlanRow
 import app.railcast.core.net.RowFareBreakdown
 import app.railcast.directory.Station
+import app.railcast.ui.EmptyState
+import app.railcast.ui.ErrorState
 
 /**
  * Plan (backlog 4.7, FR-6.1–6.3). Pick from/to + date + quota → the train list
@@ -91,14 +93,21 @@ fun PlanScreen(plan: PlanViewModel, modifier: Modifier = Modifier) {
             ) { Text(stringResource(R.string.plan_search), fontSize = 16.sp, fontWeight = FontWeight.SemiBold) }
         }
 
-        if (state.resource != null) {
-            item { SortRow(state.sort, plan::setSort) }
+        val res = state.resource
+        if (res != null) {
             val rows = state.visibleRows
-            if (rows.isEmpty() && state.resource?.loading == false) {
-                item { Text(stringResource(R.string.plan_no_trains), color = colors.ink2, modifier = Modifier.padding(8.dp)) }
-            }
-            items(rows, key = { it.no }) { row ->
-                PlanRowCard(row, expanded = state.expanded == row.no, onToggle = { plan.toggleExpand(row.no) })
+            if (rows.isEmpty() && res.loading.not()) {
+                // Error (no cached rows) → retry; genuinely empty → directive.
+                if (res.error != null && res.value == null) {
+                    item { ErrorState(onRetry = plan::retry) }
+                } else {
+                    item { EmptyState(stringResource(R.string.plan_no_trains)) }
+                }
+            } else {
+                item { SortRow(state.sort, plan::setSort) }
+                items(rows, key = { it.no }) { row ->
+                    PlanRowCard(row, expanded = state.expanded == row.no, onToggle = { plan.toggleExpand(row.no) })
+                }
             }
         }
     }
@@ -172,7 +181,7 @@ private fun Chip(label: String, on: Boolean, onClick: () -> Unit) {
         color = if (on) colors.brand else colors.ink2,
         modifier = Modifier.clip(RoundedCornerShape(999.dp)).semantics { role = Role.Tab }
             .clickable(onClick = onClick).background(if (on) colors.brandSoft else colors.surface2)
-            .heightIn(min = 40.dp).padding(horizontal = 14.dp, vertical = 9.dp),
+            .heightIn(min = 48.dp).padding(horizontal = 14.dp, vertical = 9.dp),
     )
 }
 

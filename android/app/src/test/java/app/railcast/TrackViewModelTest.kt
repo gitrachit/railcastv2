@@ -112,6 +112,15 @@ class TrackViewModelTest {
         assertEquals("cancelled", track.state.value.resource?.value?.status?.state)
     }
 
+    @Test fun `retry re-fetches the current train`() = runTest {
+        val calls = mutableListOf<String>()
+        val track = vm(backgroundScope, onFactory = { no, _ -> calls += no })
+        track.open("12780"); runCurrent()
+        assertEquals(1, calls.size)
+        track.retry(); runCurrent()
+        assertEquals(2, calls.size) // re-fetched on retry (PRD §7 next step)
+    }
+
     @Test fun `run sheet toggles open and closed`() = runTest {
         val track = vm(backgroundScope)
         track.open("12780")

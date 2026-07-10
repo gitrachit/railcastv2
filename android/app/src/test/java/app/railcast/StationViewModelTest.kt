@@ -100,6 +100,25 @@ class StationViewModelTest {
         assertEquals(listOf("2A", "SL"), vm.state.value.availableClasses)
     }
 
+    @Test fun `retry re-fetches the current board`() = runTest {
+        var fetches = 0
+        val vm = StationViewModel(
+            search = StationFakeSearch(emptyList()),
+            stationScreen = { code, hrs ->
+                fetches++
+                flow { emit(Resource(stationBoard(code, hrs), "t", stale = false, loading = false, error = null)) }
+            },
+            poller = PollController(backgroundScope),
+            scope = backgroundScope,
+            cadenceMs = 1000L,
+            debounceMs = 100L,
+        )
+        vm.open("BPL"); runCurrent()
+        assertEquals(1, fetches)
+        vm.retry(); runCurrent()
+        assertEquals(2, fetches)
+    }
+
     @Test fun `back clears the opened station`() = runTest {
         val vm = vm(backgroundScope)
         vm.open("BPL"); runCurrent()

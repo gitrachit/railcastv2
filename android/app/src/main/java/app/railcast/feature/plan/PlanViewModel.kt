@@ -88,6 +88,9 @@ class PlanViewModel(
 
     fun setQuota(quota: PlanQuota) = _state.update { it.copy(quota = quota) }
     fun setSort(sort: PlanSort) = _state.update { it.copy(sort = sort) }
+
+    /** Re-run the current A→B search after an error (PRD §7 "next step"). */
+    fun retry() = search()
     fun toggleExpand(trainNo: String) =
         _state.update { it.copy(expanded = if (it.expanded == trainNo) null else trainNo) }
 

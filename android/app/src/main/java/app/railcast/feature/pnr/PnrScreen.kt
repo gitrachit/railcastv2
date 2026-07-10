@@ -45,6 +45,7 @@ import app.railcast.core.design.StatusChip
 import app.railcast.core.design.trainStatusVisual
 import app.railcast.core.net.PnrPassenger
 import app.railcast.core.net.PnrScreen as PnrScreenModel
+import app.railcast.ui.ErrorState
 
 /**
  * PNR screen (backlog 4.5). The PNR is masked everywhere it appears (FR-4.3):
@@ -66,6 +67,8 @@ fun PnrScreen(pnr: PnrViewModel, onBack: () -> Unit, modifier: Modifier = Modifi
             if (state.maskedInput == null) {
                 item { PnrInput(state.input, state.hint, pnr::onInputChange, pnr::lookup) }
                 item { PrivacyNote() }
+            } else if (state.resource?.error != null && state.resource?.loading == false) {
+                item { ErrorState(onRetry = pnr::retry) }
             } else {
                 item { LoadingRow() }
             }
@@ -253,7 +256,7 @@ private fun PrivacyNote() {
             fontSize = 12.sp,
             fontWeight = FontWeight.SemiBold,
             color = colors.brand,
-            modifier = Modifier.clickable { open = !open }.heightIn(min = 40.dp).padding(vertical = 10.dp),
+            modifier = Modifier.clickable { open = !open }.heightIn(min = 48.dp).padding(vertical = 10.dp),
         )
         if (open) {
             Text(stringResource(R.string.pnr_privacy_body), fontSize = 12.sp, color = colors.ink2)

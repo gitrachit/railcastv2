@@ -12,4 +12,17 @@ jobs:
         with: { distribution: temurin, java-version: 17, cache: gradle }
       - run: ./gradlew :app:lintDebug :app:testDebugUnitTest
       - run: ./gradlew :app:assembleDebug
-      # TODO(M6): size-budget check + Play publish on tags (release.yml)
+      # APK size budget (NFR-1, backlog 5.2). Guards against accidental bloat
+      # (e.g. an oversized bundled asset). Budget is on the unminified debug APK;
+      # the release build ships smaller. Raise deliberately if a real feature needs it.
+      - name: APK size budget
+        run: |
+          APK=app/build/outputs/apk/debug/app-debug.apk
+          BUDGET=$((20 * 1024 * 1024))   # 20 MiB
+          SIZE=$(stat -c%s "$APK")
+          echo "debug APK: $SIZE bytes (budget $BUDGET)"
+          if [ "$SIZE" -gt "$BUDGET" ]; then
+            echo "::error::debug APK $SIZE bytes exceeds budget $BUDGET (NFR-1)"; exit 1
+          fi
+      # TODO(M6): Play publish on tags (release.yml); macrobenchmark cold-start
+      # ≤2.5s + baseline profile need an emulator/device (deferred from 5.2).
