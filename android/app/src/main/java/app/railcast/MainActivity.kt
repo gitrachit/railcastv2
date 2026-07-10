@@ -51,9 +51,10 @@ class MainActivity : ComponentActivity() {
             // Where onboarding drops the user this launch; null → default Home.
             var startRoute by remember { mutableStateOf<String?>(null) }
 
-            // Restore the persisted device token so the first screen request is
-            // already authenticated (contracts §7).
-            LaunchedEffect(Unit) { container.session.restore() }
+            // Restore the persisted device token — or MINT one on first run —
+            // so screen requests are authenticated (contracts §7). Without the
+            // mint, a fresh install would get UNAUTHORIZED on every fetch.
+            LaunchedEffect(Unit) { container.session.ensureToken(container.api) }
 
             LocalizedContent(language) {
                 RailcastTheme {

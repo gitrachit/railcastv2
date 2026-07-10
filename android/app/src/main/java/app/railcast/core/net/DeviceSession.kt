@@ -8,6 +8,8 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import java.util.concurrent.atomic.AtomicReference
 
 private val Context.deviceDataStore: DataStore<Preferences> by preferencesDataStore(name = "railcast_device")
@@ -31,6 +33,7 @@ class DeviceSession(
     private val appVersion: String,
 ) {
     private val token = AtomicReference<String?>(null)
+    private val mintLock = Mutex()
 
     val tokenProvider = TokenProvider { token.get() }
 
@@ -42,16 +45,20 @@ class DeviceSession(
     /** Ensures a valid token exists, minting via the API if needed. */
     suspend fun ensureToken(api: RailcastApi): String? {
         token.get()?.let { return it }
-        restore()
-        token.get()?.let { return it }
+        // Single-flight: a cold-start burst of screens mints exactly once.
+        return mintLock.withLock {
+            token.get()?.let { return it }
+            restore()
+            token.get()?.let { return it }
 
-        val result = apiResult({ NetworkModule.parseError(it) }) {
-            api.authDevice(DeviceAuthRequest(appVersion = appVersion))
+            val result = apiResult({ NetworkModule.parseError(it) }) {
+                api.authDevice(DeviceAuthRequest(appVersion = appVersion))
+            }
+            if (result is ApiResult.Ok) {
+                token.set(result.data.deviceToken)
+                store.write(result.data.deviceToken)
+            }
+            token.get()
         }
-        if (result is ApiResult.Ok) {
-            token.set(result.data.deviceToken)
-            store.write(result.data.deviceToken)
-        }
-        return token.get()
     }
 }
