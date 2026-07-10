@@ -36,6 +36,7 @@ class MainActivity : ComponentActivity() {
         // activity lifecycle: it runs only in the foreground (PRD §6.4, NFR-3).
         container = AppContainer(this)
         container.poller.bindTo(lifecycle)
+        container.notifications.ensureChannels() // alerts + alarm channels (4.8)
 
         setContent {
             val context = LocalContext.current
@@ -72,6 +73,7 @@ class MainActivity : ComponentActivity() {
                             pnr = container.pnr,
                             station = container.station,
                             plan = container.plan,
+                            alerts = container.alerts,
                             language = language,
                             onLanguageChange = { scope.launch { store.setLanguage(it) } },
                             startRoute = startRoute,

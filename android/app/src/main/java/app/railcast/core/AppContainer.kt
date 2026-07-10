@@ -13,6 +13,9 @@ import app.railcast.core.net.ApiResult
 import app.railcast.core.net.RailcastApi
 import app.railcast.core.poll.PollController
 import app.railcast.directory.Directory
+import app.railcast.feature.alerts.AlertPrefsStore
+import app.railcast.feature.alerts.AlertsViewModel
+import app.railcast.feature.alerts.NotificationPoster
 import app.railcast.feature.home.HomeViewModel
 import app.railcast.feature.home.SavedStore
 import app.railcast.feature.pnr.PnrViewModel
@@ -104,4 +107,9 @@ class AppContainer(context: Context) {
         scope = appScope,
         initialDate = PlanDates.today(),
     )
+
+    // Alerts: local notification prefs + quiet hours (4.8). NotificationPoster is
+    // the Firebase-agnostic binding point the FCM service will call.
+    val alerts: AlertsViewModel = AlertsViewModel(AlertPrefsStore(appContext), appScope)
+    val notifications: NotificationPoster = NotificationPoster(appContext)
 }

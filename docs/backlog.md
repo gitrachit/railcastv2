@@ -45,7 +45,7 @@ Use **plan mode** for every item marked ⚠ (structural — review the plan befo
 - [x] **4.5 PNR** [FR-4.x]: masked everywhere, chart states, chart-prepared celebration, save→creates chart watch.
 - [x] **4.6 Station** [FR-5.1]: live board, 2/4/8 toggle, filters, cancelled row → plan handoff. (FR-5.2 "trains near me"/location and FR-5.3 sunlight auto-suggest deferred to a follow-up.)
 - [x] **4.7 Plan** [FR-6.1–6.3]: unified list, progressive row hydration, quota picker w/ Tatkal hint, fare breakdown. (FR-6.4 "remind me when Tatkal opens" watch needs a new watch type in api-contracts §5 — deferred pending that contract change, per invariant 7.)
-- [ ] ⚠ **4.8 Alerts + arrival alarm** [FR-7 client]: prefs screen, quiet hours, FCM handling, full-screen alarm activity (`USE_FULL_SCREEN_INTENT`), OEM battery-settings guidance flow (Xiaomi/Oppo/Vivo).
+- [x] ⚠ **4.8 Alerts + arrival alarm** [FR-7 client]: prefs screen, quiet hours, FCM handling, full-screen alarm activity (`USE_FULL_SCREEN_INTENT`), OEM battery-settings guidance flow (Xiaomi/Oppo/Vivo). (Firebase-agnostic core; live `FirebaseMessagingService` binding deferred until `google-services.json` exists — mirrors server NoopSender. Server-side prefs sync needs a contract endpoint (not in api-contracts §5) — deferred per invariant 7. Per-journey mute has model+policy+store support; its Track/PNR trigger is a follow-up.)
 - [ ] **4.9 Offline pass** [FR-9.1–9.2]: banner, cached rendering audit on every screen, directory offline.
 
 ## M5 — Hardening

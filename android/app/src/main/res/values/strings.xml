@@ -23,6 +23,41 @@
     <!-- Language (full picker is the onboarding flow, 4.1) -->
     <string name="settings_language">Language</string>
 
+    <!-- Alerts (backlog 4.8, FR-7.4) -->
+    <string name="alerts_prefs_title">Notifications</string>
+    <string name="alert_type_chart">Chart prepared</string>
+    <string name="alert_type_delay">Delays</string>
+    <string name="alert_type_platform">Platform changes</string>
+    <string name="alert_type_cancel">Cancellations &amp; diversions</string>
+    <string name="alert_type_arrival">Arrival alarm</string>
+    <string name="alert_quiet_title">Quiet hours</string>
+    <string name="alert_quiet_enable">Mute during quiet hours</string>
+    <string name="alert_quiet_from">From</string>
+    <string name="alert_quiet_to">To</string>
+    <string name="alert_time_earlier">Earlier</string>
+    <string name="alert_time_later">Later</string>
+    <string name="alert_oem_title">Background delivery</string>
+    <string name="alert_oem_body_xiaomi">On Xiaomi/Redmi/POCO, allow Autostart and set battery saver to No restrictions so alerts arrive with the app closed.</string>
+    <string name="alert_oem_body_oppo">On Oppo/Realme/OnePlus, allow Auto-launch and set battery usage to Allow background activity.</string>
+    <string name="alert_oem_body_vivo">On Vivo/iQOO, enable Auto-start and allow high background power consumption.</string>
+    <string name="alert_oem_open_settings">Open battery settings</string>
+    <string name="alert_channel_alerts">Alerts</string>
+    <string name="alert_channel_alarms">Arrival alarms</string>
+    <string name="alert_channel_alarms_desc">High-priority full-screen arrival alarms</string>
+    <string name="alert_alarm_dismiss">Dismiss</string>
+    <string name="alert_chart_title">Chart prepared</string>
+    <string name="alert_chart_body">%1$s — chart ready for PNR %2$s</string>
+    <string name="alert_delay_title">Running late</string>
+    <string name="alert_delay_body">%1$s is %2$s min late · next %3$s</string>
+    <string name="alert_platform_title">Platform change</string>
+    <string name="alert_platform_body">%1$s now on platform %2$s at %3$s</string>
+    <string name="alert_cancelled_title">Train cancelled</string>
+    <string name="alert_cancelled_body">%1$s is cancelled</string>
+    <string name="alert_diverted_title">Train diverted</string>
+    <string name="alert_diverted_body">%1$s is diverted</string>
+    <string name="alert_arrival_title">Arriving soon</string>
+    <string name="alert_arrival_body">%1$s approaching %2$s · %3$s min</string>
+
     <!-- Onboarding (first run): language → one intent question → in (FR-10.5) -->
     <string name="onboarding_language_title">Choose your language</string>
     <string name="onboarding_continue">Continue</string>

@@ -24,6 +24,41 @@
     <!-- Language -->
     <string name="settings_language">भाषा</string>
 
+    <!-- Alerts (backlog 4.8, FR-7.4) -->
+    <string name="alerts_prefs_title">सूचनाएँ</string>
+    <string name="alert_type_chart">चार्ट तैयार</string>
+    <string name="alert_type_delay">देरी</string>
+    <string name="alert_type_platform">प्लेटफ़ॉर्म बदलाव</string>
+    <string name="alert_type_cancel">रद्द और डायवर्ज़न</string>
+    <string name="alert_type_arrival">आगमन अलार्म</string>
+    <string name="alert_quiet_title">शांत समय</string>
+    <string name="alert_quiet_enable">शांत समय में म्यूट करें</string>
+    <string name="alert_quiet_from">से</string>
+    <string name="alert_quiet_to">तक</string>
+    <string name="alert_time_earlier">पहले</string>
+    <string name="alert_time_later">बाद में</string>
+    <string name="alert_oem_title">बैकग्राउंड डिलीवरी</string>
+    <string name="alert_oem_body_xiaomi">Xiaomi/Redmi/POCO पर, ऑटोस्टार्ट चालू करें और बैटरी सेवर को \"कोई प्रतिबंध नहीं\" पर सेट करें ताकि ऐप बंद होने पर भी अलर्ट आएँ।</string>
+    <string name="alert_oem_body_oppo">Oppo/Realme/OnePlus पर, ऑटो-लॉन्च चालू करें और बैकग्राउंड गतिविधि की अनुमति दें।</string>
+    <string name="alert_oem_body_vivo">Vivo/iQOO पर, ऑटो-स्टार्ट चालू करें और उच्च बैकग्राउंड पावर की अनुमति दें।</string>
+    <string name="alert_oem_open_settings">बैटरी सेटिंग खोलें</string>
+    <string name="alert_channel_alerts">अलर्ट</string>
+    <string name="alert_channel_alarms">आगमन अलार्म</string>
+    <string name="alert_channel_alarms_desc">उच्च-प्राथमिकता पूर्ण-स्क्रीन आगमन अलार्म</string>
+    <string name="alert_alarm_dismiss">बंद करें</string>
+    <string name="alert_chart_title">चार्ट तैयार</string>
+    <string name="alert_chart_body">%1$s — PNR %2$s के लिए चार्ट तैयार</string>
+    <string name="alert_delay_title">देरी से चल रही है</string>
+    <string name="alert_delay_body">%1$s %2$s मिनट देरी से · अगला %3$s</string>
+    <string name="alert_platform_title">प्लेटफ़ॉर्म बदला</string>
+    <string name="alert_platform_body">%1$s अब %3$s पर प्लेटफ़ॉर्म %2$s पर</string>
+    <string name="alert_cancelled_title">ट्रेन रद्द</string>
+    <string name="alert_cancelled_body">%1$s रद्द है</string>
+    <string name="alert_diverted_title">ट्रेन डायवर्ट</string>
+    <string name="alert_diverted_body">%1$s डायवर्ट है</string>
+    <string name="alert_arrival_title">जल्द पहुँच रही है</string>
+    <string name="alert_arrival_body">%1$s %2$s के पास · %3$s मिनट</string>
+
     <!-- Onboarding (first run): language → one intent question → in (FR-10.5) -->
     <string name="onboarding_language_title">अपनी भाषा चुनें</string>
     <string name="onboarding_continue">आगे बढ़ें</string>

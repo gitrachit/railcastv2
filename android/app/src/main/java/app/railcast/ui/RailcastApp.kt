@@ -16,6 +16,7 @@ import androidx.navigation.compose.rememberNavController
 import app.railcast.R
 import app.railcast.core.i18n.AppLanguage
 import app.railcast.feature.alerts.AlertsScreen
+import app.railcast.feature.alerts.AlertsViewModel
 import app.railcast.feature.home.HomeScreen
 import app.railcast.feature.home.HomeViewModel
 import app.railcast.feature.pnr.PnrScreen
@@ -51,6 +52,7 @@ fun RailcastApp(
     pnr: PnrViewModel,
     station: StationViewModel,
     plan: PlanViewModel,
+    alerts: AlertsViewModel,
     language: AppLanguage,
     onLanguageChange: (AppLanguage) -> Unit,
     startRoute: String? = null,
@@ -113,7 +115,7 @@ fun RailcastApp(
             }
             composable(Destination.PLAN.route) { PlanScreen(plan) }
             composable(Destination.ALERTS.route) {
-                AlertsScreen(language = language, onLanguageChange = onLanguageChange)
+                AlertsScreen(alerts = alerts, language = language, onLanguageChange = onLanguageChange)
             }
         }
     }
