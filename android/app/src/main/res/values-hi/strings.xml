@@ -59,6 +59,15 @@
     <string name="coach_stand_middle">कोच %1$s · बीच में खड़े हों</string>
     <string name="coach_stand_rear">कोच %1$s · पीछे की ओर खड़े हों</string>
 
+    <!-- Station board (backlog 4.6, FR-5.1) -->
+    <string name="station_search_hint">स्टेशन का नाम या कोड</string>
+    <string name="station_loading">बोर्ड लोड हो रहा है…</string>
+    <string name="station_window_hours">%1$d घं</string>
+    <string name="station_filter_ontime">समय पर</string>
+    <string name="station_dest_filter">गंतव्य से छाँटें</string>
+    <string name="station_no_trains">इस अवधि में कोई ट्रेन नहीं</string>
+    <string name="station_cancelled_cta">विकल्प खोजें</string>
+
     <!-- PNR (backlog 4.5, FR-4.x) — masked everywhere (invariant 2) -->
     <string name="pnr_title">PNR जाँचें</string>
     <string name="pnr_hint">10 अंकों का PNR</string>

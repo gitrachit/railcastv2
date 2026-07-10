@@ -23,6 +23,7 @@ import app.railcast.feature.pnr.PnrViewModel
 import app.railcast.feature.track.TrackViewModel
 import app.railcast.feature.plan.PlanScreen
 import app.railcast.feature.station.StationScreen
+import app.railcast.feature.station.StationViewModel
 import app.railcast.feature.track.TrackScreen
 
 /**
@@ -47,6 +48,7 @@ fun RailcastApp(
     home: HomeViewModel,
     track: TrackViewModel,
     pnr: PnrViewModel,
+    station: StationViewModel,
     language: AppLanguage,
     onLanguageChange: (AppLanguage) -> Unit,
     startRoute: String? = null,
@@ -94,7 +96,19 @@ fun RailcastApp(
                     },
                 )
             }
-            composable(Destination.STATION.route) { StationScreen() }
+            composable(Destination.STATION.route) {
+                StationScreen(
+                    station = station,
+                    // Cancelled row → alternatives via the Plan pipeline (FR-5.1).
+                    onAlternatives = {
+                        navController.navigate(Destination.PLAN.route) {
+                            popUpTo(navController.graph.findStartDestination().id) { saveState = true }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                    },
+                )
+            }
             composable(Destination.PLAN.route) { PlanScreen() }
             composable(Destination.ALERTS.route) {
                 AlertsScreen(language = language, onLanguageChange = onLanguageChange)

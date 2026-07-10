@@ -16,6 +16,7 @@ import app.railcast.directory.Directory
 import app.railcast.feature.home.HomeViewModel
 import app.railcast.feature.home.SavedStore
 import app.railcast.feature.pnr.PnrViewModel
+import app.railcast.feature.station.StationViewModel
 import app.railcast.feature.track.TrackViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -79,6 +80,14 @@ class AppContainer(context: Context) {
     val pnr: PnrViewModel = PnrViewModel(
         pnrScreen = { p -> screens.pnrScreen(p) },
         createChartWatch = { p -> screens.createChartWatch(p) is ApiResult.Ok },
+        poller = poller,
+        scope = appScope,
+    )
+
+    // Station board: search → live 2/4/8-hr board, same poller (4.6).
+    val station: StationViewModel = StationViewModel(
+        search = directory,
+        stationScreen = { code, hrs -> screens.stationScreen(code, hrs) },
         poller = poller,
         scope = appScope,
     )

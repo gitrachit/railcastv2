@@ -138,6 +138,30 @@ data class PnrScreen(
     val live: TrainStatus? = null, // joined when the train is currently running
 )
 
+// ─── §3 Station ─────────────────────────────────────────────────────────────
+@Serializable
+data class StationTrainTime(val scheduled: String, val actual: String? = null, val delayMin: Int? = null)
+
+@Serializable
+data class StationTrain(
+    val no: String,
+    val name: String,
+    val source: StationRef,
+    val dest: StationRef,
+    val platform: String? = null,
+    val arrival: StationTrainTime? = null, // null = originates here
+    val departure: StationTrainTime? = null, // null = terminates here
+    val status: String, // "ontime" | "late" | "cancelled"
+    val classes: List<String>,
+)
+
+@Serializable
+data class StationScreen(
+    val station: StationRef,
+    val windowHrs: Int, // 2 | 4 | 8
+    val trains: List<StationTrain>,
+)
+
 // ─── §5 Watch (create only in P1; list/delete land with 4.8 Alerts) ─────────
 @Serializable
 data class WatchEntity(
