@@ -44,6 +44,7 @@ class MainActivity : ComponentActivity() {
             val onboarding = remember { OnboardingStore(context.applicationContext) }
             val language by store.language.collectAsState(initial = AppLanguage.DEFAULT)
             val onboardingDone by onboarding.completed.collectAsState(initial = null)
+            val online by container.connectivity.isOnline.collectAsState(initial = true)
             val scope = rememberCoroutineScope()
 
             // Where onboarding drops the user this launch; null → default Home.
@@ -76,6 +77,7 @@ class MainActivity : ComponentActivity() {
                             alerts = container.alerts,
                             language = language,
                             onLanguageChange = { scope.launch { store.setLanguage(it) } },
+                            isOffline = !online,
                             startRoute = startRoute,
                         )
                     }
