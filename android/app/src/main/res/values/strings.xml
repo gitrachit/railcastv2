@@ -48,6 +48,16 @@
     <string name="track_cancelled_title">Train cancelled</string>
     <string name="track_alternatives_cta">See alternatives</string>
 
+    <!-- Coach guide (backlog 4.4, FR-3.x) -->
+    <string name="coach_title">Coach guide</string>
+    <string name="coach_at">at %1$s</string>
+    <string name="coach_gen_mode">GEN</string>
+    <string name="coach_gen_note">General coaches stop at the front and rear here</string>
+    <string name="coach_reversal">Reverses at %1$s — coach order changes here</string>
+    <string name="coach_stand_front">Coach %1$s · stand near the front</string>
+    <string name="coach_stand_middle">Coach %1$s · stand in the middle</string>
+    <string name="coach_stand_rear">Coach %1$s · stand near the rear</string>
+
     <!-- Home: search results + saved live cards (backlog 4.2) -->
     <string name="home_saved_title">Saved trains</string>
     <string name="home_card_loading">Loading %1$s…</string>

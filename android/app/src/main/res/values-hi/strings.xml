@@ -49,6 +49,16 @@
     <string name="track_cancelled_title">ट्रेन रद्द</string>
     <string name="track_alternatives_cta">विकल्प देखें</string>
 
+    <!-- Coach guide (backlog 4.4, FR-3.x) -->
+    <string name="coach_title">कोच गाइड</string>
+    <string name="coach_at">%1$s पर</string>
+    <string name="coach_gen_mode">जनरल</string>
+    <string name="coach_gen_note">जनरल कोच यहाँ प्लेटफ़ॉर्म के आगे और पीछे रुकते हैं</string>
+    <string name="coach_reversal">%1$s पर दिशा बदलती है — कोच क्रम यहाँ बदल जाता है</string>
+    <string name="coach_stand_front">कोच %1$s · आगे की ओर खड़े हों</string>
+    <string name="coach_stand_middle">कोच %1$s · बीच में खड़े हों</string>
+    <string name="coach_stand_rear">कोच %1$s · पीछे की ओर खड़े हों</string>
+
     <!-- Home: search results + saved live cards (backlog 4.2) -->
     <string name="home_saved_title">सहेजी गई ट्रेनें</string>
     <string name="home_card_loading">%1$s लोड हो रही है…</string>
