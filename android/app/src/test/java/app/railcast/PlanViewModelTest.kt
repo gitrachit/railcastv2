@@ -135,6 +135,37 @@ class PlanViewModelTest {
         assertEquals(null, plan.state.value.expanded)
     }
 
+    @Test fun `stale hydration from a previous search never patches the new one`() = runTest {
+        val gate = kotlinx.coroutines.CompletableDeferred<Unit>()
+        var calls = 0
+        val plan = PlanViewModel(
+            search = PlanFakeSearch(emptyList()),
+            planScreen = { from, to, date, quota ->
+                flow {
+                    emit(
+                        Resource(
+                            PlanScreen(StationRef(from, "F"), StationRef(to, "T"), date, quota, listOf(pendingRow("111", "10:00"))),
+                            "t", stale = false, loading = false, error = null,
+                        ),
+                    )
+                }
+            },
+            planRow = { _, _, _, _, _, _ ->
+                if (++calls == 1) { gate.await(); hydration(999.0) } // slow row from search 1
+                else hydration(500.0)
+            },
+            scope = backgroundScope,
+            initialDate = "2026-07-10",
+        )
+        plan.selectFrom(stationA); plan.selectTo(stationB)
+        plan.search(); runCurrent() // search 1: its hydration is stuck on the gate
+        plan.search(); runCurrent() // search 2: hydrates immediately with 500
+        gate.complete(Unit); runCurrent() // search 1's stale 999 arrives late — must be dropped
+
+        val fare = plan.state.value.rows.single().fare as FareCell.Ready
+        assertEquals(500.0, fare.value.total, 0.0) // not clobbered by the stale hydration
+    }
+
     @Test fun `retry re-runs the current search`() = runTest {
         var searches = 0
         val plan = PlanViewModel(

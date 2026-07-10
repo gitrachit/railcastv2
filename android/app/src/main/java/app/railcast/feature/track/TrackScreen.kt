@@ -244,12 +244,14 @@ private fun TrackHeader(name: String?, trainNo: String?, onBack: () -> Unit) {
 
 private fun LazyListScope.timeline(route: List<RouteStop>) {
     var lastDay = -1
-    for (stop in route) {
+    for ((index, stop) in route.withIndex()) {
         if (stop.day != lastDay) {
             lastDay = stop.day
             item(key = "day-${stop.day}") { DayHeader(stop.day) }
         }
-        item(key = "stop-${stop.code}-${stop.day}") { StopRow(stop) }
+        // Index in the key: circular/loop routes can visit a station twice in a
+        // day, and duplicate LazyColumn keys crash.
+        item(key = "stop-$index-${stop.code}") { StopRow(stop) }
     }
 }
 

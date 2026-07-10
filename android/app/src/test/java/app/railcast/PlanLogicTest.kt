@@ -33,6 +33,15 @@ class PlanLogicTest {
         assertEquals("2026-08-01", PlanDates.addDays("2026-07-31", 1)) // month rollover
     }
 
+    @Test fun `today is the IST date, not UTC`() {
+        // 20:00 UTC = 01:30 IST next day — an evening IST user must not be
+        // floored to yesterday's date (Indian Railways runs on IST).
+        val utcEvening = java.util.Date(java.time.Instant.parse("2026-07-10T20:00:00Z").toEpochMilli())
+        assertEquals("2026-07-11", PlanDates.today(utcEvening))
+        val utcMorning = java.util.Date(java.time.Instant.parse("2026-07-10T08:00:00Z").toEpochMilli())
+        assertEquals("2026-07-10", PlanDates.today(utcMorning))
+    }
+
     @Test fun `quota maps from code with a general fallback`() {
         assertEquals(PlanQuota.TATKAL, PlanQuota.fromCode("TQ"))
         assertEquals(PlanQuota.GENERAL, PlanQuota.fromCode(null))
