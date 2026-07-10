@@ -88,6 +88,12 @@ class StationViewModel(
         _state.value = StationUiState()
     }
 
+    /** Re-fetch the current board after an error (PRD §7 "next step"). */
+    fun retry() {
+        val s = _state.value
+        s.code?.let { startBoard(it, s.windowHrs) }
+    }
+
     private fun startBoard(code: String, hrs: Int) {
         loopKey?.let { poller.unregister(it) }
         val key = "station:$code:$hrs"

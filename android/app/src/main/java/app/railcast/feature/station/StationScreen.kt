@@ -39,6 +39,8 @@ import app.railcast.core.design.StatusChip
 import app.railcast.core.net.StationTrain
 import app.railcast.directory.SearchResult
 import app.railcast.directory.Station
+import app.railcast.ui.EmptyState
+import app.railcast.ui.ErrorState
 
 /**
  * Station board (backlog 4.6, FR-5.1). Search a station → live arrivals/
@@ -134,19 +136,23 @@ private fun StationBoard(
 
         if (screen == null) {
             item {
-                Text(
-                    stringResource(R.string.station_loading),
-                    color = colors.ink2,
-                    modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp))
-                        .background(colors.surface2).heightIn(min = 64.dp).padding(20.dp),
-                )
+                if (state.resource?.error != null && state.resource?.loading == false) {
+                    ErrorState(onRetry = vm::retry)
+                } else {
+                    Text(
+                        stringResource(R.string.station_loading),
+                        color = colors.ink2,
+                        modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp))
+                            .background(colors.surface2).heightIn(min = 64.dp).padding(20.dp),
+                    )
+                }
             }
             return@LazyColumn
         }
 
         val trains = state.visibleTrains
         if (trains.isEmpty()) {
-            item { Text(stringResource(R.string.station_no_trains), color = colors.ink2, modifier = Modifier.padding(8.dp)) }
+            item { EmptyState(stringResource(R.string.station_no_trains)) }
         } else {
             items(trains, key = { it.no + "|" + (it.departure?.scheduled ?: it.arrival?.scheduled) }) { t ->
                 TrainRow(t, onAlternatives)

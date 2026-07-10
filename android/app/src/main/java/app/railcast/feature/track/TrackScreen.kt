@@ -51,6 +51,7 @@ import app.railcast.core.design.trainStatusVisual
 import app.railcast.core.net.CoachGuide
 import app.railcast.core.net.RouteStop
 import app.railcast.core.net.TrainScreen
+import app.railcast.ui.ErrorState
 import app.railcast.directory.SearchResult
 import app.railcast.directory.Station
 import app.railcast.directory.Train
@@ -153,12 +154,18 @@ private fun TrackContent(
 
         if (screen == null) {
             item {
-                Text(
-                    stringResource(R.string.home_card_loading, state.trainNo.orEmpty()),
-                    color = colors.ink2,
-                    modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(20.dp))
-                        .background(colors.surface2).heightIn(min = 72.dp).padding(20.dp),
-                )
+                // Error with no cached value → plain-language + retry (PRD §7);
+                // otherwise a loading skeleton.
+                if (resource?.error != null && resource.loading.not()) {
+                    ErrorState(onRetry = track::retry)
+                } else {
+                    Text(
+                        stringResource(R.string.home_card_loading, state.trainNo.orEmpty()),
+                        color = colors.ink2,
+                        modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(20.dp))
+                            .background(colors.surface2).heightIn(min = 72.dp).padding(20.dp),
+                    )
+                }
             }
             return@LazyColumn
         }

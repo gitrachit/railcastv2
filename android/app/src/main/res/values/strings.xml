@@ -23,6 +23,11 @@
     <!-- Language (full picker is the onboarding flow, 4.1) -->
     <string name="settings_language">Language</string>
 
+    <!-- Shared states (backlog 5.1, PRD §7) -->
+    <string name="state_error_title">Couldn\'t load</string>
+    <string name="state_error_body">Check your connection and try again.</string>
+    <string name="action_retry">Retry</string>
+
     <!-- Offline (backlog 4.9, FR-9.1) -->
     <string name="offline_banner">You\'re offline · showing saved data</string>
 

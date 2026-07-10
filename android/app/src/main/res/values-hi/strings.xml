@@ -24,6 +24,11 @@
     <!-- Language -->
     <string name="settings_language">भाषा</string>
 
+    <!-- Shared states (backlog 5.1, PRD §7) -->
+    <string name="state_error_title">लोड नहीं हो सका</string>
+    <string name="state_error_body">अपना कनेक्शन जाँचें और दोबारा कोशिश करें।</string>
+    <string name="action_retry">पुनः प्रयास</string>
+
     <!-- Offline (backlog 4.9, FR-9.1) -->
     <string name="offline_banner">आप ऑफ़लाइन हैं · सहेजा गया डेटा दिखा रहे हैं</string>
 

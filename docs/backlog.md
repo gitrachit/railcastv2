@@ -49,7 +49,7 @@ Use **plan mode** for every item marked ⚠ (structural — review the plan befo
 - [x] **4.9 Offline pass** [FR-9.1–9.2]: banner, cached rendering audit on every screen, directory offline.
 
 ## M5 — Hardening
-- [ ] **5.1 Error/empty states audit** per PRD §7 on all screens.
+- [x] **5.1 Error/empty states audit** per PRD §7 on all screens.
 - [ ] **5.2 Perf**: baseline profile, macrobenchmark cold start ≤2.5 s on low-RAM profile; APK size budget check in CI [NFR-1].
 - [ ] **5.3 Load test** (k6) on hot paths; verify ≥90% cache hit [NFR-5].
 - [ ] **5.4 Accessibility pass**: TalkBack labels, 48 dp targets, text-scaling reflow [FR-10.3].
