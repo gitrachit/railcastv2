@@ -12,6 +12,8 @@ import app.railcast.core.net.NetworkModule
 import app.railcast.core.net.RailcastApi
 import app.railcast.core.poll.PollController
 import app.railcast.directory.Directory
+import app.railcast.feature.home.HomeViewModel
+import app.railcast.feature.home.SavedStore
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -48,7 +50,16 @@ class AppContainer(context: Context) {
 
     // The one poll controller for the whole app (PRD §6.4). Main-confined so
     // register/foreground/background and loop mutations never race.
-    val poller: PollController = PollController(
-        CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate),
+    private val appScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
+    val poller: PollController = PollController(appScope)
+
+    // Home: directory search + saved live cards (backlog 4.2). Saved-card refresh
+    // is owned by `poller` like every other loop — no per-card timers.
+    val home: HomeViewModel = HomeViewModel(
+        search = directory,
+        saved = SavedStore(appContext),
+        trainScreen = { trainNo -> screens.trainScreen(trainNo) },
+        poller = poller,
+        scope = appScope,
     )
 }
