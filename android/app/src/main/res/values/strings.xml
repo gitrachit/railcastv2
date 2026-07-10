@@ -58,6 +58,15 @@
     <string name="coach_stand_middle">Coach %1$s · stand in the middle</string>
     <string name="coach_stand_rear">Coach %1$s · stand near the rear</string>
 
+    <!-- Station board (backlog 4.6, FR-5.1) -->
+    <string name="station_search_hint">Station name or code</string>
+    <string name="station_loading">Loading the board…</string>
+    <string name="station_window_hours">%1$d h</string>
+    <string name="station_filter_ontime">On time</string>
+    <string name="station_dest_filter">Filter by destination</string>
+    <string name="station_no_trains">No trains in this window</string>
+    <string name="station_cancelled_cta">Find alternatives</string>
+
     <!-- PNR (backlog 4.5, FR-4.x) — masked everywhere (invariant 2) -->
     <string name="pnr_title">Check PNR</string>
     <string name="pnr_hint">10-digit PNR</string>

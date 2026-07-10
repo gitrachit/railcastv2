@@ -7,6 +7,7 @@ import app.railcast.core.net.EnvelopeDto
 import app.railcast.core.net.NetworkModule
 import app.railcast.core.net.PnrScreen
 import app.railcast.core.net.RailcastApi
+import app.railcast.core.net.StationScreen
 import app.railcast.core.net.TrainScreen
 import app.railcast.core.net.WatchCreated
 import app.railcast.core.net.WatchEntity
@@ -46,6 +47,9 @@ class ScreenRepository(
      *  the cache key and never persisted (FR-4.3). */
     fun pnrScreen(pnr: String): Flow<Resource<PnrScreen>> =
         swr(pnrScreenKey(pnr), PnrScreen.serializer()) { api.pnrScreen(pnr) }
+
+    fun stationScreen(code: String, hrs: Int = 4): Flow<Resource<StationScreen>> =
+        swr("station:$code:$hrs", StationScreen.serializer()) { api.stationScreen(code, hrs) }
 
     /** Save = create a server-side chart watch. The raw [pnr] goes only in the
      *  request body; the server encrypts it at rest and drives the FR-4.2 push.

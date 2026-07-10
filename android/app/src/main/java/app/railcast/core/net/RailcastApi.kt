@@ -27,6 +27,12 @@ interface RailcastApi {
     @GET("screen/pnr/{pnr}")
     suspend fun pnrScreen(@Path("pnr") pnr: String): Response<EnvelopeDto<PnrScreen>>
 
+    @GET("screen/station/{code}")
+    suspend fun stationScreen(
+        @Path("code") code: String,
+        @Query("hrs") hrs: Int = 4,
+    ): Response<EnvelopeDto<StationScreen>>
+
     @POST("watch")
     suspend fun createWatch(@Body body: WatchRequest): Response<EnvelopeDto<WatchCreated>>
 }
