@@ -34,6 +34,20 @@
     <string name="onboarding_intent_nearby">Trains near me</string>
     <string name="onboarding_intent_nearby_sub">Live arrivals and departures at a station</string>
 
+    <!-- Track (backlog 4.3, FR-2.x) -->
+    <string name="action_back">Back</string>
+    <string name="run_today">Started today</string>
+    <string name="run_yesterday">Started yesterday</string>
+    <string name="track_run_sheet_title">Which run?</string>
+    <string name="track_timeline">Timeline</string>
+    <string name="track_day">Day %1$d</string>
+    <string name="track_platform">Platform %1$s</string>
+    <string name="track_on_time">On time</string>
+    <string name="track_delay_late">%1$d min late</string>
+    <string name="track_estimated_position">Estimated position</string>
+    <string name="track_cancelled_title">Train cancelled</string>
+    <string name="track_alternatives_cta">See alternatives</string>
+
     <!-- Home: search results + saved live cards (backlog 4.2) -->
     <string name="home_saved_title">Saved trains</string>
     <string name="home_card_loading">Loading %1$s…</string>

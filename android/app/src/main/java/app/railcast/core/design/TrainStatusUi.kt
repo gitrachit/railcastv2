@@ -1,6 +1,4 @@
-package app.railcast.feature.home
-
-import app.railcast.core.design.StatusLevel
+package app.railcast.core.design
 
 /**
  * Maps a contract TrainStatus.state (+ delay) to the icon+word+colour trio the

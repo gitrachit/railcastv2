@@ -14,6 +14,7 @@ import app.railcast.core.poll.PollController
 import app.railcast.directory.Directory
 import app.railcast.feature.home.HomeViewModel
 import app.railcast.feature.home.SavedStore
+import app.railcast.feature.track.TrackViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -59,6 +60,14 @@ class AppContainer(context: Context) {
         search = directory,
         saved = SavedStore(appContext),
         trainScreen = { trainNo -> screens.trainScreen(trainNo) },
+        poller = poller,
+        scope = appScope,
+    )
+
+    // Track: search → live train screen, refreshed by the same poller (4.3).
+    val track: TrackViewModel = TrackViewModel(
+        search = directory,
+        trainScreen = { trainNo, run -> screens.trainScreen(trainNo, run) },
         poller = poller,
         scope = appScope,
     )
