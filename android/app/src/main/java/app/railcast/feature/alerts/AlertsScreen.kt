@@ -130,7 +130,7 @@ private fun StepArrow(glyph: String, label: String, onClick: () -> Unit) {
     val colors = RailcastTheme.colors
     Text(
         glyph, fontSize = 20.sp, color = colors.brand, fontWeight = FontWeight.Bold,
-        modifier = Modifier.clip(RoundedCornerShape(999.dp)).clickable(onClick = onClick).size(44.dp)
+        modifier = Modifier.clip(RoundedCornerShape(999.dp)).clickable(onClick = onClick).size(48.dp)
             .background(colors.brandSoft).padding(10.dp).semantics { contentDescription = label; role = Role.Button },
     )
 }
@@ -162,7 +162,7 @@ private fun OemGuidanceSection() {
                 }
                 .background(colors.brandSoft)
                 .border(1.dp, colors.brand, RoundedCornerShape(999.dp))
-                .heightIn(min = 44.dp)
+                .heightIn(min = 48.dp)
                 .padding(horizontal = 16.dp, vertical = 11.dp),
         )
     }

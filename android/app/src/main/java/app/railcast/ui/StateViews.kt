@@ -37,7 +37,7 @@ fun ErrorState(onRetry: () -> Unit, modifier: Modifier = Modifier) {
         Text("⚠", fontSize = 26.sp)
         Text(stringResource(R.string.state_error_title), fontSize = 16.sp, fontWeight = FontWeight.Bold, color = colors.ink)
         Text(stringResource(R.string.state_error_body), fontSize = 13.sp, color = colors.ink2)
-        TextButton(onClick = onRetry, modifier = Modifier.heightIn(min = 44.dp)) {
+        TextButton(onClick = onRetry, modifier = Modifier.heightIn(min = 48.dp)) {
             Text(stringResource(R.string.action_retry), fontWeight = FontWeight.SemiBold)
         }
     }

@@ -256,7 +256,7 @@ private fun PrivacyNote() {
             fontSize = 12.sp,
             fontWeight = FontWeight.SemiBold,
             color = colors.brand,
-            modifier = Modifier.clickable { open = !open }.heightIn(min = 40.dp).padding(vertical = 10.dp),
+            modifier = Modifier.clickable { open = !open }.heightIn(min = 48.dp).padding(vertical = 10.dp),
         )
         if (open) {
             Text(stringResource(R.string.pnr_privacy_body), fontSize = 12.sp, color = colors.ink2)

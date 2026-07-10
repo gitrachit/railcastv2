@@ -181,7 +181,7 @@ private fun Chip(label: String, on: Boolean, onClick: () -> Unit) {
         color = if (on) colors.brand else colors.ink2,
         modifier = Modifier.clip(RoundedCornerShape(999.dp)).semantics { role = Role.Tab }
             .clickable(onClick = onClick).background(if (on) colors.brandSoft else colors.surface2)
-            .heightIn(min = 40.dp).padding(horizontal = 14.dp, vertical = 9.dp),
+            .heightIn(min = 48.dp).padding(horizontal = 14.dp, vertical = 9.dp),
     )
 }
 

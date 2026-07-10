@@ -352,7 +352,7 @@ private fun RunDatePanel(screen: TrainScreen, expanded: Boolean, track: TrackVie
                 .clip(RoundedCornerShape(999.dp))
                 .clickable { if (expanded) track.dismissRunSheet() else track.openRunSheet() }
                 .background(colors.brandSoft)
-                .heightIn(min = 40.dp)
+                .heightIn(min = 48.dp)
                 .padding(horizontal = 14.dp, vertical = 9.dp),
         )
         if (expanded) {
@@ -440,7 +440,7 @@ private fun CoachGuideSection(
                     .clip(RoundedCornerShape(999.dp))
                     .clickable(onClick = onToggleGen)
                     .background(if (genMode) colors.brandSoft else colors.surface2)
-                    .heightIn(min = 40.dp)
+                    .heightIn(min = 48.dp)
                     .padding(horizontal = 12.dp, vertical = 9.dp)
                     .semantics { role = Role.Switch },
             )

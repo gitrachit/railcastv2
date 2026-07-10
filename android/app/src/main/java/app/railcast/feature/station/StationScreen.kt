@@ -190,7 +190,7 @@ private fun WindowToggle(current: Int, onSelect: (Int) -> Unit) {
                     .selectableChip()
                     .clickable { onSelect(hrs) }
                     .background(if (on) colors.brandSoft else colors.surface2)
-                    .heightIn(min = 44.dp).padding(horizontal = 18.dp, vertical = 11.dp),
+                    .heightIn(min = 48.dp).padding(horizontal = 18.dp, vertical = 11.dp),
             )
         }
     }
@@ -229,7 +229,7 @@ private fun FilterChip(label: String, on: Boolean, onClick: () -> Unit) {
         color = if (on) colors.brand else colors.ink2,
         modifier = Modifier.clip(RoundedCornerShape(999.dp)).selectableChip().clickable(onClick = onClick)
             .background(if (on) colors.brandSoft else colors.surface2)
-            .heightIn(min = 40.dp).padding(horizontal = 14.dp, vertical = 9.dp),
+            .heightIn(min = 48.dp).padding(horizontal = 14.dp, vertical = 9.dp),
     )
 }
 
@@ -266,7 +266,7 @@ private fun TrainRow(t: StationTrain, onAlternatives: () -> Unit) {
             StatusChip(icon = icon, label = statusWord(t.status, time?.delayMin), level = level)
         }
         if (cancelled) {
-            TextButton(onClick = onAlternatives, modifier = Modifier.heightIn(min = 44.dp)) {
+            TextButton(onClick = onAlternatives, modifier = Modifier.heightIn(min = 48.dp)) {
                 Text(stringResource(R.string.station_cancelled_cta), fontWeight = FontWeight.SemiBold)
             }
         }
