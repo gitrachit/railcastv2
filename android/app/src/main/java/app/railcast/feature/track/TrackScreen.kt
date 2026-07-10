@@ -4,6 +4,8 @@ import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -27,6 +29,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -43,6 +48,7 @@ import app.railcast.core.data.Resource
 import app.railcast.core.design.BoardHero
 import app.railcast.core.design.RailcastTheme
 import app.railcast.core.design.trainStatusVisual
+import app.railcast.core.net.CoachGuide
 import app.railcast.core.net.RouteStop
 import app.railcast.core.net.TrainScreen
 import app.railcast.directory.SearchResult
@@ -135,6 +141,9 @@ private fun TrackContent(
     val colors = RailcastTheme.colors
     val resource = state.resource
     val screen = resource?.value
+    // Coach-guide view state is ephemeral and resets when the train changes.
+    var selectedCoach by remember(state.trainNo) { mutableStateOf<String?>(null) }
+    var genMode by remember(state.trainNo) { mutableStateOf(false) }
     LazyColumn(
         modifier = modifier.fillMaxSize().padding(horizontal = 20.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
@@ -180,6 +189,18 @@ private fun TrackContent(
 
         screen.position?.let { pos ->
             item { EstimatedPosition(pos.betweenCodes.getOrNull(0), pos.betweenCodes.getOrNull(1), pos.progress) }
+        }
+
+        screen.coach?.let { guide ->
+            item {
+                CoachGuideSection(
+                    guide = guide,
+                    selectedCoach = selectedCoach,
+                    genMode = genMode,
+                    onSelectCoach = { selectedCoach = if (selectedCoach == it) null else it },
+                    onToggleGen = { genMode = !genMode },
+                )
+            }
         }
 
         item {
@@ -381,6 +402,108 @@ private fun CancelledState(summary: String, onAlternatives: () -> Unit) {
             Text(stringResource(R.string.track_alternatives_cta), fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
         }
     }
+}
+
+@Composable
+private fun CoachGuideSection(
+    guide: CoachGuide,
+    selectedCoach: String?,
+    genMode: Boolean,
+    onSelectCoach: (String) -> Unit,
+    onToggleGen: () -> Unit,
+) {
+    val colors = RailcastTheme.colors
+    val ordered = CoachLayout.ordered(guide)
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Text(stringResource(R.string.coach_title), fontSize = 15.sp, fontWeight = FontWeight.SemiBold, color = colors.ink2)
+            Text(
+                stringResource(R.string.coach_at, guide.referenceStation),
+                fontSize = 12.sp,
+                color = colors.ink3,
+                modifier = Modifier.weight(1f),
+            )
+            // GEN mode toggle (FR-3.3): highlights all unreserved coaches.
+            Text(
+                text = stringResource(R.string.coach_gen_mode),
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Bold,
+                color = if (genMode) colors.brand else colors.ink2,
+                modifier = Modifier
+                    .clip(RoundedCornerShape(999.dp))
+                    .clickable(onClick = onToggleGen)
+                    .background(if (genMode) colors.brandSoft else colors.surface2)
+                    .heightIn(min = 40.dp)
+                    .padding(horizontal = 12.dp, vertical = 9.dp)
+                    .semantics { role = Role.Switch },
+            )
+        }
+
+        // Reversal notes in plain language (FR-3.2).
+        for (rev in guide.reversals) {
+            Text(
+                text = stringResource(R.string.coach_reversal, rev.atStationName),
+                fontSize = 13.sp,
+                color = colors.amber,
+            )
+        }
+
+        Row(
+            modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
+            horizontalArrangement = Arrangement.spacedBy(6.dp),
+        ) {
+            // Engine marks the front of the platform so "front/rear" is unambiguous.
+            Text("🚂", fontSize = 20.sp, modifier = Modifier.padding(end = 2.dp))
+            for (coach in ordered) {
+                val gen = CoachLayout.isGen(coach)
+                val highlighted = coach.number == selectedCoach || (genMode && gen)
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(8.dp))
+                        .clickable { onSelectCoach(coach.number) }
+                        .background(if (highlighted) colors.brand else colors.surface2)
+                        .border(1.dp, if (highlighted) colors.brand else colors.line, RoundedCornerShape(8.dp))
+                        .heightIn(min = 48.dp)
+                        .padding(horizontal = 12.dp, vertical = 8.dp),
+                ) {
+                    Text(
+                        coach.number,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = if (highlighted) colors.board else colors.ink,
+                    )
+                    Text(
+                        coach.type,
+                        fontSize = 10.sp,
+                        color = if (highlighted) colors.board else colors.ink3,
+                    )
+                }
+            }
+        }
+
+        // "Stand here" indicator for the chosen coach (FR-3.1).
+        selectedCoach?.let { number ->
+            CoachLayout.zoneOf(guide, number)?.let { zone ->
+                Text(
+                    text = stringResource(standRes(zone), number),
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = colors.ink,
+                )
+            }
+        }
+        if (genMode) {
+            Text(stringResource(R.string.coach_gen_note), fontSize = 12.sp, color = colors.ink2)
+        }
+    }
+}
+
+@StringRes
+private fun standRes(zone: PlatformZone): Int = when (zone) {
+    PlatformZone.FRONT -> R.string.coach_stand_front
+    PlatformZone.MIDDLE -> R.string.coach_stand_middle
+    PlatformZone.REAR -> R.string.coach_stand_rear
 }
 
 @Composable
