@@ -17,6 +17,7 @@ import app.railcast.core.design.RailcastTheme
 import app.railcast.core.i18n.AppLanguage
 import app.railcast.core.i18n.LanguageStore
 import app.railcast.core.i18n.LocalizedContent
+import app.railcast.core.analytics.FirstSessionSuccess
 import app.railcast.core.poll.bindTo
 import app.railcast.feature.onboarding.OnboardingScreen
 import app.railcast.feature.onboarding.OnboardingStore
@@ -65,6 +66,8 @@ class MainActivity : ComponentActivity() {
                             onLanguageChange = { scope.launch { store.setLanguage(it) } },
                             onDone = { intent ->
                                 startRoute = intent.route
+                                // Anonymised: only the intent ordinal, no PII (FR-11.3).
+                                container.analytics.log(FirstSessionSuccess(intent.ordinal))
                                 scope.launch { onboarding.complete(intent) }
                             },
                         )

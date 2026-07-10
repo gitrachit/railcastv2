@@ -9,6 +9,10 @@ import app.railcast.core.db.RoomScreenCache
 import app.railcast.core.net.DeviceSession
 import app.railcast.core.net.DeviceTokenStore
 import app.railcast.core.net.NetworkModule
+import app.railcast.core.analytics.Analytics
+import app.railcast.core.analytics.AnalyticsConsentStore
+import app.railcast.core.analytics.ConsentGatedAnalytics
+import app.railcast.core.analytics.NoopAnalytics
 import app.railcast.core.net.AndroidConnectivity
 import app.railcast.core.net.ApiResult
 import app.railcast.core.net.Connectivity
@@ -28,6 +32,9 @@ import app.railcast.feature.track.TrackViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.stateIn
 
 /**
  * Manual composition root (no DI framework — keeps the app lean, NFR-1). Holds
@@ -112,9 +119,18 @@ class AppContainer(context: Context) {
 
     // Alerts: local notification prefs + quiet hours (4.8). NotificationPoster is
     // the Firebase-agnostic binding point the FCM service will call.
-    val alerts: AlertsViewModel = AlertsViewModel(AlertPrefsStore(appContext), appScope)
     val notifications: NotificationPoster = NotificationPoster(appContext)
 
     // Drives the offline banner (4.9); the SWR cache still serves data offline.
     val connectivity: Connectivity = AndroidConnectivity(appContext)
+
+    // Privacy-respecting analytics (5.5, FR-11.3): numeric-only events, gated by
+    // a local opt-out. Sink is Noop until a backend is wired.
+    private val analyticsConsent = AnalyticsConsentStore(appContext)
+    val analyticsEnabled: StateFlow<Boolean> =
+        analyticsConsent.enabled.stateIn(appScope, SharingStarted.Eagerly, true)
+    val analytics: Analytics = ConsentGatedAnalytics(NoopAnalytics) { analyticsEnabled.value }
+
+    // Alerts settings: notification prefs (4.8) + analytics opt-out (5.5).
+    val alerts: AlertsViewModel = AlertsViewModel(AlertPrefsStore(appContext), analyticsConsent, appScope)
 }
