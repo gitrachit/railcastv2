@@ -31,7 +31,12 @@ object PlanDates {
         isLenient = false
     }
 
-    fun today(): String = formatter().format(java.util.Date())
+    /** Today's date in IST — Indian Railways' clock, not the device's or UTC's.
+     *  (In UTC, an IST evening would floor the planner to yesterday.) */
+    fun today(at: java.util.Date = java.util.Date()): String =
+        SimpleDateFormat("yyyy-MM-dd", Locale.US)
+            .apply { timeZone = TimeZone.getTimeZone("Asia/Kolkata") }
+            .format(at)
 
     fun addDays(iso: String, days: Int): String {
         val parsed = runCatching { formatter().parse(iso) }.getOrNull() ?: return iso

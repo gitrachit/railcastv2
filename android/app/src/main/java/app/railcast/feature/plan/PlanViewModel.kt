@@ -94,29 +94,36 @@ class PlanViewModel(
     fun toggleExpand(trainNo: String) =
         _state.update { it.copy(expanded = if (it.expanded == trainNo) null else trainNo) }
 
+    // Monotonic search generation: list updates and row hydrations only apply
+    // when they belong to the LATEST search, so a slow row fetched for one
+    // date/quota can never patch the same train number in a newer search.
+    private var searchGen = 0
+
     /** Run the A→B search and kick off per-row hydration. */
     fun search() {
         val s = _state.value
         val from = s.from ?: return
         val to = s.to ?: return
+        val gen = ++searchGen
         _state.update { it.copy(resource = null, rows = emptyList(), expanded = null) }
         scope.launch {
             planScreen(from.code, to.code, s.date, s.quota.code).collect { res ->
+                if (gen != searchGen) return@collect
                 _state.update { it.copy(resource = res, rows = res.value?.trains ?: it.rows) }
             }
-            hydrateRows(from.code, to.code, s.date, s.quota.code)
+            if (gen == searchGen) hydrateRows(gen, from.code, to.code, s.date, s.quota.code)
         }
     }
 
     /** Fetch every pending row's seats + fare concurrently — independent calls,
      *  so the slowest never blocks the rest (FR-6.2). */
-    private fun hydrateRows(from: String, to: String, date: String, quota: String) {
+    private fun hydrateRows(gen: Int, from: String, to: String, date: String, quota: String) {
         for (row in _state.value.rows) {
             if (row.availability !is AvailabilityCell.Pending) continue
             val cls = row.classes.firstOrNull() ?: continue
             scope.launch {
                 val h = planRow(row.no, from, to, date, cls, quota) ?: return@launch
-                patchRow(row.no, h)
+                if (gen == searchGen) patchRow(row.no, h)
             }
         }
     }

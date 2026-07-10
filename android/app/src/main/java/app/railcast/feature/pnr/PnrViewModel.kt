@@ -97,8 +97,9 @@ class PnrViewModel(
 
     private fun startWatchingLive(pnr: String) {
         loopKey?.let { poller.unregister(it) }
-        // Keyed by the SAME hash the cache uses — no raw PNR in the loop key.
-        val key = app.railcast.core.data.pnrScreenKey(pnr)
+        // One PNR is watched at a time and the previous loop was just
+        // unregistered, so a constant key suffices — no PNR-derived value here.
+        val key = "pnr:live"
         loopKey = key
         poller.register(key, cadenceMs) {
             var signature: String? = null
