@@ -96,3 +96,39 @@ export function renderExpiredPage(): string {
   <p>Shared Railcast journeys stay live only for the trip. Ask for a fresh link, or track the train yourself in the Railcast app — ad-free.</p>
 </body></html>`;
 }
+
+// Public privacy policy (backlog 5.6, FR-4.3/11.3/11.1). Static, no-JS, no
+// tracking; the app links here from the PNR screen and Settings. EN.
+export function renderPrivacyPage(): string {
+  return `<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Privacy · Railcast</title>
+<style>
+  :root { color-scheme: light dark; }
+  body { font-family: system-ui, sans-serif; max-width: 640px; margin-inline: auto; padding: 1.5rem; line-height: 1.5; }
+  h1 { font-size: 1.4rem; } h2 { font-size: 1.05rem; margin-top: 1.5rem; }
+  .lead { color: #57606a; } .disclaimer { margin-top: 2rem; font-size: .85rem; color: #57606a; }
+  @media (prefers-color-scheme: dark) { .lead, .disclaimer { color: #9aa4ad; } }
+</style></head><body>
+  <h1>Your privacy on Railcast</h1>
+  <p class="lead">Railcast is built to be useful without watching you. No ads, no trackers, no account required for core features.</p>
+
+  <h2>PNRs</h2>
+  <p>Your PNR is <strong>masked</strong> everywhere it appears (e.g. ••••2882). It is sent only over an encrypted connection, is <strong>never written to logs in full</strong>, is <strong>encrypted at rest</strong> (AES-256-GCM) when you save a chart alert, and is <strong>automatically deleted</strong> shortly after your journey ends.</p>
+
+  <h2>Accounts &amp; personal data</h2>
+  <p>Core features — live status, PNR, station boards, planning — need no login. We do not sell or share your personal data. Saved trains and preferences stay on your device.</p>
+
+  <h2>Analytics</h2>
+  <p>Optional, anonymous usage metrics (like how quickly a screen shows its answer) help us improve. They carry <strong>numbers only</strong> — never your PNR or any identifier — and you can turn them off any time in Settings → Privacy.</p>
+
+  <h2>Notifications</h2>
+  <p>Alerts fire only for what you ask to watch. Quiet hours and per-type controls are yours; the arrival alarm is the one exception, by design.</p>
+
+  <h2>Data retention</h2>
+  <p>Cached railway data expires on a short schedule. Journey watches expire automatically after the trip, and their encrypted data is hard-deleted by a purge job.</p>
+
+  <p class="disclaimer">Railcast is not affiliated with Indian Railways or IRCTC. Times and positions are estimates, always labelled as such.</p>
+</body></html>`;
+}
