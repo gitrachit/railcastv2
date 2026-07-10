@@ -162,6 +162,37 @@ data class StationScreen(
     val trains: List<StationTrain>,
 )
 
+// ─── §4 Plan (progressive per-row hydration) ────────────────────────────────
+@Serializable
+data class PlanPunctuality(val pct: Int, val basisRuns: Int)
+
+@Serializable
+data class PlanRow(
+    val no: String,
+    val name: String,
+    val dep: String,
+    val arr: String,
+    val durationMin: Int,
+    val classes: List<String>,
+    val runsOn: List<Boolean>, // [Sun..Sat]
+    val punctuality: PlanPunctuality? = null,
+    val availability: AvailabilityCell = AvailabilityCell.Pending,
+    val fare: FareCell = FareCell.Pending,
+)
+
+@Serializable
+data class PlanScreen(
+    val from: StationRef,
+    val to: StationRef,
+    val date: String,
+    val quota: String,
+    val trains: List<PlanRow>,
+)
+
+/** Response of GET /screen/plan/row/:trainNo — hydrates one row. */
+@Serializable
+data class PlanRowHydration(val availability: RowAvailability, val fare: RowFare)
+
 // ─── §5 Watch (create only in P1; list/delete land with 4.8 Alerts) ─────────
 @Serializable
 data class WatchEntity(

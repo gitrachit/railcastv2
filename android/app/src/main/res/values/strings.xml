@@ -58,6 +58,37 @@
     <string name="coach_stand_middle">Coach %1$s · stand in the middle</string>
     <string name="coach_stand_rear">Coach %1$s · stand near the rear</string>
 
+    <!-- Plan (backlog 4.7, FR-6.1–6.3) -->
+    <string name="plan_from_hint">From station</string>
+    <string name="plan_to_hint">To station</string>
+    <string name="plan_prev_day">Previous day</string>
+    <string name="plan_next_day">Next day</string>
+    <string name="plan_search">Find trains</string>
+    <string name="plan_quota_general">General</string>
+    <string name="plan_quota_tatkal">Tatkal</string>
+    <string name="plan_quota_ladies">Ladies</string>
+    <string name="plan_quota_senior">Senior</string>
+    <string name="plan_tatkal_hint">Tatkal opens 10 AM (AC) · 11 AM (non-AC)</string>
+    <string name="plan_sort_by">Sort</string>
+    <string name="plan_sort_departure">Departure</string>
+    <string name="plan_sort_price">Price</string>
+    <string name="plan_sort_seats">Seats</string>
+    <string name="plan_no_trains">No trains found</string>
+    <string name="plan_checking">Checking…</string>
+    <string name="plan_duration">%1$dh %2$dm</string>
+    <string name="plan_day_letters" translatable="false">SMTWTFS</string>
+    <string name="plan_runs_on">Runs: %1$s</string>
+    <string name="plan_confirm_chance">%1$d%% chance</string>
+    <string name="plan_fare_total">₹%1$s</string>
+    <string name="plan_fare_base">Base</string>
+    <string name="plan_fare_reservation">Reservation</string>
+    <string name="plan_fare_superfast">Superfast</string>
+    <string name="plan_fare_tatkal">Tatkal</string>
+    <string name="plan_fare_gst">GST</string>
+    <string name="plan_fare_dynamic">Dynamic</string>
+    <string name="plan_fare_other">Other</string>
+    <string name="plan_fare_total_label">Total</string>
+
     <!-- Station board (backlog 4.6, FR-5.1) -->
     <string name="station_search_hint">Station name or code</string>
     <string name="station_loading">Loading the board…</string>

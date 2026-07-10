@@ -59,6 +59,10 @@ private class FakeApi(
         Response.success(EnvelopeDto(ok = false, data = null, meta = null))
     override suspend fun stationScreen(code: String, hrs: Int): Response<EnvelopeDto<app.railcast.core.net.StationScreen>> =
         Response.success(EnvelopeDto(ok = false, data = null, meta = null))
+    override suspend fun planScreen(from: String, to: String, date: String, quota: String): Response<EnvelopeDto<app.railcast.core.net.PlanScreen>> =
+        Response.success(EnvelopeDto(ok = false, data = null, meta = null))
+    override suspend fun planRow(trainNo: String, from: String, to: String, date: String, cls: String, quota: String): Response<EnvelopeDto<app.railcast.core.net.PlanRowHydration>> =
+        Response.success(EnvelopeDto(ok = false, data = null, meta = null))
     override suspend fun createWatch(body: app.railcast.core.net.WatchRequest): Response<EnvelopeDto<app.railcast.core.net.WatchCreated>> =
         Response.success(EnvelopeDto(ok = true, data = app.railcast.core.net.WatchCreated("w1", "2026-07-20T00:00:00Z"), meta = app.railcast.core.net.MetaDto("2026-07-10T00:00:00Z", false, 0)))
 }

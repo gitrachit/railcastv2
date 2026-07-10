@@ -71,6 +71,7 @@ class MainActivity : ComponentActivity() {
                             track = container.track,
                             pnr = container.pnr,
                             station = container.station,
+                            plan = container.plan,
                             language = language,
                             onLanguageChange = { scope.launch { store.setLanguage(it) } },
                             startRoute = startRoute,

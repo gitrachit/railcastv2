@@ -59,6 +59,36 @@
     <string name="coach_stand_middle">कोच %1$s · बीच में खड़े हों</string>
     <string name="coach_stand_rear">कोच %1$s · पीछे की ओर खड़े हों</string>
 
+    <!-- Plan (backlog 4.7, FR-6.1–6.3) -->
+    <string name="plan_from_hint">कहाँ से</string>
+    <string name="plan_to_hint">कहाँ तक</string>
+    <string name="plan_prev_day">पिछला दिन</string>
+    <string name="plan_next_day">अगला दिन</string>
+    <string name="plan_search">ट्रेनें खोजें</string>
+    <string name="plan_quota_general">सामान्य</string>
+    <string name="plan_quota_tatkal">तत्काल</string>
+    <string name="plan_quota_ladies">महिला</string>
+    <string name="plan_quota_senior">वरिष्ठ</string>
+    <string name="plan_tatkal_hint">तत्काल खुलता है 10 बजे (AC) · 11 बजे (नॉन-AC)</string>
+    <string name="plan_sort_by">क्रम</string>
+    <string name="plan_sort_departure">प्रस्थान</string>
+    <string name="plan_sort_price">किराया</string>
+    <string name="plan_sort_seats">सीटें</string>
+    <string name="plan_no_trains">कोई ट्रेन नहीं मिली</string>
+    <string name="plan_checking">जाँच हो रही है…</string>
+    <string name="plan_duration">%1$dघं %2$dमि</string>
+    <string name="plan_runs_on">चलती है: %1$s</string>
+    <string name="plan_confirm_chance">%1$d%% संभावना</string>
+    <string name="plan_fare_total">₹%1$s</string>
+    <string name="plan_fare_base">मूल</string>
+    <string name="plan_fare_reservation">आरक्षण</string>
+    <string name="plan_fare_superfast">सुपरफास्ट</string>
+    <string name="plan_fare_tatkal">तत्काल</string>
+    <string name="plan_fare_gst">जीएसटी</string>
+    <string name="plan_fare_dynamic">डायनामिक</string>
+    <string name="plan_fare_other">अन्य</string>
+    <string name="plan_fare_total_label">कुल</string>
+
     <!-- Station board (backlog 4.6, FR-5.1) -->
     <string name="station_search_hint">स्टेशन का नाम या कोड</string>
     <string name="station_loading">बोर्ड लोड हो रहा है…</string>
