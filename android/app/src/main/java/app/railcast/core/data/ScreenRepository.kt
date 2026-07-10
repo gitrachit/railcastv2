@@ -5,6 +5,8 @@ import app.railcast.core.db.ScreenCache
 import app.railcast.core.net.ApiResult
 import app.railcast.core.net.EnvelopeDto
 import app.railcast.core.net.NetworkModule
+import app.railcast.core.net.PlanRowHydration
+import app.railcast.core.net.PlanScreen
 import app.railcast.core.net.PnrScreen
 import app.railcast.core.net.RailcastApi
 import app.railcast.core.net.StationScreen
@@ -50,6 +52,21 @@ class ScreenRepository(
 
     fun stationScreen(code: String, hrs: Int = 4): Flow<Resource<StationScreen>> =
         swr("station:$code:$hrs", StationScreen.serializer()) { api.stationScreen(code, hrs) }
+
+    fun planScreen(from: String, to: String, date: String, quota: String): Flow<Resource<PlanScreen>> =
+        swr("plan:$from:$to:$date:$quota", PlanScreen.serializer()) { api.planScreen(from, to, date, quota) }
+
+    /** One row's seats + fare (FR-6.2 progressive hydration); slow rows never
+     *  block the list because each is fetched on its own. */
+    suspend fun planRow(
+        trainNo: String,
+        from: String,
+        to: String,
+        date: String,
+        cls: String,
+        quota: String,
+    ): ApiResult<PlanRowHydration> =
+        apiResult({ NetworkModule.parseError(it) }) { api.planRow(trainNo, from, to, date, cls, quota) }
 
     /** Save = create a server-side chart watch. The raw [pnr] goes only in the
      *  request body; the server encrypts it at rest and drives the FR-4.2 push.

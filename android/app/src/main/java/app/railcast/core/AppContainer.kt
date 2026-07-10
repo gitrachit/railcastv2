@@ -16,6 +16,8 @@ import app.railcast.directory.Directory
 import app.railcast.feature.home.HomeViewModel
 import app.railcast.feature.home.SavedStore
 import app.railcast.feature.pnr.PnrViewModel
+import app.railcast.feature.plan.PlanDates
+import app.railcast.feature.plan.PlanViewModel
 import app.railcast.feature.station.StationViewModel
 import app.railcast.feature.track.TrackViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -90,5 +92,16 @@ class AppContainer(context: Context) {
         stationScreen = { code, hrs -> screens.stationScreen(code, hrs) },
         poller = poller,
         scope = appScope,
+    )
+
+    // Plan: A→B list with progressive per-row hydration (4.7).
+    val plan: PlanViewModel = PlanViewModel(
+        search = directory,
+        planScreen = { from, to, date, quota -> screens.planScreen(from, to, date, quota) },
+        planRow = { no, from, to, date, cls, quota ->
+            (screens.planRow(no, from, to, date, cls, quota) as? ApiResult.Ok)?.data
+        },
+        scope = appScope,
+        initialDate = PlanDates.today(),
     )
 }

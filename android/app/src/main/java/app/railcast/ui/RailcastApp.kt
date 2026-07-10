@@ -22,6 +22,7 @@ import app.railcast.feature.pnr.PnrScreen
 import app.railcast.feature.pnr.PnrViewModel
 import app.railcast.feature.track.TrackViewModel
 import app.railcast.feature.plan.PlanScreen
+import app.railcast.feature.plan.PlanViewModel
 import app.railcast.feature.station.StationScreen
 import app.railcast.feature.station.StationViewModel
 import app.railcast.feature.track.TrackScreen
@@ -49,6 +50,7 @@ fun RailcastApp(
     track: TrackViewModel,
     pnr: PnrViewModel,
     station: StationViewModel,
+    plan: PlanViewModel,
     language: AppLanguage,
     onLanguageChange: (AppLanguage) -> Unit,
     startRoute: String? = null,
@@ -109,7 +111,7 @@ fun RailcastApp(
                     },
                 )
             }
-            composable(Destination.PLAN.route) { PlanScreen() }
+            composable(Destination.PLAN.route) { PlanScreen(plan) }
             composable(Destination.ALERTS.route) {
                 AlertsScreen(language = language, onLanguageChange = onLanguageChange)
             }

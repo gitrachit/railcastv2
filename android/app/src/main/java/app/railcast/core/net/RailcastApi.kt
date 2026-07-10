@@ -33,6 +33,25 @@ interface RailcastApi {
         @Query("hrs") hrs: Int = 4,
     ): Response<EnvelopeDto<StationScreen>>
 
+    @GET("screen/plan")
+    suspend fun planScreen(
+        @Query("from") from: String,
+        @Query("to") to: String,
+        @Query("date") date: String,
+        @Query("quota") quota: String,
+    ): Response<EnvelopeDto<PlanScreen>>
+
+    // Progressive hydration: fetch one row's seats + fare without blocking others.
+    @GET("screen/plan/row/{trainNo}")
+    suspend fun planRow(
+        @Path("trainNo") trainNo: String,
+        @Query("from") from: String,
+        @Query("to") to: String,
+        @Query("date") date: String,
+        @Query("cls") cls: String,
+        @Query("quota") quota: String,
+    ): Response<EnvelopeDto<PlanRowHydration>>
+
     @POST("watch")
     suspend fun createWatch(@Body body: WatchRequest): Response<EnvelopeDto<WatchCreated>>
 }
