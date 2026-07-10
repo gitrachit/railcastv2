@@ -42,7 +42,7 @@ Use **plan mode** for every item marked ⚠ (structural — review the plan befo
 - [x] **4.2 Home**: search + results, saved cards with live refresh via PollController.
 - [x] ⚠ **4.3 Track** [FR-2.x]: run-date sheet (auto-detected default, never a raw date field), board hero, timeline w/ day labels, map with interpolated marker labelled "estimated", cancelled/diverted full-screen states → alternatives CTA. (Position rendered as an "estimated" schematic progress line in P1; tiled map deferred to a polish pass.)
 - [x] **4.4 Coach guide** [FR-3.x]: platform diagram, reversal note, GEN mode toggle.
-- [ ] **4.5 PNR** [FR-4.x]: masked everywhere, chart states, chart-prepared celebration, save→creates chart watch.
+- [x] **4.5 PNR** [FR-4.x]: masked everywhere, chart states, chart-prepared celebration, save→creates chart watch.
 - [ ] **4.6 Station** [FR-5.x]: live board, 2/4/8 toggle, filters, cancelled row → plan handoff.
 - [ ] **4.7 Plan** [FR-6.x]: unified list, progressive row hydration, quota picker w/ Tatkal hint + reminder watch, fare breakdown.
 - [ ] ⚠ **4.8 Alerts + arrival alarm** [FR-7 client]: prefs screen, quiet hours, FCM handling, full-screen alarm activity (`USE_FULL_SCREEN_INTENT`), OEM battery-settings guidance flow (Xiaomi/Oppo/Vivo).

@@ -9,11 +9,13 @@ import app.railcast.core.db.RoomScreenCache
 import app.railcast.core.net.DeviceSession
 import app.railcast.core.net.DeviceTokenStore
 import app.railcast.core.net.NetworkModule
+import app.railcast.core.net.ApiResult
 import app.railcast.core.net.RailcastApi
 import app.railcast.core.poll.PollController
 import app.railcast.directory.Directory
 import app.railcast.feature.home.HomeViewModel
 import app.railcast.feature.home.SavedStore
+import app.railcast.feature.pnr.PnrViewModel
 import app.railcast.feature.track.TrackViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -68,6 +70,15 @@ class AppContainer(context: Context) {
     val track: TrackViewModel = TrackViewModel(
         search = directory,
         trainScreen = { trainNo, run -> screens.trainScreen(trainNo, run) },
+        poller = poller,
+        scope = appScope,
+    )
+
+    // PNR: masked lookup + chart-prepared watch (4.5). The raw PNR reaches the
+    // repository only for the request/watch; it is never persisted here.
+    val pnr: PnrViewModel = PnrViewModel(
+        pnrScreen = { p -> screens.pnrScreen(p) },
+        createChartWatch = { p -> screens.createChartWatch(p) is ApiResult.Ok },
         poller = poller,
         scope = appScope,
     )

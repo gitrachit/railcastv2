@@ -59,7 +59,29 @@
     <string name="coach_stand_middle">कोच %1$s · बीच में खड़े हों</string>
     <string name="coach_stand_rear">कोच %1$s · पीछे की ओर खड़े हों</string>
 
+    <!-- PNR (backlog 4.5, FR-4.x) — masked everywhere (invariant 2) -->
+    <string name="pnr_title">PNR जाँचें</string>
+    <string name="pnr_hint">10 अंकों का PNR</string>
+    <string name="pnr_check">जाँचें</string>
+    <string name="pnr_loading">आपका PNR लाया जा रहा है…</string>
+    <string name="pnr_chart_prepared">चार्ट तैयार</string>
+    <string name="pnr_chart_waiting">चार्ट अभी तैयार नहीं</string>
+    <string name="pnr_chart_celebration">चार्ट तैयार हो गया!</string>
+    <string name="pnr_passengers">यात्री</string>
+    <string name="pnr_passenger">यात्री %1$d</string>
+    <string name="pnr_route">%1$s → %2$s</string>
+    <string name="pnr_class_quota">%1$s · %2$s</string>
+    <string name="pnr_boarding">बोर्डिंग: %1$s</string>
+    <string name="pnr_fare">किराया: ₹%1$s</string>
+    <string name="pnr_save">सहेजें और चार्ट पर सूचित करें</string>
+    <string name="pnr_saving">सहेजा जा रहा है…</string>
+    <string name="pnr_saved">चार्ट अपडेट के लिए नज़र रखी जा रही है</string>
+    <string name="pnr_save_failed">सहेजा नहीं जा सका — दोबारा कोशिश करें</string>
+    <string name="pnr_privacy_link">हम आपका PNR कैसे संभालते हैं</string>
+    <string name="pnr_privacy_body">आपका PNR मास्क करके दिखाया जाता है, आपके डिवाइस पर पूरा कभी संग्रहीत नहीं होता, केवल सुरक्षित कनेक्शन पर भेजा जाता है, हमारे सर्वर पर एन्क्रिप्ट किया जाता है, और यात्रा के बाद हटा दिया जाता है।</string>
+
     <!-- Home: search results + saved live cards (backlog 4.2) -->
+    <string name="home_check_pnr">PNR जाँचें</string>
     <string name="home_saved_title">सहेजी गई ट्रेनें</string>
     <string name="home_card_loading">%1$s लोड हो रही है…</string>
     <string name="search_result_train">ट्रेन</string>
