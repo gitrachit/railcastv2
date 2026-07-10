@@ -22,7 +22,12 @@ export interface AuthOptions {
 // public shared-journey pages (FR-8.1, FR-10.5 — no forced login, ever).
 function isPublic(url: string): boolean {
   const path = url.split("?")[0] ?? url;
-  return path === "/health" || path === "/auth/device" || path.startsWith("/t/");
+  return (
+    path === "/health" ||
+    path === "/privacy" ||
+    path === "/auth/device" ||
+    path.startsWith("/t/")
+  );
 }
 
 export function registerAuth(app: FastifyInstance, opts: AuthOptions): void {

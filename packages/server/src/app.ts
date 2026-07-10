@@ -8,6 +8,7 @@ import { registerPnrScreen } from "./screens/pnr.js";
 import { registerStationScreen } from "./screens/station.js";
 import { registerTrainScreen } from "./screens/train.js";
 import { registerWatchRoutes, type WatchRoutesDeps } from "./watcher/routes.js";
+import { renderPrivacyPage } from "./web/page.js";
 import { registerShareRoutes, type ShareRoutesDeps } from "./web/share.js";
 
 const startedAt = Date.now();
@@ -60,6 +61,11 @@ export function buildApp(opts: AppOptions = {}): FastifyInstance {
   if (opts.share) {
     registerShareRoutes(app, { ...opts.share, cache, now: opts.now });
   }
+
+  // Public privacy policy (backlog 5.6, FR-4.3/11.3). Static HTML, no auth.
+  app.get("/privacy", async (_req, reply) =>
+    reply.type("text/html; charset=utf-8").send(renderPrivacyPage()),
+  );
 
   // Contracts §9. `upstream` becomes a real probe when watcher health lands (M2).
   app.get("/health", async (): Promise<Ok<Health>> => ({

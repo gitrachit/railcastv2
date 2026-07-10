@@ -54,7 +54,7 @@ Use **plan mode** for every item marked ⚠ (structural — review the plan befo
 - [ ] **5.3 Load test** (k6) on hot paths; verify ≥90% cache hit [NFR-5].
 - [x] **5.4 Accessibility pass**: TalkBack labels, 48 dp targets, text-scaling reflow [FR-10.3].
 - [x] **5.5 Analytics** [FR-11.3]: anonymized events for time-to-answer, alert latency, first-session success. No PNR contents anywhere. (Numeric-only event contract + consent opt-out; first-session-success wired; Noop sink until a backend is chosen.)
-- [ ] **5.6 Privacy**: policy page on web layer; data-purge verification; DPDP checklist.
+- [~] **5.6 Privacy**: `GET /privacy` policy page on the web layer + data-purge verified (`watcher.int.test.ts`, FR-4.3) + `docs/dpdp-checklist.md`. Remaining = DPDP legal review, grievance channel, breach procedure (human/legal, WS-D).
 
 ## M6 — Launch
 - [ ] **6.1 Play Console**: app signing, data-safety form (mirror FR-4.3/11.3), content rating, listing (EN+HI) with "No ads, ever." and non-affiliation disclaimer.

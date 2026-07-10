@@ -55,7 +55,7 @@ export function registerShareRoutes(app: FastifyInstance, deps: ShareRoutesDeps)
   // Public — no auth (isPublic() allows /t/*). Renders HTML, never JSON.
   app.get("/t/:token", async (req: FastifyRequest, reply: FastifyReply) => {
     const { token } = req.params as { token: string };
-    const share = await deps.repo.getActive(token);
+    const share = await deps.repo.getActive(token, deps.now?.() ?? new Date());
     if (!share) {
       return reply.status(410).type("text/html; charset=utf-8").send(renderExpiredPage());
     }

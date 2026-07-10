@@ -55,10 +55,13 @@ export class WatchRepo {
     return { watchId: res.rows[0]!.id, expiresAt: res.rows[0]!.expires_at.toISOString() };
   }
 
-  async listForDevice(deviceId: string): Promise<WatchSummary[]> {
+  // Read-side expiry uses the injected clock (defaulting to real time), matching
+  // the write-side `create`/`defaultExpiry` so time is deterministic under a
+  // fixed test clock (no reliance on the DB's wall clock).
+  async listForDevice(deviceId: string, now: Date = new Date()): Promise<WatchSummary[]> {
     const res = await this.pool.query(
-      "SELECT id, type, entity_encrypted, params, expires_at FROM watch WHERE device_id = $1 AND expires_at > now() ORDER BY created_at",
-      [deviceId],
+      "SELECT id, type, entity_encrypted, params, expires_at FROM watch WHERE device_id = $1 AND expires_at > $2 ORDER BY created_at",
+      [deviceId, now],
     );
     return res.rows.map((r) => {
       const entity = JSON.parse(decryptPnrBlob(r.entity_encrypted)) as WatchEntity;
@@ -85,18 +88,19 @@ export class WatchRepo {
   }
 
   /** Active (unexpired) watches for one entity — the fan-out set for a poll. */
-  async activeForEntity(entityKey: string): Promise<WatchRow[]> {
+  async activeForEntity(entityKey: string, now: Date = new Date()): Promise<WatchRow[]> {
     const res = await this.pool.query(
-      "SELECT * FROM watch WHERE entity_key = $1 AND expires_at > now()",
-      [entityKey],
+      "SELECT * FROM watch WHERE entity_key = $1 AND expires_at > $2",
+      [entityKey, now],
     );
     return res.rows.map(rowToWatch);
   }
 
   /** Distinct entities that still have active watches — the scheduler's world. */
-  async activeEntityKeys(): Promise<string[]> {
+  async activeEntityKeys(now: Date = new Date()): Promise<string[]> {
     const res = await this.pool.query<{ entity_key: string }>(
-      "SELECT DISTINCT entity_key FROM watch WHERE expires_at > now()",
+      "SELECT DISTINCT entity_key FROM watch WHERE expires_at > $1",
+      [now],
     );
     return res.rows.map((r) => r.entity_key);
   }
