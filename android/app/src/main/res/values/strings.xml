@@ -34,6 +34,14 @@
     <string name="onboarding_intent_nearby">Trains near me</string>
     <string name="onboarding_intent_nearby_sub">Live arrivals and departures at a station</string>
 
+    <!-- Home: search results + saved live cards (backlog 4.2) -->
+    <string name="home_saved_title">Saved trains</string>
+    <string name="home_card_loading">Loading %1$s…</string>
+    <string name="search_result_train">Train</string>
+    <string name="search_result_station">Station</string>
+    <string name="action_remove">Remove</string>
+    <string name="freshness_offline">%1$s · offline</string>
+
     <!-- Directory search + voice + inline format hints (FR-1.1, FR-1.4, FR-1.5) -->
     <string name="search_hint">Train name or number</string>
     <string name="search_voice">Search by voice</string>

@@ -17,6 +17,7 @@ import app.railcast.R
 import app.railcast.core.i18n.AppLanguage
 import app.railcast.feature.alerts.AlertsScreen
 import app.railcast.feature.home.HomeScreen
+import app.railcast.feature.home.HomeViewModel
 import app.railcast.feature.plan.PlanScreen
 import app.railcast.feature.station.StationScreen
 import app.railcast.feature.track.TrackScreen
@@ -36,6 +37,7 @@ enum class Destination(val route: String, @StringRes val label: Int, val icon: S
 
 @Composable
 fun RailcastApp(
+    home: HomeViewModel,
     language: AppLanguage,
     onLanguageChange: (AppLanguage) -> Unit,
     startRoute: String? = null,
@@ -66,7 +68,7 @@ fun RailcastApp(
                 ?: Destination.HOME.route,
             modifier = Modifier.fillMaxSize().padding(padding),
         ) {
-            composable(Destination.HOME.route) { HomeScreen() }
+            composable(Destination.HOME.route) { HomeScreen(home) }
             composable(Destination.TRACK.route) { TrackScreen() }
             composable(Destination.STATION.route) { StationScreen() }
             composable(Destination.PLAN.route) { PlanScreen() }
