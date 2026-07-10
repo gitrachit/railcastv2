@@ -22,11 +22,13 @@ import kotlinx.serialization.KSerializer
 import kotlinx.serialization.json.Json
 import retrofit2.Response
 
-/** SWR cache key for a PNR: a SHA-256 of the raw value so the raw PNR is NEVER
- *  written to disk — Room only ever sees the hash, while the cached payload
- *  carries the masked form (FR-4.3, invariant 2). */
-fun pnrScreenKey(pnr: String): String {
-    val digest = MessageDigest.getInstance("SHA-256").digest(pnr.toByteArray())
+/** SWR cache key for a PNR: SHA-256 of salt+PNR so the raw PNR is NEVER written
+ *  to disk — Room only ever sees the salted hash, while the cached payload
+ *  carries the masked form (FR-4.3, invariant 2). The per-install [salt]
+ *  (PnrKeySalt) makes offline brute-force of the 10-digit space useless without
+ *  also exfiltrating the separate salt file. */
+fun pnrScreenKey(pnr: String, salt: String = ""): String {
+    val digest = MessageDigest.getInstance("SHA-256").digest("$salt:$pnr".toByteArray())
     return "pnr:" + digest.joinToString("") { "%02x".format(it) }
 }
 
@@ -40,6 +42,7 @@ class ScreenRepository(
     private val api: RailcastApi,
     private val cache: ScreenCache,
     private val json: Json = NetworkModule.json,
+    private val pnrKeySalt: () -> String = { "" },
     private val now: () -> Long = System::currentTimeMillis,
 ) {
     fun trainScreen(trainNo: String, run: String = "auto"): Flow<Resource<TrainScreen>> =
@@ -48,7 +51,7 @@ class ScreenRepository(
     /** PNR screen. [pnr] is the raw value (request path only); it is hashed for
      *  the cache key and never persisted (FR-4.3). */
     fun pnrScreen(pnr: String): Flow<Resource<PnrScreen>> =
-        swr(pnrScreenKey(pnr), PnrScreen.serializer()) { api.pnrScreen(pnr) }
+        swr(pnrScreenKey(pnr, pnrKeySalt()), PnrScreen.serializer()) { api.pnrScreen(pnr) }
 
     fun stationScreen(code: String, hrs: Int = 4): Flow<Resource<StationScreen>> =
         swr("station:$code:$hrs", StationScreen.serializer()) { api.stationScreen(code, hrs) }

@@ -1,5 +1,6 @@
 package app.railcast.feature.pnr
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -56,6 +57,11 @@ import app.railcast.ui.ErrorState
 fun PnrScreen(pnr: PnrViewModel, onBack: () -> Unit, modifier: Modifier = Modifier) {
     val state by pnr.state.collectAsState()
     val screen = state.resource?.value
+
+    // System back must also drop the in-memory PNR and stop its poll loop —
+    // otherwise the app keeps polling /screen/pnr/<raw> after leaving (FR-4.3).
+    BackHandler { pnr.clear(); onBack() }
+
     LazyColumn(
         modifier = modifier.fillMaxSize().padding(horizontal = 20.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),

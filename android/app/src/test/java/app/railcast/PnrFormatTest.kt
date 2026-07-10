@@ -25,13 +25,19 @@ class PnrFormatTest {
 
     @Test fun `cache key never contains the raw pnr and is stable`() {
         val raw = "2458692882"
-        val key = pnrScreenKey(raw)
+        val key = pnrScreenKey(raw, salt = "install-salt")
         assertTrue(key.startsWith("pnr:"))
         assertFalse("raw PNR must not appear in the cache key", key.contains(raw))
-        assertEquals(key, pnrScreenKey(raw)) // deterministic
+        assertEquals(key, pnrScreenKey(raw, salt = "install-salt")) // deterministic per salt
     }
 
     @Test fun `different pnrs hash to different keys`() {
         assertNotEquals(pnrScreenKey("2458692882"), pnrScreenKey("2458692883"))
+    }
+
+    @Test fun `salt changes the key so an unsalted rainbow table is useless`() {
+        val raw = "2458692882"
+        assertNotEquals(pnrScreenKey(raw), pnrScreenKey(raw, salt = "a"))
+        assertNotEquals(pnrScreenKey(raw, salt = "a"), pnrScreenKey(raw, salt = "b"))
     }
 }

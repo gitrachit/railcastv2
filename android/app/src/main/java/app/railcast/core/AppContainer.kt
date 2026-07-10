@@ -57,9 +57,12 @@ class AppContainer(context: Context) {
 
     val api: RailcastApi = NetworkModule.railcastApi(BuildConfig.BASE_URL, session.tokenProvider)
 
+    private val pnrKeySalt = app.railcast.core.data.PnrKeySalt(appContext)
+
     val screens: ScreenRepository = ScreenRepository(
         api = api,
         cache = RoomScreenCache(database.screenCacheDao()),
+        pnrKeySalt = { pnrKeySalt.value },
     )
 
     // Bundled train/station directory: offline fuzzy search, name→code/number
