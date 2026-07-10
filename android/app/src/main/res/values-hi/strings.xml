@@ -35,6 +35,20 @@
     <string name="onboarding_intent_nearby">आस-पास की ट्रेनें</string>
     <string name="onboarding_intent_nearby_sub">स्टेशन पर लाइव आगमन और प्रस्थान</string>
 
+    <!-- Track (backlog 4.3, FR-2.x) -->
+    <string name="action_back">वापस</string>
+    <string name="run_today">आज चली</string>
+    <string name="run_yesterday">कल चली</string>
+    <string name="track_run_sheet_title">कौन-सी यात्रा?</string>
+    <string name="track_timeline">समयरेखा</string>
+    <string name="track_day">दिन %1$d</string>
+    <string name="track_platform">प्लेटफ़ॉर्म %1$s</string>
+    <string name="track_on_time">समय पर</string>
+    <string name="track_delay_late">%1$d मिनट देरी</string>
+    <string name="track_estimated_position">अनुमानित स्थिति</string>
+    <string name="track_cancelled_title">ट्रेन रद्द</string>
+    <string name="track_alternatives_cta">विकल्प देखें</string>
+
     <!-- Home: search results + saved live cards (backlog 4.2) -->
     <string name="home_saved_title">सहेजी गई ट्रेनें</string>
     <string name="home_card_loading">%1$s लोड हो रही है…</string>

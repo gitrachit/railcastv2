@@ -18,6 +18,7 @@ import app.railcast.core.i18n.AppLanguage
 import app.railcast.feature.alerts.AlertsScreen
 import app.railcast.feature.home.HomeScreen
 import app.railcast.feature.home.HomeViewModel
+import app.railcast.feature.track.TrackViewModel
 import app.railcast.feature.plan.PlanScreen
 import app.railcast.feature.station.StationScreen
 import app.railcast.feature.track.TrackScreen
@@ -38,6 +39,7 @@ enum class Destination(val route: String, @StringRes val label: Int, val icon: S
 @Composable
 fun RailcastApp(
     home: HomeViewModel,
+    track: TrackViewModel,
     language: AppLanguage,
     onLanguageChange: (AppLanguage) -> Unit,
     startRoute: String? = null,
@@ -69,7 +71,19 @@ fun RailcastApp(
             modifier = Modifier.fillMaxSize().padding(padding),
         ) {
             composable(Destination.HOME.route) { HomeScreen(home) }
-            composable(Destination.TRACK.route) { TrackScreen() }
+            composable(Destination.TRACK.route) {
+                TrackScreen(
+                    track = track,
+                    // Cancelled → alternatives via the Plan pipeline (FR-2.4).
+                    onAlternatives = {
+                        navController.navigate(Destination.PLAN.route) {
+                            popUpTo(navController.graph.findStartDestination().id) { saveState = true }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                    },
+                )
+            }
             composable(Destination.STATION.route) { StationScreen() }
             composable(Destination.PLAN.route) { PlanScreen() }
             composable(Destination.ALERTS.route) {

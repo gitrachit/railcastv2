@@ -38,6 +38,7 @@ import app.railcast.R
 import app.railcast.core.data.Resource
 import app.railcast.core.design.BoardHero
 import app.railcast.core.design.RailcastTheme
+import app.railcast.core.design.trainStatusVisual
 import app.railcast.core.net.TrainScreen
 import app.railcast.directory.FormatValidation
 import app.railcast.directory.SearchResult
