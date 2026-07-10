@@ -24,6 +24,17 @@
     <!-- Language -->
     <string name="settings_language">भाषा</string>
 
+    <!-- Onboarding (first run): language → one intent question → in (FR-10.5) -->
+    <string name="onboarding_language_title">अपनी भाषा चुनें</string>
+    <string name="onboarding_continue">आगे बढ़ें</string>
+    <string name="onboarding_intent_title">आप क्या करना चाहते हैं?</string>
+    <string name="onboarding_intent_track">ट्रेन ट्रैक करें</string>
+    <string name="onboarding_intent_track_sub">नाम या नंबर से लाइव रनिंग स्टेटस</string>
+    <string name="onboarding_intent_pnr">PNR जाँचें</string>
+    <string name="onboarding_intent_pnr_sub">बुकिंग और चार्ट स्थिति</string>
+    <string name="onboarding_intent_nearby">आस-पास की ट्रेनें</string>
+    <string name="onboarding_intent_nearby_sub">स्टेशन पर लाइव आगमन और प्रस्थान</string>
+
     <!-- Directory search + voice + inline format hints (FR-1.1, FR-1.4, FR-1.5) -->
     <string name="search_hint">ट्रेन का नाम या नंबर</string>
     <string name="search_voice">आवाज़ से खोजें</string>
