@@ -9,7 +9,9 @@ import app.railcast.core.db.RoomScreenCache
 import app.railcast.core.net.DeviceSession
 import app.railcast.core.net.DeviceTokenStore
 import app.railcast.core.net.NetworkModule
+import app.railcast.core.net.AndroidConnectivity
 import app.railcast.core.net.ApiResult
+import app.railcast.core.net.Connectivity
 import app.railcast.core.net.RailcastApi
 import app.railcast.core.poll.PollController
 import app.railcast.directory.Directory
@@ -112,4 +114,7 @@ class AppContainer(context: Context) {
     // the Firebase-agnostic binding point the FCM service will call.
     val alerts: AlertsViewModel = AlertsViewModel(AlertPrefsStore(appContext), appScope)
     val notifications: NotificationPoster = NotificationPoster(appContext)
+
+    // Drives the offline banner (4.9); the SWR cache still serves data offline.
+    val connectivity: Connectivity = AndroidConnectivity(appContext)
 }

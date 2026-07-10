@@ -118,6 +118,17 @@ private fun StationBoard(
         contentPadding = PaddingValues(vertical = 16.dp),
     ) {
         item { Header(screen?.station?.name ?: state.code.orEmpty(), onBack = vm::back) }
+        state.resource?.let { res ->
+            if (res.value != null) {
+                item {
+                    val base = res.freshness ?: stringResource(R.string.freshness_demo)
+                    Text(
+                        if (res.stale) stringResource(R.string.freshness_offline, base) else base,
+                        fontSize = 11.sp, color = colors.ink3,
+                    )
+                }
+            }
+        }
         item { WindowToggle(state.windowHrs, vm::setWindow) }
         item { Filters(state, vm) }
 

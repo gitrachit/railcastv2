@@ -1,6 +1,7 @@
 package app.railcast.ui
 
 import androidx.annotation.StringRes
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -55,6 +56,7 @@ fun RailcastApp(
     alerts: AlertsViewModel,
     language: AppLanguage,
     onLanguageChange: (AppLanguage) -> Unit,
+    isOffline: Boolean = false,
     startRoute: String? = null,
 ) {
     val navController = rememberNavController()
@@ -75,13 +77,16 @@ fun RailcastApp(
             )
         },
     ) { padding ->
+      Column(Modifier.fillMaxSize().padding(padding)) {
+        // Offline strip above every screen; content keeps its cached data (FR-9.1).
+        OfflineBanner(visible = isOffline)
         NavHost(
             navController = navController,
             // Onboarding drops the user on the tab matching their chosen intent
             // (PRD §7); otherwise Home. Unknown routes fall back to Home.
             startDestination = Destination.entries.firstOrNull { it.route == startRoute }?.route
                 ?: Destination.HOME.route,
-            modifier = Modifier.fillMaxSize().padding(padding),
+            modifier = Modifier.fillMaxSize().weight(1f),
         ) {
             composable(Destination.HOME.route) {
                 HomeScreen(home, onCheckPnr = { navController.navigate(PNR_ROUTE) { launchSingleTop = true } })
@@ -118,5 +123,6 @@ fun RailcastApp(
                 AlertsScreen(alerts = alerts, language = language, onLanguageChange = onLanguageChange)
             }
         }
+      }
     }
 }

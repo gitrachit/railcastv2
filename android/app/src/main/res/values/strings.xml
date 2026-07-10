@@ -23,6 +23,9 @@
     <!-- Language (full picker is the onboarding flow, 4.1) -->
     <string name="settings_language">Language</string>
 
+    <!-- Offline (backlog 4.9, FR-9.1) -->
+    <string name="offline_banner">You\'re offline · showing saved data</string>
+
     <!-- Alerts (backlog 4.8, FR-7.4) -->
     <string name="alerts_prefs_title">Notifications</string>
     <string name="alert_type_chart">Chart prepared</string>
