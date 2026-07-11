@@ -20,6 +20,7 @@ const WATCH_TYPES: ReadonlySet<string> = new Set([
   "platform",
   "cancel",
   "arrival",
+  "tatkal",
 ]);
 const API_DATE = /^\d{4}-\d{2}-\d{2}$/;
 
@@ -74,7 +75,7 @@ export function registerWatchRoutes(app: FastifyInstance, deps: WatchRoutesDeps)
 
 function validateCreate(body: Partial<CreateWatchRequest> | null): string | null {
   if (!body || !WATCH_TYPES.has(body.type as string)) {
-    return "type must be one of chart, delay, platform, cancel, arrival";
+    return "type must be one of chart, delay, platform, cancel, arrival, tatkal";
   }
   const entity = body.entity;
   if (!entity || (entity.kind !== "pnr" && entity.kind !== "train")) {
@@ -90,7 +91,7 @@ function validateCreate(body: Partial<CreateWatchRequest> | null): string | null
   // Type/entity coherence + required params.
   const type = body.type as WatchType;
   if (type === "chart" && entity.kind !== "pnr") return "chart watches require a pnr entity";
-  if ((type === "delay" || type === "platform" || type === "cancel" || type === "arrival") && entity.kind !== "train") {
+  if ((type === "delay" || type === "platform" || type === "cancel" || type === "arrival" || type === "tatkal") && entity.kind !== "train") {
     return `${type} watches require a train entity`;
   }
   if (type === "delay" && !(body.params?.delayThresholdMin! > 0)) {
@@ -101,6 +102,9 @@ function validateCreate(body: Partial<CreateWatchRequest> | null): string | null
       return "arrival watches require a valid params.stationCode";
     }
     if (!(body.params?.leadMin! > 0)) return "arrival watches require params.leadMin > 0";
+  }
+  if (type === "tatkal" && body.params?.tatkalBand !== "ac" && body.params?.tatkalBand !== "nonac") {
+    return "tatkal watches require params.tatkalBand of ac or nonac";
   }
   return null;
 }

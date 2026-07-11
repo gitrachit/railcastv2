@@ -199,12 +199,13 @@ POST /device/push-token        body: { fcmToken: string }        → Ok<{}>
 // Create a watch
 POST /watch
 body: {
-  type: "chart" | "delay" | "platform" | "cancel" | "arrival";
+  type: "chart" | "delay" | "platform" | "cancel" | "arrival" | "tatkal";
   entity: { kind: "pnr"; pnr: string } | { kind: "train"; trainNo: string; runDate: string };
   params?: {
     delayThresholdMin?: number;      // type=delay
     stationCode?: string;            // type=arrival — alarm station
     leadMin?: number;                // type=arrival — "wake me N min before"
+    tatkalBand?: "ac" | "nonac";     // type=tatkal — which opening applies (required)
   };
 }
 → Ok<{ watchId: string; expiresAt: string }>
@@ -214,10 +215,11 @@ DELETE /watch/:watchId           → Ok<{}>
 
 interface WatchSummary {
   watchId: string;
-  type: "chart" | "delay" | "platform" | "cancel" | "arrival";
+  type: "chart" | "delay" | "platform" | "cancel" | "arrival" | "tatkal";
   entity: { kind: "pnr"; pnrMasked: string }                 // masked per FR-4.3
         | { kind: "train"; trainNo: string; runDate: string };
-  params?: { delayThresholdMin?: number; stationCode?: string; leadMin?: number };
+  params?: { delayThresholdMin?: number; stationCode?: string; leadMin?: number;
+             tatkalBand?: "ac" | "nonac" };
   expiresAt: string;
 }
 ```
@@ -231,9 +233,15 @@ type PushPayload =
   | { kind: "PLATFORM_CHANGE"; trainNo: string; stationCode: string; platform: string }
   | { kind: "CANCELLED" | "DIVERTED"; trainNo: string; runDate: string }  // FR-2.4
   | { kind: "ARRIVAL_ALARM"; trainNo: string; stationCode: string;
-      etaActual: string; leadMin: number };                               // high-priority + full-screen intent
+      etaActual: string; leadMin: number }                                // high-priority + full-screen intent
+  | { kind: "TATKAL_OPEN"; trainNo: string; runDate: string;
+      band: "ac" | "nonac" };                                             // FR-6.4 — "remind me when Tatkal opens"
 ```
 Server enforces quiet hours and per-type opt-in (FR-7.4); `ARRIVAL_ALARM` bypasses quiet hours by design.
+`tatkal` watches are time-based, not state-diff: the reminder fires when the clock crosses the band's
+opening on the day before the journey — 10:00 IST (`ac`) / 11:00 IST (`nonac`) on `runDate − 1` — with
+no upstream call, once per band (delivery-deduped). A watch created after the band is already open
+fires on the next poll ("Tatkal is open" is still true and useful).
 
 ---
 
