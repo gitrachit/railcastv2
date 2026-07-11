@@ -1,0 +1,15 @@
+.git
+.github
+node_modules
+**/node_modules
+android
+site
+docs
+infra
+*.md
+.env
+.env.*
+dump.rdb
+**/dump.rdb
+packages/directory/ingest/raw
+packages/server/loadtest
