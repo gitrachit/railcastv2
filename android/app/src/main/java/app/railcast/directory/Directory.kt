@@ -43,4 +43,10 @@ class Directory(
         val idx = ensureLoaded()
         return withContext(io) { DirectorySearch.search(idx, query, limit) }
     }
+
+    /** Nearest stations to a device location — "trains near me" (FR-5.2). */
+    suspend fun nearest(lat: Double, lng: Double, limit: Int = 3): List<Station> {
+        val idx = ensureLoaded()
+        return withContext(io) { NearestStations.find(idx.stations, lat, lng, limit) }
+    }
 }

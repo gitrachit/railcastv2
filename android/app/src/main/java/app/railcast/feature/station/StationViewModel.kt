@@ -19,6 +19,8 @@ import kotlinx.coroutines.launch
 data class StationUiState(
     val query: String = "",
     val results: List<SearchResult> = emptyList(),
+    val nearby: List<app.railcast.directory.Station> = emptyList(),
+    val locationFailed: Boolean = false,
     val code: String? = null, // opened station
     val windowHrs: Int = 4, // 2 | 4 | 8
     val filters: StationFilterState = StationFilterState(),
@@ -46,6 +48,7 @@ class StationViewModel(
     private val scope: CoroutineScope,
     private val cadenceMs: Long = 90_000L, // station board 60–120 s band (PRD §6.4)
     private val debounceMs: Long = 150L,
+    private val nearestStations: suspend (lat: Double, lng: Double) -> List<app.railcast.directory.Station> = { _, _ -> emptyList() },
 ) {
     private val _state = MutableStateFlow(StationUiState())
     val state: StateFlow<StationUiState> = _state.asStateFlow()
@@ -67,8 +70,21 @@ class StationViewModel(
     }
 
     fun open(code: String) {
-        _state.update { it.copy(code = code, resource = null, query = "", results = emptyList()) }
+        _state.update { it.copy(code = code, resource = null, query = "", results = emptyList(), nearby = emptyList()) }
         startBoard(code, _state.value.windowHrs)
+    }
+
+    /** Device location resolved → offer the nearest stations (FR-5.2). */
+    fun onLocation(lat: Double, lng: Double) {
+        scope.launch {
+            val found = nearestStations(lat, lng)
+            _state.update { it.copy(nearby = found, locationFailed = found.isEmpty()) }
+        }
+    }
+
+    /** Location unavailable/denied → a gentle hint instead of silence (PRD §7). */
+    fun onLocationUnavailable() {
+        _state.update { it.copy(nearby = emptyList(), locationFailed = true) }
     }
 
     /** Switch the 2/4/8-hr window and re-fetch. */

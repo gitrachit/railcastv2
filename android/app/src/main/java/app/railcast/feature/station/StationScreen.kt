@@ -19,9 +19,15 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import android.Manifest
+import android.content.pm.PackageManager
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -52,7 +58,7 @@ import app.railcast.ui.ErrorState
 fun StationScreen(station: StationViewModel, onAlternatives: () -> Unit, modifier: Modifier = Modifier) {
     val state by station.state.collectAsState()
     if (state.code == null) {
-        StationSearch(state.query, state.results, station::onQueryChange, station::open, modifier)
+        StationSearch(state, station, modifier)
     } else {
         StationBoard(state, station, onAlternatives, modifier)
     }
@@ -60,13 +66,22 @@ fun StationScreen(station: StationViewModel, onAlternatives: () -> Unit, modifie
 
 @Composable
 private fun StationSearch(
-    query: String,
-    results: List<SearchResult>,
-    onQueryChange: (String) -> Unit,
-    onOpen: (String) -> Unit,
+    state: StationUiState,
+    vm: StationViewModel,
     modifier: Modifier,
 ) {
     val colors = RailcastTheme.colors
+    val context = LocalContext.current
+    // Location permission asked in context — the tap on "near me" IS the reason
+    // (FR-5.2 "permission asked in context, with reason").
+    val locate = {
+        LocationResolver.resolve(context) { loc ->
+            if (loc != null) vm.onLocation(loc.latitude, loc.longitude) else vm.onLocationUnavailable()
+        }
+    }
+    val permissionLauncher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+        if (granted) locate() else vm.onLocationUnavailable()
+    }
     LazyColumn(
         modifier = modifier.fillMaxWidth().padding(horizontal = 20.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
@@ -75,21 +90,41 @@ private fun StationSearch(
         item { Text(stringResource(R.string.nav_station), fontSize = 28.sp, fontWeight = FontWeight.Bold, color = colors.ink) }
         item {
             OutlinedTextField(
-                value = query,
-                onValueChange = onQueryChange,
+                value = state.query,
+                onValueChange = vm::onQueryChange,
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
                 placeholder = { Text(stringResource(R.string.station_search_hint)) },
                 leadingIcon = { Text("🔎") },
             )
         }
-        items(results, key = { it.entry.query + "|" + it.entry.label }) { result ->
+        item {
+            NearMeRow {
+                if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) ==
+                    PackageManager.PERMISSION_GRANTED
+                ) {
+                    locate()
+                } else {
+                    permissionLauncher.launch(Manifest.permission.ACCESS_COARSE_LOCATION)
+                }
+            }
+        }
+        if (state.locationFailed) {
+            item { Text(stringResource(R.string.station_location_failed), fontSize = 13.sp, color = colors.amber) }
+        }
+        if (state.nearby.isNotEmpty()) {
+            item {
+                Text(stringResource(R.string.station_nearby_title), fontSize = 15.sp, fontWeight = FontWeight.SemiBold, color = colors.ink2)
+            }
+            items(state.nearby, key = { "near-" + it.code }) { s -> NearbyRow(s) { vm.open(s.code) } }
+        }
+        items(state.results, key = { it.entry.query + "|" + it.entry.label }) { result ->
             val entry = result.entry
             // Only stations open a board here.
             if (entry is Station) {
                 Row(
                     modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp))
-                        .clickable { onOpen(entry.code) }.background(colors.surface)
+                        .clickable { vm.open(entry.code) }.background(colors.surface)
                         .border(1.dp, colors.line, RoundedCornerShape(12.dp))
                         .heightIn(min = 56.dp).padding(horizontal = 16.dp, vertical = 10.dp),
                     verticalAlignment = Alignment.CenterVertically,
@@ -102,6 +137,42 @@ private fun StationSearch(
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun NearMeRow(onClick: () -> Unit) {
+    val colors = RailcastTheme.colors
+    Row(
+        modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)).clickable(onClick = onClick)
+            .background(colors.brandSoft).heightIn(min = 56.dp).padding(horizontal = 16.dp, vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        Text("📍", fontSize = 18.sp)
+        Text(
+            stringResource(R.string.station_near_me),
+            fontSize = 15.sp,
+            fontWeight = FontWeight.SemiBold,
+            color = colors.brand,
+        )
+    }
+}
+
+@Composable
+private fun NearbyRow(station: Station, onClick: () -> Unit) {
+    val colors = RailcastTheme.colors
+    Row(
+        modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)).clickable(onClick = onClick)
+            .background(colors.surface).border(1.dp, colors.line, RoundedCornerShape(12.dp))
+            .heightIn(min = 56.dp).padding(horizontal = 16.dp, vertical = 10.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Column(Modifier.weight(1f)) {
+            Text(station.name, fontSize = 16.sp, fontWeight = FontWeight.SemiBold, color = colors.ink)
+            Text(station.subtitle, fontSize = 13.sp, color = colors.ink2)
+        }
+        Text(station.code, fontSize = 12.sp, color = colors.ink3)
     }
 }
 
