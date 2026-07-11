@@ -43,6 +43,7 @@
     <string name="alert_type_platform">प्लेटफ़ॉर्म बदलाव</string>
     <string name="alert_type_cancel">रद्द और डायवर्ज़न</string>
     <string name="alert_type_arrival">आगमन अलार्म</string>
+    <string name="alert_type_tatkal">तत्काल रिमाइंडर</string>
     <string name="alert_quiet_title">शांत समय</string>
     <string name="alert_quiet_enable">शांत समय में म्यूट करें</string>
     <string name="alert_quiet_from">से</string>
@@ -72,6 +73,8 @@
     <string name="alert_diverted_body">%1$s डायवर्ट है</string>
     <string name="alert_arrival_title">जल्द पहुँच रही है</string>
     <string name="alert_arrival_body">%1$s %2$s के पास · %3$s मिनट</string>
+    <string name="alert_tatkal_title">तत्काल खुल गया</string>
+    <string name="alert_tatkal_body">ट्रेन %1$s, %2$s — तत्काल बुकिंग अभी खुली है</string>
 
     <!-- Onboarding (first run): language → one intent question → in (FR-10.5) -->
     <string name="onboarding_language_title">अपनी भाषा चुनें</string>
@@ -119,6 +122,9 @@
     <string name="plan_quota_ladies">महिला</string>
     <string name="plan_quota_senior">वरिष्ठ</string>
     <string name="plan_tatkal_hint">तत्काल खुलता है 10 बजे (AC) · 11 बजे (नॉन-AC)</string>
+    <string name="plan_tatkal_remind">तत्काल खुलने पर याद दिलाएँ</string>
+    <string name="plan_tatkal_reminded">रिमाइंडर सेट</string>
+    <string name="plan_tatkal_failed">रिमाइंडर सेट नहीं हुआ — दोबारा टैप करें</string>
     <string name="plan_sort_by">क्रम</string>
     <string name="plan_sort_departure">प्रस्थान</string>
     <string name="plan_sort_price">किराया</string>

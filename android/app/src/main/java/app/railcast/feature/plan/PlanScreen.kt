@@ -106,7 +106,21 @@ fun PlanScreen(plan: PlanViewModel, modifier: Modifier = Modifier) {
             } else {
                 item { SortRow(state.sort, plan::setSort) }
                 items(rows, key = { it.no }) { row ->
-                    PlanRowCard(row, expanded = state.expanded == row.no, onToggle = { plan.toggleExpand(row.no) })
+                    // Offer the Tatkal reminder only for a Tatkal search whose
+                    // band hasn't opened yet (FR-6.4) — never after the fact.
+                    val band = TatkalTiming.bandFor(row.classes)
+                    val offerRemind = state.quota.isTatkal &&
+                        !TatkalTiming.isOpen(state.date, band, System.currentTimeMillis())
+                    PlanRowCard(
+                        row,
+                        expanded = state.expanded == row.no,
+                        onToggle = { plan.toggleExpand(row.no) },
+                        tatkal = if (!offerRemind) null else TatkalChipState(
+                            reminded = row.no in state.tatkalReminded,
+                            failed = row.no in state.tatkalFailed,
+                            onRemind = { plan.remindTatkal(row) },
+                        ),
+                    )
                 }
             }
         }
@@ -185,8 +199,11 @@ private fun Chip(label: String, on: Boolean, onClick: () -> Unit) {
     )
 }
 
+/** Per-row Tatkal-reminder chip state (null = don't offer). */
+data class TatkalChipState(val reminded: Boolean, val failed: Boolean, val onRemind: () -> Unit)
+
 @Composable
-private fun PlanRowCard(row: PlanRow, expanded: Boolean, onToggle: () -> Unit) {
+private fun PlanRowCard(row: PlanRow, expanded: Boolean, onToggle: () -> Unit, tatkal: TatkalChipState? = null) {
     val colors = RailcastTheme.colors
     Column(
         modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)).clickable(onClick = onToggle)
@@ -207,6 +224,28 @@ private fun PlanRowCard(row: PlanRow, expanded: Boolean, onToggle: () -> Unit) {
                 AvailabilityText(row.availability)
                 FareText(row.fare)
             }
+        }
+        tatkal?.let { chip ->
+            Text(
+                text = when {
+                    chip.reminded -> "✓ " + stringResource(R.string.plan_tatkal_reminded)
+                    chip.failed -> stringResource(R.string.plan_tatkal_failed)
+                    else -> "🔔 " + stringResource(R.string.plan_tatkal_remind)
+                },
+                fontSize = 13.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = when {
+                    chip.reminded -> colors.green
+                    chip.failed -> colors.amber
+                    else -> colors.brand
+                },
+                modifier = Modifier
+                    .clip(RoundedCornerShape(999.dp))
+                    .clickable(enabled = !chip.reminded, onClick = chip.onRemind)
+                    .background(if (chip.reminded) colors.greenSoft else colors.brandSoft)
+                    .heightIn(min = 48.dp)
+                    .padding(horizontal = 14.dp, vertical = 13.dp),
+            )
         }
         if (expanded) {
             val fare = row.fare

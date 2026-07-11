@@ -24,6 +24,34 @@ enum class PlanQuota(val code: String) {
 
 enum class PlanSort { DEPARTURE, PRICE, SEATS }
 
+/**
+ * Tatkal timing (FR-6.4, contracts §5): booking opens the day BEFORE the
+ * journey at 10:00 IST for AC classes, 11:00 IST for non-AC. Pure, so the band
+ * mapping and opening instant are unit-tested; the server fires the reminder
+ * with the same rule.
+ */
+object TatkalTiming {
+    private val AC_CLASSES = setOf("1A", "2A", "3A", "3E", "CC", "EC", "EA")
+    private const val DAY_MS = 86_400_000L
+
+    /** Which opening applies to a train, from the classes it carries. A mixed
+     *  rake uses the AC band — the earlier opening, so the reminder is never late. */
+    fun bandFor(classes: List<String>): String =
+        if (classes.any { it.uppercase(Locale.US) in AC_CLASSES }) "ac" else "nonac"
+
+    /** Epoch ms when the band opens for a journey date (IST wall clock). */
+    fun opensAtMs(runDate: String, band: String): Long {
+        val istMidnight = SimpleDateFormat("yyyy-MM-dd", Locale.US)
+            .apply { timeZone = TimeZone.getTimeZone("Asia/Kolkata"); isLenient = false }
+            .parse(runDate)?.time ?: return Long.MIN_VALUE // unparseable → treat as open (no reminder offered)
+        val openHour = if (band == "ac") 10 else 11
+        return istMidnight - DAY_MS + openHour * 3600_000L
+    }
+
+    fun isOpen(runDate: String, band: String, nowMs: Long): Boolean =
+        nowMs >= opensAtMs(runDate, band)
+}
+
 /** UTC date stepping for the journey date — no java.time (minSdk 24 safe). */
 object PlanDates {
     private fun formatter() = SimpleDateFormat("yyyy-MM-dd", Locale.US).apply {

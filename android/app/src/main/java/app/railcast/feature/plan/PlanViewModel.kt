@@ -31,6 +31,8 @@ data class PlanUiState(
     val resource: Resource<PlanScreen>? = null,
     val rows: List<PlanRow> = emptyList(),
     val expanded: String? = null,
+    val tatkalReminded: Set<String> = emptySet(), // trainNos with a reminder set
+    val tatkalFailed: Set<String> = emptySet(), // reminder create failed — retryable
 ) {
     val canSearch: Boolean get() = from != null && to != null
     val visibleRows: List<PlanRow> get() = PlanSorting.sort(rows, sort)
@@ -50,6 +52,7 @@ class PlanViewModel(
     private val scope: CoroutineScope,
     initialDate: String,
     private val debounceMs: Long = 150L,
+    private val createTatkalWatch: suspend (trainNo: String, runDate: String, band: String) -> Boolean = { _, _, _ -> false },
 ) {
     private val _state = MutableStateFlow(PlanUiState(date = initialDate))
     val state: StateFlow<PlanUiState> = _state.asStateFlow()
@@ -91,6 +94,23 @@ class PlanViewModel(
 
     /** Re-run the current A→B search after an error (PRD §7 "next step"). */
     fun retry() = search()
+
+    /** "Remind me when Tatkal opens" for one row (FR-6.4): creates a server
+     *  tatkal watch for this train + the searched date; the push fires at the
+     *  band opening. Idempotent per train within a session. */
+    fun remindTatkal(row: PlanRow) {
+        val trainNo = row.no
+        if (trainNo in _state.value.tatkalReminded) return
+        val date = _state.value.date
+        val band = TatkalTiming.bandFor(row.classes)
+        scope.launch {
+            val ok = createTatkalWatch(trainNo, date, band)
+            _state.update {
+                if (ok) it.copy(tatkalReminded = it.tatkalReminded + trainNo, tatkalFailed = it.tatkalFailed - trainNo)
+                else it.copy(tatkalFailed = it.tatkalFailed + trainNo)
+            }
+        }
+    }
     fun toggleExpand(trainNo: String) =
         _state.update { it.copy(expanded = if (it.expanded == trainNo) null else trainNo) }
 
@@ -105,7 +125,7 @@ class PlanViewModel(
         val from = s.from ?: return
         val to = s.to ?: return
         val gen = ++searchGen
-        _state.update { it.copy(resource = null, rows = emptyList(), expanded = null) }
+        _state.update { it.copy(resource = null, rows = emptyList(), expanded = null, tatkalReminded = emptySet(), tatkalFailed = emptySet()) }
         scope.launch {
             planScreen(from.code, to.code, s.date, s.quota.code).collect { res ->
                 if (gen != searchGen) return@collect

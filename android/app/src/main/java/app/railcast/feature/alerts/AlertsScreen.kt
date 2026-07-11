@@ -204,6 +204,7 @@ private fun alertTypeLabel(type: AlertType): Int = when (type) {
     AlertType.PLATFORM -> R.string.alert_type_platform
     AlertType.CANCEL -> R.string.alert_type_cancel
     AlertType.ARRIVAL -> R.string.alert_type_arrival
+    AlertType.TATKAL -> R.string.alert_type_tatkal
 }
 
 @StringRes

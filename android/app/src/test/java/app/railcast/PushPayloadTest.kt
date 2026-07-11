@@ -53,6 +53,15 @@ class PushPayloadTest {
         assertFalse(c.titleRes == d.titleRes)
     }
 
+    @Test fun `tatkal open parses and routes as a normal alert`() {
+        val p = PushPayload.parse(mapOf("kind" to "TATKAL_OPEN", "trainNo" to "12780", "runDate" to "2026-07-12", "band" to "ac"))
+        assertTrue(p is PushPayload.TatkalOpen)
+        assertEquals(AlertType.TATKAL, p!!.type)
+        val spec = PushHandler.toSpec(p)
+        assertEquals(NotifChannel.ALERTS, spec.channel)
+        assertFalse(spec.fullScreen) // respects quiet hours — not an alarm
+    }
+
     @Test fun `push entity keys align with the mute-chip keys`() {
         val delay = PushPayload.parse(mapOf("kind" to "DELAY", "trainNo" to "12780", "delayMin" to "5"))!!
         assertEquals(MuteKeys.train("12780"), delay.entityKey)
