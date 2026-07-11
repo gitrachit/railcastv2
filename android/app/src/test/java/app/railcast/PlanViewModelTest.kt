@@ -185,6 +185,42 @@ class PlanViewModelTest {
         assertEquals(2, searches)
     }
 
+    @Test fun `tatkal reminder marks the row and a failure is retryable`() = runTest {
+        val created = mutableListOf<Triple<String, String, String>>()
+        var succeed = false
+        val plan = PlanViewModel(
+            search = PlanFakeSearch(emptyList()),
+            planScreen = { from, to, date, quota ->
+                flow {
+                    emit(
+                        Resource(
+                            PlanScreen(StationRef(from, "F"), StationRef(to, "T"), date, quota, listOf(pendingRow("111", "10:00"))),
+                            "t", stale = false, loading = false, error = null,
+                        ),
+                    )
+                }
+            },
+            planRow = { _, _, _, _, _, _ -> null },
+            scope = backgroundScope,
+            initialDate = "2026-07-10",
+            createTatkalWatch = { no, date, band -> created += Triple(no, date, band); succeed },
+        )
+        plan.selectFrom(stationA); plan.selectTo(stationB)
+        plan.search(); runCurrent()
+        val row = plan.state.value.rows.single()
+
+        plan.remindTatkal(row); runCurrent()
+        assertTrue(plan.state.value.tatkalFailed.contains("111")) // create failed → retryable
+        succeed = true
+        plan.remindTatkal(row); runCurrent()
+        assertTrue(plan.state.value.tatkalReminded.contains("111"))
+        assertFalse(plan.state.value.tatkalFailed.contains("111"))
+        assertEquals(Triple("111", "2026-07-10", "nonac"), created.last()) // SL-only row → nonac band
+
+        plan.remindTatkal(row); runCurrent()
+        assertEquals(2, created.size) // already reminded → no duplicate watch
+    }
+
     @Test fun `quota selection is retained`() = runTest {
         val plan = vm(backgroundScope)
         plan.setQuota(PlanQuota.TATKAL)

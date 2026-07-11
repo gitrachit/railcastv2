@@ -2,7 +2,7 @@ package app.railcast.feature.alerts
 
 /** The five alert types the user opts into (FR-7.4); mirrors the watch/push
  *  `type` union in api-contracts §5. */
-enum class AlertType { CHART, DELAY, PLATFORM, CANCEL, ARRIVAL }
+enum class AlertType { CHART, DELAY, PLATFORM, CANCEL, ARRIVAL, TATKAL }
 
 /** The one place mute-this-journey keys are built, so the mute chips on Track/
  *  PNR and the incoming-push entityKey can never drift apart (FR-7.4). The PNR
@@ -57,6 +57,11 @@ sealed interface PushPayload {
         override val entityKey get() = MuteKeys.train(trainNo)
     }
 
+    data class TatkalOpen(val trainNo: String, val runDate: String, val band: String) : PushPayload {
+        override val type get() = AlertType.TATKAL
+        override val entityKey get() = MuteKeys.train(trainNo)
+    }
+
     companion object {
         /** Parse an FCM data map by its `kind` discriminator; null if unknown/malformed. */
         fun parse(data: Map<String, String>): PushPayload? {
@@ -88,6 +93,11 @@ sealed interface PushPayload {
                     stationCode = data["stationCode"] ?: return null,
                     etaActual = data["etaActual"].orEmpty(),
                     leadMin = data["leadMin"]?.toIntOrNull() ?: 0,
+                )
+                "TATKAL_OPEN" -> TatkalOpen(
+                    trainNo = data["trainNo"] ?: return null,
+                    runDate = data["runDate"].orEmpty(),
+                    band = data["band"].orEmpty(),
                 )
                 else -> null
             }

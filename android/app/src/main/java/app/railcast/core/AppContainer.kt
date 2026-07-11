@@ -119,6 +119,7 @@ class AppContainer(context: Context) {
         },
         scope = appScope,
         initialDate = PlanDates.today(),
+        createTatkalWatch = { no, date, band -> screens.createTatkalWatch(no, date, band) is ApiResult.Ok },
     )
 
     // Alerts: local notification prefs + quiet hours (4.8). NotificationPoster is

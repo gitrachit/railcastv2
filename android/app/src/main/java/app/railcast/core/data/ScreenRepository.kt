@@ -13,6 +13,7 @@ import app.railcast.core.net.StationScreen
 import app.railcast.core.net.TrainScreen
 import app.railcast.core.net.WatchCreated
 import app.railcast.core.net.WatchEntity
+import app.railcast.core.net.WatchParams
 import app.railcast.core.net.WatchRequest
 import app.railcast.core.net.apiResult
 import java.security.MessageDigest
@@ -77,6 +78,19 @@ class ScreenRepository(
     suspend fun createChartWatch(pnr: String): ApiResult<WatchCreated> =
         apiResult({ NetworkModule.parseError(it) }) {
             api.createWatch(WatchRequest(type = "chart", entity = WatchEntity(kind = "pnr", pnr = pnr)))
+        }
+
+    /** "Remind me when Tatkal opens" (FR-6.4, contracts §5): the server fires
+     *  the push at 10:00 (ac) / 11:00 (nonac) IST on runDate − 1. */
+    suspend fun createTatkalWatch(trainNo: String, runDate: String, band: String): ApiResult<WatchCreated> =
+        apiResult({ NetworkModule.parseError(it) }) {
+            api.createWatch(
+                WatchRequest(
+                    type = "tatkal",
+                    entity = WatchEntity(kind = "train", trainNo = trainNo, runDate = runDate),
+                    params = WatchParams(tatkalBand = band),
+                ),
+            )
         }
 
     private fun <T> swr(

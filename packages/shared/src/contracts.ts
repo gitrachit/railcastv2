@@ -2,7 +2,7 @@
 // Any change there must be mirrored here in the same PR, then run:
 //   pnpm -F @railcast/shared check:drift --update
 // CI fails when the hash below no longer matches the doc (root CLAUDE.md invariant 7).
-// contracts-sha256: 2cab34ae1068aebfbdd4f540ad2a34aa2ac8f71b8a53d32ebc1b52a4277817e9
+// contracts-sha256: 0b55c32d327eada490df9c58a5eb10fdde1d53ba0c5b9ecd7cff4cff530bc8c8
 
 // ─── §0 Conventions ─────────────────────────────────────────────────────────
 
@@ -207,7 +207,7 @@ export interface PushTokenRequest {
   fcmToken: string;
 }
 
-export type WatchType = "chart" | "delay" | "platform" | "cancel" | "arrival";
+export type WatchType = "chart" | "delay" | "platform" | "cancel" | "arrival" | "tatkal";
 
 export type WatchEntity =
   | { kind: "pnr"; pnr: string }
@@ -217,6 +217,7 @@ export interface WatchParams {
   delayThresholdMin?: number; // type=delay
   stationCode?: string; // type=arrival — alarm station
   leadMin?: number; // type=arrival — "wake me N min before"
+  tatkalBand?: "ac" | "nonac"; // type=tatkal — which opening applies (required)
 }
 
 // POST /watch
@@ -261,7 +262,8 @@ export type PushPayload =
       stationCode: string;
       etaActual: string;
       leadMin: number;
-    };
+    }
+  | { kind: "TATKAL_OPEN"; trainNo: string; runDate: string; band: "ac" | "nonac" }; // FR-6.4
 
 // ─── §6 Shared journey ──────────────────────────────────────────────────────
 

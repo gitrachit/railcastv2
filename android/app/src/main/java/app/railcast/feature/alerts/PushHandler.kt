@@ -51,5 +51,10 @@ object PushHandler {
             R.string.alert_arrival_title, R.string.alert_arrival_body,
             listOf(payload.trainNo, payload.stationCode, payload.leadMin.toString()), payload.entityKey,
         )
+        is PushPayload.TatkalOpen -> NotificationSpec(
+            NotifChannel.ALERTS, false,
+            R.string.alert_tatkal_title, R.string.alert_tatkal_body,
+            listOf(payload.trainNo, payload.runDate), payload.entityKey,
+        )
     }
 }

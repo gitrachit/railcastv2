@@ -10,6 +10,7 @@ import type { RawPnrStatus, RawTrackTrain } from "../railkit/types.js";
 import { decryptPnrBlob, encryptPnrBlob, pnrCacheKey } from "../privacy/crypto.js";
 import { nextPollDelayS, type EntitySnapshot } from "./cadence.js";
 import { detectWatchEvents } from "./diff.js";
+import { detectTatkalEvents, nextTatkalDelayS } from "./tatkal.js";
 import { normalizePnr, normalizeTrain, type NormalizedEntity } from "./normalize.js";
 import type { WatchRepo, WatchRow } from "./repo.js";
 
@@ -44,6 +45,33 @@ export class EntityPoller {
     const entity = watches[0]!.entity;
     const now = this.deps.now?.() ?? new Date();
 
+    // Tatkal reminders are time-based and fire BEFORE the upstream fetch: a
+    // future run's trackTrain would fail, and the first-poll baseline rule
+    // must not swallow an opening that is already due (contracts §5).
+    const tatkalWatches = watches.filter((w) => w.type === "tatkal");
+    for (const watch of tatkalWatches) {
+      const fresh = detectTatkalEvents(watch, now).filter(
+        (e) => !watch.delivered.includes(e.signature),
+      );
+      for (const e of fresh) {
+        await this.deps.onEvent?.({ watch, payload: e.payload, signature: e.signature, detectedAt: now });
+      }
+      if (fresh.length > 0) {
+        await this.deps.repo.markDelivered(
+          watch.id,
+          fresh.map((e) => e.signature),
+        );
+        watch.delivered.push(...fresh.map((e) => e.signature));
+      }
+    }
+    const stateWatches = watches.filter((w) => w.type !== "tatkal");
+    if (stateWatches.length === 0) {
+      // Pure-tatkal entity: never touch upstream. Wake at the next opening, or
+      // end the chain once every reminder has been delivered.
+      const nextS = nextTatkalDelayS(tatkalWatches, now);
+      return nextS === null ? null : { nextDelayS: nextS };
+    }
+
     let fetched: Awaited<ReturnType<EntityPoller["fetchState"]>>;
     try {
       fetched = await this.fetchState(entity, now);
@@ -61,7 +89,7 @@ export class EntityPoller {
     if (prev) {
       // First poll for an entity is a silent baseline (prev === null): a watch
       // never fires for a condition that was already true when it was created.
-      for (const watch of watches) {
+      for (const watch of stateWatches) {
         const detected = detectWatchEvents({ prev, next, raw, watch, now });
         const fresh = detected.filter((e) => !watch.delivered.includes(e.signature));
         for (const e of fresh) {
@@ -86,7 +114,11 @@ export class EntityPoller {
       await this.deps.repo.setEntityExpiry(entityKey, new Date(settledAt + SETTLED_GRACE_MS));
     }
 
-    return { nextDelayS: nextPollDelayS(snapshot, watches) };
+    // A pending tatkal opening can pull the next poll earlier than the
+    // state-diff cadence wants.
+    const stateDelayS = nextPollDelayS(snapshot, stateWatches);
+    const tatkalDelayS = nextTatkalDelayS(tatkalWatches, now);
+    return { nextDelayS: tatkalDelayS === null ? stateDelayS : Math.min(stateDelayS, tatkalDelayS) };
   }
 
   private async fetchState(

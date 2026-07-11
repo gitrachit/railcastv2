@@ -203,7 +203,15 @@ data class WatchEntity(
 )
 
 @Serializable
-data class WatchRequest(val type: String, val entity: WatchEntity)
+data class WatchParams(
+    val delayThresholdMin: Int? = null,
+    val stationCode: String? = null,
+    val leadMin: Int? = null,
+    val tatkalBand: String? = null, // "ac" | "nonac" — type=tatkal (required)
+)
+
+@Serializable
+data class WatchRequest(val type: String, val entity: WatchEntity, val params: WatchParams? = null)
 
 @Serializable
 data class WatchCreated(val watchId: String, val expiresAt: String)

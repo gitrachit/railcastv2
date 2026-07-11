@@ -104,6 +104,12 @@ describe.skipIf(!pgUp)("watch API (contracts §5)", () => {
     expect((await bad({ type: "delay", entity: { kind: "train", trainNo: "22188", runDate: "2026-07-09" } })).statusCode).toBe(400); // missing threshold
     expect((await bad({ type: "arrival", entity: { kind: "train", trainNo: "22188", runDate: "2026-07-09" }, params: { leadMin: 10 } })).statusCode).toBe(400); // missing stationCode
     expect((await bad({ type: "chart", entity: { kind: "pnr", pnr: "123" } })).statusCode).toBe(400);
+    // tatkal (FR-6.4): train entity + a valid band are required; a good one is accepted.
+    expect((await bad({ type: "tatkal", entity: { kind: "train", trainNo: "22188", runDate: "2026-07-12" } })).statusCode).toBe(400); // missing band
+    expect((await bad({ type: "tatkal", entity: { kind: "train", trainNo: "22188", runDate: "2026-07-12" }, params: { tatkalBand: "sleeper" } })).statusCode).toBe(400);
+    const okTatkal = await bad({ type: "tatkal", entity: { kind: "train", trainNo: "22188", runDate: "2026-07-12" }, params: { tatkalBand: "nonac" } });
+    expect(okTatkal.statusCode).toBe(200);
+    expect(okTatkal.json().data.watchId).toBeTruthy();
   });
 
   it("registers a push token", async () => {

@@ -42,6 +42,7 @@
     <string name="alert_type_platform">Platform changes</string>
     <string name="alert_type_cancel">Cancellations &amp; diversions</string>
     <string name="alert_type_arrival">Arrival alarm</string>
+    <string name="alert_type_tatkal">Tatkal reminders</string>
     <string name="alert_quiet_title">Quiet hours</string>
     <string name="alert_quiet_enable">Mute during quiet hours</string>
     <string name="alert_quiet_from">From</string>
@@ -71,6 +72,8 @@
     <string name="alert_diverted_body">%1$s is diverted</string>
     <string name="alert_arrival_title">Arriving soon</string>
     <string name="alert_arrival_body">%1$s approaching %2$s · %3$s min</string>
+    <string name="alert_tatkal_title">Tatkal is open</string>
+    <string name="alert_tatkal_body">Train %1$s on %2$s — Tatkal booking just opened</string>
 
     <!-- Onboarding (first run): language → one intent question → in (FR-10.5) -->
     <string name="onboarding_language_title">Choose your language</string>
@@ -118,6 +121,9 @@
     <string name="plan_quota_ladies">Ladies</string>
     <string name="plan_quota_senior">Senior</string>
     <string name="plan_tatkal_hint">Tatkal opens 10 AM (AC) · 11 AM (non-AC)</string>
+    <string name="plan_tatkal_remind">Remind me when Tatkal opens</string>
+    <string name="plan_tatkal_reminded">Reminder set</string>
+    <string name="plan_tatkal_failed">Couldn\'t set reminder — tap to retry</string>
     <string name="plan_sort_by">Sort</string>
     <string name="plan_sort_departure">Departure</string>
     <string name="plan_sort_price">Price</string>
