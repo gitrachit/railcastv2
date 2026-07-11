@@ -46,6 +46,10 @@ import app.railcast.core.design.StatusChip
 import app.railcast.core.design.trainStatusVisual
 import app.railcast.core.net.PnrPassenger
 import app.railcast.core.net.PnrScreen as PnrScreenModel
+import app.railcast.feature.alerts.AlertPrefs
+import app.railcast.feature.alerts.AlertsViewModel
+import app.railcast.feature.alerts.MuteJourneyChip
+import app.railcast.feature.alerts.MuteKeys
 import app.railcast.ui.ErrorState
 
 /**
@@ -54,9 +58,10 @@ import app.railcast.ui.ErrorState
  * chart watch for the FR-4.2 push. A plain-language privacy note is linked here.
  */
 @Composable
-fun PnrScreen(pnr: PnrViewModel, onBack: () -> Unit, modifier: Modifier = Modifier) {
+fun PnrScreen(pnr: PnrViewModel, alerts: AlertsViewModel, onBack: () -> Unit, modifier: Modifier = Modifier) {
     val state by pnr.state.collectAsState()
     val screen = state.resource?.value
+    val alertPrefs by alerts.prefs.collectAsState(initial = AlertPrefs())
 
     // System back must also drop the in-memory PNR and stop its poll loop —
     // otherwise the app keeps polling /screen/pnr/<raw> after leaving (FR-4.3).
@@ -100,6 +105,14 @@ fun PnrScreen(pnr: PnrViewModel, onBack: () -> Unit, modifier: Modifier = Modifi
             item { Text(stringResource(R.string.pnr_fare, fare.total.toInt().toString()), fontSize = 14.sp, color = RailcastTheme.colors.ink) }
         }
         item { SaveButton(state.saveState, onSave = pnr::save) }
+        // One-tap mute for this journey's pushes, keyed by the MASKED PNR (FR-7.4).
+        item {
+            val muteKey = MuteKeys.pnr(screen.pnrMasked)
+            MuteJourneyChip(
+                muted = alertPrefs.isMuted(muteKey),
+                onToggle = { alerts.setMuted(muteKey, !alertPrefs.isMuted(muteKey)) },
+            )
+        }
         item { PrivacyNote() }
     }
 }

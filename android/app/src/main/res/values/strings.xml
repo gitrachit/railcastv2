@@ -57,6 +57,8 @@
     <string name="alert_channel_alarms">Arrival alarms</string>
     <string name="alert_channel_alarms_desc">High-priority full-screen arrival alarms</string>
     <string name="alert_alarm_dismiss">Dismiss</string>
+    <string name="alert_mute_journey">Mute this journey</string>
+    <string name="alert_journey_muted">Muted for this journey — tap to unmute</string>
     <string name="alert_chart_title">Chart prepared</string>
     <string name="alert_chart_body">%1$s — chart ready for PNR %2$s</string>
     <string name="alert_delay_title">Running late</string>
@@ -144,6 +146,9 @@
     <string name="station_dest_filter">Filter by destination</string>
     <string name="station_no_trains">No trains in this window</string>
     <string name="station_cancelled_cta">Find alternatives</string>
+    <string name="station_near_me">Trains near me</string>
+    <string name="station_nearby_title">Nearby stations</string>
+    <string name="station_location_failed">Couldn\'t get your location — check that location is on, or search by name.</string>
 
     <!-- PNR (backlog 4.5, FR-4.x) — masked everywhere (invariant 2) -->
     <string name="pnr_title">Check PNR</string>

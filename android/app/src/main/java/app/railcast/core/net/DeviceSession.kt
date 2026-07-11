@@ -14,11 +14,17 @@ import java.util.concurrent.atomic.AtomicReference
 
 private val Context.deviceDataStore: DataStore<Preferences> by preferencesDataStore(name = "railcast_device")
 
+/** Persistence seam so DeviceSession is unit-testable on the JVM. */
+interface TokenStore {
+    suspend fun read(): String?
+    suspend fun write(token: String)
+}
+
 /** Persists the anonymous device token (contracts §7, FR-10.5 — no login). */
-class DeviceTokenStore(private val context: Context) {
+class DeviceTokenStore(private val context: Context) : TokenStore {
     private val key = stringPreferencesKey("device_token")
-    suspend fun read(): String? = context.deviceDataStore.data.map { it[key] }.first()
-    suspend fun write(token: String) {
+    override suspend fun read(): String? = context.deviceDataStore.data.map { it[key] }.first()
+    override suspend fun write(token: String) {
         context.deviceDataStore.edit { it[key] = token }
     }
 }
@@ -29,7 +35,7 @@ class DeviceTokenStore(private val context: Context) {
  * burst of screens on cold start triggers exactly one /auth/device call.
  */
 class DeviceSession(
-    private val store: DeviceTokenStore,
+    private val store: TokenStore,
     private val appVersion: String,
 ) {
     private val token = AtomicReference<String?>(null)
@@ -60,5 +66,25 @@ class DeviceSession(
             }
             token.get()
         }
+    }
+
+    /**
+     * Replaces a server-rejected token (mid-session 401 — e.g. the server
+     * rotated AUTH_TOKEN_SECRET). Single-flighted: when a burst of requests
+     * 401s together, the first caller mints and the rest reuse its result.
+     * Returns null when a fresh token could not be obtained.
+     */
+    suspend fun remint(api: RailcastApi, rejectedToken: String?): String? = mintLock.withLock {
+        // Someone else already re-minted while we waited for the lock.
+        token.get()?.takeIf { it != rejectedToken }?.let { return@withLock it }
+
+        val result = apiResult({ NetworkModule.parseError(it) }) {
+            api.authDevice(DeviceAuthRequest(appVersion = appVersion))
+        }
+        if (result is ApiResult.Ok) {
+            token.set(result.data.deviceToken)
+            store.write(result.data.deviceToken)
+        }
+        token.get()?.takeIf { it != rejectedToken }
     }
 }

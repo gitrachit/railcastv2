@@ -6,6 +6,9 @@
     <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
     <!-- Offline banner reads connectivity (FR-9.1, backlog 4.9). -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <!-- "Trains near me" resolves the nearest station; coarse is enough and the
+         permission is requested in context on tap (FR-5.2). -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
     <!-- Package-visibility (API 30+): without this, resolveActivity() cannot see
          the system speech recognizer and voice search silently no-ops (FR-1.4). -->

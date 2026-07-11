@@ -119,6 +119,28 @@ class StationViewModelTest {
         assertEquals(2, fetches)
     }
 
+    @Test fun `onLocation offers nearby stations and open clears them`() = runTest {
+        val vm = StationViewModel(
+            search = StationFakeSearch(emptyList()),
+            stationScreen = { code, hrs ->
+                flow { emit(Resource(stationBoard(code, hrs), "t", stale = false, loading = false, error = null)) }
+            },
+            poller = PollController(backgroundScope),
+            scope = backgroundScope,
+            nearestStations = { _, _ -> listOf(Station("RKMP", "Rani Kamlapati", "Bhopal", "MP", 23.2, 77.4, )) },
+        )
+        vm.onLocation(23.25, 77.41); runCurrent()
+        assertEquals(listOf("RKMP"), vm.state.value.nearby.map { it.code })
+        vm.open("RKMP"); runCurrent()
+        assertTrue(vm.state.value.nearby.isEmpty()) // suggestions cleared on open
+    }
+
+    @Test fun `location failure sets the gentle hint flag`() = runTest {
+        val vm = vm(backgroundScope)
+        vm.onLocationUnavailable()
+        assertTrue(vm.state.value.locationFailed)
+    }
+
     @Test fun `back clears the opened station`() = runTest {
         val vm = vm(backgroundScope)
         vm.open("BPL"); runCurrent()

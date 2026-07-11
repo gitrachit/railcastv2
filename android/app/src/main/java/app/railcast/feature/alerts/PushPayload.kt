@@ -4,6 +4,14 @@ package app.railcast.feature.alerts
  *  `type` union in api-contracts §5. */
 enum class AlertType { CHART, DELAY, PLATFORM, CANCEL, ARRIVAL }
 
+/** The one place mute-this-journey keys are built, so the mute chips on Track/
+ *  PNR and the incoming-push entityKey can never drift apart (FR-7.4). The PNR
+ *  form uses the MASKED value — no raw PNR ever reaches prefs storage. */
+object MuteKeys {
+    fun train(trainNo: String) = "train:$trainNo"
+    fun pnr(pnrMasked: String) = "pnr:$pnrMasked"
+}
+
 /**
  * FCM `data` push payloads (api-contracts §5). They arrive as a flat
  * string→string map (FCM data messages), which the client parses and renders
@@ -21,22 +29,22 @@ sealed interface PushPayload {
         val coachSummary: String,
     ) : PushPayload {
         override val type get() = AlertType.CHART
-        override val entityKey get() = "pnr:$pnrMasked"
+        override val entityKey get() = MuteKeys.pnr(pnrMasked)
     }
 
     data class Delay(val trainNo: String, val delayMin: Int, val nextStation: String) : PushPayload {
         override val type get() = AlertType.DELAY
-        override val entityKey get() = "train:$trainNo"
+        override val entityKey get() = MuteKeys.train(trainNo)
     }
 
     data class PlatformChange(val trainNo: String, val stationCode: String, val platform: String) : PushPayload {
         override val type get() = AlertType.PLATFORM
-        override val entityKey get() = "train:$trainNo"
+        override val entityKey get() = MuteKeys.train(trainNo)
     }
 
     data class Disruption(val cancelled: Boolean, val trainNo: String, val runDate: String) : PushPayload {
         override val type get() = AlertType.CANCEL // cancelled OR diverted → the "cancel" opt-in
-        override val entityKey get() = "train:$trainNo"
+        override val entityKey get() = MuteKeys.train(trainNo)
     }
 
     data class ArrivalAlarm(
@@ -46,7 +54,7 @@ sealed interface PushPayload {
         val leadMin: Int,
     ) : PushPayload {
         override val type get() = AlertType.ARRIVAL
-        override val entityKey get() = "train:$trainNo"
+        override val entityKey get() = MuteKeys.train(trainNo)
     }
 
     companion object {

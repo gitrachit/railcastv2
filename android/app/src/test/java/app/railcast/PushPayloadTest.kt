@@ -1,6 +1,7 @@
 package app.railcast
 
 import app.railcast.feature.alerts.AlertType
+import app.railcast.feature.alerts.MuteKeys
 import app.railcast.feature.alerts.NotifChannel
 import app.railcast.feature.alerts.OemGuidance
 import app.railcast.feature.alerts.OemVendor
@@ -50,6 +51,13 @@ class PushPayloadTest {
         val c = PushHandler.toSpec(PushPayload.Disruption(true, "12780", "2026-07-10"))
         val d = PushHandler.toSpec(PushPayload.Disruption(false, "12780", "2026-07-10"))
         assertFalse(c.titleRes == d.titleRes)
+    }
+
+    @Test fun `push entity keys align with the mute-chip keys`() {
+        val delay = PushPayload.parse(mapOf("kind" to "DELAY", "trainNo" to "12780", "delayMin" to "5"))!!
+        assertEquals(MuteKeys.train("12780"), delay.entityKey)
+        val chart = PushPayload.parse(mapOf("kind" to "CHART_PREPARED", "pnrMasked" to "••••2882", "trainNo" to "12780"))!!
+        assertEquals(MuteKeys.pnr("••••2882"), chart.entityKey) // masked — never the raw PNR
     }
 
     @Test fun `oem vendor detection groups families`() {

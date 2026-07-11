@@ -55,7 +55,7 @@ class AppContainer(context: Context) {
         appVersion = BuildConfig.VERSION_NAME,
     )
 
-    val api: RailcastApi = NetworkModule.railcastApi(BuildConfig.BASE_URL, session.tokenProvider)
+    val api: RailcastApi = NetworkModule.railcastApi(BuildConfig.BASE_URL, session)
 
     private val pnrKeySalt = app.railcast.core.data.PnrKeySalt(appContext)
 
@@ -107,6 +107,7 @@ class AppContainer(context: Context) {
         stationScreen = { code, hrs -> screens.stationScreen(code, hrs) },
         poller = poller,
         scope = appScope,
+        nearestStations = { lat, lng -> directory.nearest(lat, lng) },
     )
 
     // Plan: A→B list with progressive per-row hydration (4.7).
