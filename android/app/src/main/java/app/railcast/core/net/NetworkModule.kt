@@ -16,16 +16,23 @@ object NetworkModule {
         explicitNulls = false
     }
 
-    fun railcastApi(baseUrl: String, tokens: TokenProvider): RailcastApi {
+    fun railcastApi(baseUrl: String, session: DeviceSession): RailcastApi {
+        // The authenticator re-mints through the API it protects; the reference
+        // is set right after Retrofit builds it (the mint call itself carries no
+        // Authorization header, so there is no recursion).
+        val apiRef = java.util.concurrent.atomic.AtomicReference<RailcastApi?>(null)
         val client = OkHttpClient.Builder()
-            .addInterceptor(AuthInterceptor(tokens))
+            .addInterceptor(AuthInterceptor(session.tokenProvider))
+            .authenticator(TokenAuthenticator(session) { apiRef.get() })
             .build()
-        return Retrofit.Builder()
+        val api = Retrofit.Builder()
             .baseUrl(baseUrl)
             .client(client)
             .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
             .build()
             .create(RailcastApi::class.java)
+        apiRef.set(api)
+        return api
     }
 
     /** Parse a server Err envelope out of a non-2xx body (for apiResult). */
