@@ -1,0 +1,361 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RailCast — the ad-free Indian Railways companion</title>
+<meta name="description" content="Live train tracking, PNR status, station boards and journey planning for Indian Railways. No ads, no forced login, no dark patterns. Ever.">
+<meta property="og:title" content="RailCast — the train app that answers first">
+<meta property="og:description" content="Live tracking, PNR, station boards and planning for Indian Railways. Ad-free, forever.">
+<style>
+  /* ── Tokens: ported 1:1 from the app's core/design (Colors.kt) ─────────── */
+  :root {
+    --bg: #E7ECEF; --surface: #FFFFFF; --surface2: #F1F4F6;
+    --ink: #0F2A33; --ink2: #54696F; --ink3: #8FA1A8; --line: #DCE3E7;
+    --brand: #2743C4; --brand-soft: #EAEEFB;
+    --green: #178A52; --green-soft: rgba(23,138,82,.14);
+    --amber: #C9770B; --amber-soft: rgba(201,119,11,.14);
+    --red: #C33F3F;
+    --board: #0F2A33; --board-green: #3DE08A; --board-amber: #FFC24D; --board-ink: #7FA6AE;
+    --sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans", sans-serif;
+    --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #081115; --surface: #0F2129; --surface2: #15303A;
+      --ink: #EAF3F4; --ink2: #9DB4BB; --ink3: #6C868E; --line: #1E3B45;
+      --brand: #8098FF; --brand-soft: #182747;
+      --green: #3DBB77; --green-soft: rgba(61,187,119,.16);
+      --amber: #E7A542; --amber-soft: rgba(231,165,66,.16);
+      --red: #E36868;
+      --board: #06151A; --board-ink: #6E969E;
+    }
+  }
+  :root[data-theme="light"] {
+    --bg: #E7ECEF; --surface: #FFFFFF; --surface2: #F1F4F6;
+    --ink: #0F2A33; --ink2: #54696F; --ink3: #8FA1A8; --line: #DCE3E7;
+    --brand: #2743C4; --brand-soft: #EAEEFB;
+    --green: #178A52; --green-soft: rgba(23,138,82,.14);
+    --amber: #C9770B; --amber-soft: rgba(201,119,11,.14);
+    --red: #C33F3F;
+    --board: #0F2A33; --board-ink: #7FA6AE;
+  }
+  :root[data-theme="dark"] {
+    --bg: #081115; --surface: #0F2129; --surface2: #15303A;
+    --ink: #EAF3F4; --ink2: #9DB4BB; --ink3: #6C868E; --line: #1E3B45;
+    --brand: #8098FF; --brand-soft: #182747;
+    --green: #3DBB77; --green-soft: rgba(61,187,119,.16);
+    --amber: #E7A542; --amber-soft: rgba(231,165,66,.16);
+    --red: #E36868;
+    --board: #06151A; --board-ink: #6E969E;
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font-family: var(--sans); font-size: 17px; line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--brand); }
+  a:focus-visible, button:focus-visible { outline: 3px solid var(--brand); outline-offset: 2px; border-radius: 6px; }
+
+  .wrap { max-width: 1040px; margin-inline: auto; padding-inline: 24px; }
+
+  .eyebrow {
+    font-family: var(--mono); font-size: 12px; letter-spacing: .08em;
+    text-transform: uppercase; color: var(--ink3);
+  }
+  h1, h2 { text-wrap: balance; letter-spacing: -.03em; }
+
+  /* ── Header ─────────────────────────────────────────────────────────────── */
+  header.site {
+    display: flex; align-items: center; justify-content: space-between;
+    padding-block: 22px;
+  }
+  .wordmark {
+    font-family: var(--mono); font-weight: 700; font-size: 18px;
+    letter-spacing: .14em; color: var(--ink);
+  }
+  .wordmark .cast { color: var(--brand); }
+  .noads {
+    font-family: var(--mono); font-size: 12px; letter-spacing: .06em;
+    color: var(--green); background: var(--green-soft);
+    border-radius: 999px; padding: 7px 14px; white-space: nowrap;
+  }
+
+  /* ── Hero ───────────────────────────────────────────────────────────────── */
+  .hero {
+    display: grid; grid-template-columns: 1.05fr .95fr; gap: 48px;
+    align-items: center; padding-block: 56px 72px;
+  }
+  .hero h1 {
+    font-size: clamp(38px, 5.4vw, 58px); font-weight: 800;
+    line-height: 1.04; margin: 14px 0 18px;
+  }
+  .hero h1 .ans { color: var(--brand); }
+  .hero .lede { color: var(--ink2); font-size: 19px; max-width: 30em; margin: 0 0 26px; }
+  .hindi { font-family: var(--sans); color: var(--ink3); font-size: 15px; margin-top: 30px; }
+
+  .promises { display: flex; flex-wrap: wrap; gap: 10px; }
+  .promise {
+    font-size: 14px; font-weight: 600; color: var(--ink2);
+    background: var(--surface); border: 1px solid var(--line);
+    border-radius: 999px; padding: 9px 15px;
+  }
+  .promise b { color: var(--ink); font-weight: 700; }
+
+  /* The board hero — the app's signature surface, rebuilt in CSS. */
+  .board {
+    background: var(--board); border-radius: 22px; padding: 26px 26px 22px;
+    font-family: var(--mono); font-variant-numeric: tabular-nums;
+    box-shadow: 0 24px 60px -28px rgba(6, 21, 26, .55);
+    min-width: 0;
+  }
+  .board .route {
+    color: var(--board-ink); font-size: 13px; letter-spacing: .1em;
+    display: flex; justify-content: space-between; gap: 12px;
+  }
+  .board .train { color: #EAF3F4; font-size: 21px; font-weight: 700; margin-top: 14px; letter-spacing: .02em; }
+  .board .status {
+    color: var(--board-green); font-size: clamp(22px, 3vw, 28px); font-weight: 800;
+    margin-top: 6px; display: flex; align-items: center; gap: 12px; letter-spacing: .01em;
+  }
+  .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--board-green); flex: none; }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .35; } }
+  .dot { animation: pulse 1.6s ease-in-out infinite; }
+  @media (prefers-reduced-motion: reduce) { .dot { animation: none; } html { scroll-behavior: auto; } }
+
+  .board .fresh { color: var(--board-ink); font-size: 12.5px; margin-top: 10px; letter-spacing: .04em; }
+  .board .est { margin-top: 22px; }
+  .board .est-label { color: var(--board-amber); font-size: 11.5px; letter-spacing: .1em; }
+  .board .rail { display: flex; align-items: center; gap: 10px; margin-top: 10px; color: #EAF3F4; font-size: 13px; }
+  .board .track-line { flex: 1; height: 5px; border-radius: 999px; background: rgba(127,166,174,.28); position: relative; }
+  .board .track-line i {
+    position: absolute; inset: 0 38% 0 0; border-radius: 999px;
+    background: var(--board-green); display: block;
+  }
+  .board .next { color: var(--board-ink); font-size: 12.5px; margin-top: 14px; letter-spacing: .04em; }
+  .board .next b { color: #EAF3F4; font-weight: 700; }
+
+  /* ── Sections ───────────────────────────────────────────────────────────── */
+  section { padding-block: 30px 64px; }
+  .section-head { max-width: 34em; margin-bottom: 34px; }
+  .section-head h2 { font-size: clamp(26px, 3.4vw, 34px); font-weight: 800; margin: 10px 0 10px; }
+  .section-head p { color: var(--ink2); margin: 0; }
+
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .card {
+    background: var(--surface); border: 1px solid var(--line); border-radius: 18px;
+    padding: 22px; display: flex; flex-direction: column; gap: 10px; min-width: 0;
+  }
+  .card .tab {
+    font-family: var(--mono); font-size: 11.5px; letter-spacing: .12em;
+    color: var(--brand); background: var(--brand-soft);
+    border-radius: 999px; padding: 5px 11px; align-self: flex-start;
+  }
+  .card h3 { margin: 2px 0 0; font-size: 18.5px; letter-spacing: -.01em; }
+  .card p { margin: 0; color: var(--ink2); font-size: 15.5px; }
+  .card .honest {
+    margin-top: auto; padding-top: 8px;
+    font-family: var(--mono); font-size: 12.5px; color: var(--ink3); letter-spacing: .02em;
+  }
+  .chip { display: inline-flex; align-items: center; gap: 7px; border-radius: 999px; padding: 5px 12px; font-size: 13.5px; font-weight: 700; }
+  .chip.good { color: var(--green); background: var(--green-soft); }
+  .chip.warn { color: var(--amber); background: var(--amber-soft); }
+
+  /* ── Product law ────────────────────────────────────────────────────────── */
+  .law {
+    background: var(--board); color: #EAF3F4; border-radius: 22px;
+    padding: 44px clamp(24px, 5vw, 56px);
+  }
+  .law .eyebrow { color: var(--board-ink); }
+  .law h2 { font-size: clamp(26px, 3.4vw, 34px); margin: 10px 0 6px; }
+  .law p.sub { color: var(--board-ink); margin: 0 0 26px; max-width: 36em; }
+  .law ul {
+    list-style: none; margin: 0; padding: 0;
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px 28px;
+    font-family: var(--mono); font-size: 14.5px; letter-spacing: .02em;
+  }
+  .law li { padding-left: 26px; position: relative; color: #EAF3F4; }
+  .law li::before { content: "✕"; position: absolute; left: 0; color: var(--board-amber); font-weight: 700; }
+  .law .forever { margin-top: 28px; color: var(--board-green); font-family: var(--mono); font-weight: 700; letter-spacing: .06em; font-size: 14px; }
+
+  /* ── Privacy ────────────────────────────────────────────────────────────── */
+  .privacy .grid { grid-template-columns: repeat(3, 1fr); }
+  .privacy .card h3 { font-size: 17px; }
+  .mask { font-family: var(--mono); color: var(--ink); background: var(--surface2); border-radius: 8px; padding: 2px 8px; }
+
+  /* ── Footer ─────────────────────────────────────────────────────────────── */
+  footer.site {
+    border-top: 1px solid var(--line); padding-block: 34px 46px;
+    display: flex; flex-direction: column; gap: 14px;
+  }
+  .soon {
+    align-self: flex-start; font-family: var(--mono); font-size: 13px; letter-spacing: .06em;
+    color: var(--brand); background: var(--brand-soft); border-radius: 999px; padding: 9px 16px;
+  }
+  footer .fine { color: var(--ink3); font-size: 13.5px; max-width: 46em; margin: 0; }
+  footer .langs { color: var(--ink2); font-size: 14px; margin: 0; }
+
+  /* ── Responsive ─────────────────────────────────────────────────────────── */
+  @media (max-width: 880px) {
+    .hero { grid-template-columns: 1fr; gap: 36px; padding-block: 36px 56px; }
+    .grid, .law ul, .privacy .grid { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 560px) {
+    .grid, .law ul, .privacy .grid { grid-template-columns: 1fr; }
+    body { font-size: 16px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="site">
+    <div class="wordmark">RAIL<span class="cast">CAST</span></div>
+    <div class="noads">● NO ADS, EVER</div>
+  </header>
+
+  <!-- Hero: the answer-first thesis beside the app's signature departure board. -->
+  <main>
+  <section class="hero" aria-label="Introduction">
+    <div>
+      <p class="eyebrow">Indian Railways companion · Android</p>
+      <h1>The train app that <span class="ans">answers first</span>.</h1>
+      <p class="lede">Live running status, PNR, station boards and journey planning —
+        the answer in the largest type, a freshness stamp on every screen, and honesty
+        about what's estimated. Built for Indian Railways. Free of ads, forever.</p>
+      <div class="promises">
+        <div class="promise"><b>No ads.</b> Not now, not later.</div>
+        <div class="promise"><b>No login</b> for any core feature.</div>
+        <div class="promise"><b>Works offline</b> — cached, never blank.</div>
+      </div>
+      <p class="hindi">कहाँ जाना है? — English और हिन्दी में, आज। 12 भाषाएँ आ रही हैं।</p>
+    </div>
+
+    <div class="board" role="img" aria-label="Live departure board showing Goa Express 12780 running on time, with an estimated position between Pune and Vasco-da-Gama">
+      <div class="route"><span>PUNE JN → VASCO-DA-GAMA</span><span>PF 4</span></div>
+      <div class="train">12780 · GOA EXPRESS</div>
+      <div class="status"><span class="dot" aria-hidden="true"></span>▶ RUNNING · ON TIME</div>
+      <div class="fresh">UPDATED 32s AGO</div>
+      <div class="est">
+        <div class="est-label">ESTIMATED POSITION — NOT GPS</div>
+        <div class="rail"><span>PUNE</span><span class="track-line"><i></i></span><span>VSG</span></div>
+      </div>
+      <div class="next">NEXT <b>MIRAJ JN</b> · ETA 14:32 · DAY 1</div>
+    </div>
+  </section>
+
+  <!-- Features, structured by the app's five real tabs. -->
+  <section aria-labelledby="features-h">
+    <div class="section-head">
+      <p class="eyebrow">Five tabs. Nothing important deeper than two taps.</p>
+      <h2 id="features-h">Everything a journey needs, nothing it doesn't</h2>
+    </div>
+    <div class="grid">
+      <div class="card">
+        <span class="tab">TRACK</span>
+        <h3>Live status without the date puzzle</h3>
+        <p>Overnight train? You're never asked for a raw date — just
+          “Started today / Started yesterday”, auto-detected. Timeline with day labels,
+          delays per stop, platforms where known.</p>
+        <div class="honest">position always labelled “estimated” — never implied as GPS</div>
+      </div>
+      <div class="card">
+        <span class="tab">TRACK · COACH</span>
+        <h3>Stand where your coach stops</h3>
+        <p>A platform diagram of the coach order at your station — reversal-aware
+          (“reverses at Itarsi — your coach moves to the front”), with a GEN mode
+          that highlights unreserved coaches. No PNR needed.</p>
+        <div class="honest">front · middle · rear — told plainly</div>
+      </div>
+      <div class="card">
+        <span class="tab">PNR</span>
+        <h3>Chart prepared — pushed in minutes</h3>
+        <p>Booking and current status per passenger, coach and berth. Save a PNR and
+          the chart-prepared push reaches you with the app closed.</p>
+        <div class="honest">shown masked: <span class="mask">••••2882</span> — everywhere, always</div>
+      </div>
+      <div class="card">
+        <span class="tab">STATION</span>
+        <h3>The whole board, in your hand</h3>
+        <p>Arrivals and departures over 2, 4 or 8 hours with live delays and platforms.
+          Filter by destination or class. “Trains near me” finds your station.</p>
+        <div class="honest"><span class="chip good">✓ on time</span>&nbsp;<span class="chip warn">▲ 12 min late</span></div>
+      </div>
+      <div class="card">
+        <span class="tab">PLAN</span>
+        <h3>A→B with fares that fill in live</h3>
+        <p>Every train between two stations — seats and fares hydrate row by row, so a
+          slow query never blocks the list. Full fare breakdown on tap. Tatkal search?
+          One tap sets a reminder for the 10 AM / 11 AM opening.</p>
+        <div class="honest">quota-aware: General · Tatkal · Ladies · Senior</div>
+      </div>
+      <div class="card">
+        <span class="tab">ALERTS</span>
+        <h3>An alarm that wakes you, not spam</h3>
+        <p>“Wake me 20 minutes before my station” — computed from the live run, delivered
+          full-screen. Quiet hours, per-type switches, one-tap mute for a journey.</p>
+        <div class="honest">minimal, meaningful notifications — the default posture</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Product law -->
+  <section aria-labelledby="law-h">
+    <div class="law">
+      <p class="eyebrow">Product law — not a pledge, a constraint in the code</p>
+      <h2 id="law-h">What RailCast will never do</h2>
+      <p class="sub">Every state is designed — loading, empty, error, offline, bad news.
+        And an entire class of features is permanently out of scope:</p>
+      <ul>
+        <li>Ads or interstitials</li>
+        <li>Forced sign-up</li>
+        <li>Notification spam</li>
+        <li>Fake urgency</li>
+        <li>Dark patterns</li>
+        <li>Feature bloat</li>
+      </ul>
+      <p class="forever">— AD-FREE, FOREVER</p>
+    </div>
+  </section>
+
+  <!-- Privacy -->
+  <section class="privacy" aria-labelledby="privacy-h">
+    <div class="section-head">
+      <p class="eyebrow">Privacy, by construction</p>
+      <h2 id="privacy-h">Useful without watching you</h2>
+    </div>
+    <div class="grid">
+      <div class="card">
+        <h3>Your PNR is handled like a secret</h3>
+        <p>Masked on every screen (<span class="mask">••••2882</span>), never written to logs
+          in full, encrypted at rest, and deleted automatically after your journey.</p>
+      </div>
+      <div class="card">
+        <h3>Analytics that can't identify you</h3>
+        <p>Optional usage metrics carry numbers only — by design, no field can hold a PNR
+          or an identifier. One switch turns them off.</p>
+      </div>
+      <div class="card">
+        <h3>Yours stays on your device</h3>
+        <p>Saved trains, language, and preferences live locally. No account exists to
+          leak. Core features never ask you to sign in.</p>
+      </div>
+    </div>
+  </section>
+
+  </main>
+
+  <footer class="site">
+    <div class="soon">COMING SOON TO GOOGLE PLAY</div>
+    <p class="langs">English और हिन्दी at full parity today · 12 Indian languages planned · voice search on every field</p>
+    <p class="fine">RailCast is an independent app and is not affiliated with Indian Railways,
+      IRCTC, or the Ministry of Railways. Live times and positions are estimates and are
+      always labelled as such. © 2026 RailCast.</p>
+  </footer>
+</div>
+
+</body>
+</html>
