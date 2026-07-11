@@ -91,10 +91,11 @@ fun RailcastApp(
             composable(Destination.HOME.route) {
                 HomeScreen(home, onCheckPnr = { navController.navigate(PNR_ROUTE) { launchSingleTop = true } })
             }
-            composable(PNR_ROUTE) { PnrScreen(pnr, onBack = { navController.popBackStack() }) }
+            composable(PNR_ROUTE) { PnrScreen(pnr, alerts, onBack = { navController.popBackStack() }) }
             composable(Destination.TRACK.route) {
                 TrackScreen(
                     track = track,
+                    alerts = alerts,
                     // Cancelled → alternatives via the Plan pipeline (FR-2.4).
                     onAlternatives = {
                         navController.navigate(Destination.PLAN.route) {

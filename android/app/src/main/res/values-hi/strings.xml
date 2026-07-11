@@ -58,6 +58,8 @@
     <string name="alert_channel_alarms">आगमन अलार्म</string>
     <string name="alert_channel_alarms_desc">उच्च-प्राथमिकता पूर्ण-स्क्रीन आगमन अलार्म</string>
     <string name="alert_alarm_dismiss">बंद करें</string>
+    <string name="alert_mute_journey">इस यात्रा को म्यूट करें</string>
+    <string name="alert_journey_muted">इस यात्रा के लिए म्यूट — अनम्यूट के लिए टैप करें</string>
     <string name="alert_chart_title">चार्ट तैयार</string>
     <string name="alert_chart_body">%1$s — PNR %2$s के लिए चार्ट तैयार</string>
     <string name="alert_delay_title">देरी से चल रही है</string>
@@ -144,6 +146,9 @@
     <string name="station_dest_filter">गंतव्य से छाँटें</string>
     <string name="station_no_trains">इस अवधि में कोई ट्रेन नहीं</string>
     <string name="station_cancelled_cta">विकल्प खोजें</string>
+    <string name="station_near_me">आस-पास की ट्रेनें</string>
+    <string name="station_nearby_title">नज़दीकी स्टेशन</string>
+    <string name="station_location_failed">आपकी लोकेशन नहीं मिल सकी — लोकेशन चालू है या नहीं जाँचें, या नाम से खोजें।</string>
 
     <!-- PNR (backlog 4.5, FR-4.x) — masked everywhere (invariant 2) -->
     <string name="pnr_title">PNR जाँचें</string>

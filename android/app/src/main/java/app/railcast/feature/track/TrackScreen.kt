@@ -55,6 +55,10 @@ import app.railcast.ui.ErrorState
 import app.railcast.directory.SearchResult
 import app.railcast.directory.Station
 import app.railcast.directory.Train
+import app.railcast.feature.alerts.AlertPrefs
+import app.railcast.feature.alerts.AlertsViewModel
+import app.railcast.feature.alerts.MuteJourneyChip
+import app.railcast.feature.alerts.MuteKeys
 
 /**
  * Track (backlog 4.3, FR-2.x). Search a train, then a live board + timeline with
@@ -66,6 +70,7 @@ import app.railcast.directory.Train
 @Composable
 fun TrackScreen(
     track: TrackViewModel,
+    alerts: AlertsViewModel,
     onAlternatives: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -73,7 +78,7 @@ fun TrackScreen(
     if (state.trainNo == null) {
         TrackSearch(state.query, state.results, track::onQueryChange, track::open, modifier)
     } else {
-        TrackContent(state, track, onAlternatives, modifier)
+        TrackContent(state, track, alerts, onAlternatives, modifier)
     }
 }
 
@@ -136,12 +141,14 @@ private fun TrackSearch(
 private fun TrackContent(
     state: TrackUiState,
     track: TrackViewModel,
+    alerts: AlertsViewModel,
     onAlternatives: () -> Unit,
     modifier: Modifier,
 ) {
     val colors = RailcastTheme.colors
     val resource = state.resource
     val screen = resource?.value
+    val alertPrefs by alerts.prefs.collectAsState(initial = AlertPrefs())
     // Coach-guide view state is ephemeral and resets when the train changes.
     var selectedCoach by remember(state.trainNo) { mutableStateOf<String?>(null) }
     var genMode by remember(state.trainNo) { mutableStateOf(false) }
@@ -188,6 +195,15 @@ private fun TrackContent(
 
         if (screen.status.state == "diverted" || screen.status.state == "rescheduled") {
             item { AmberBanner(screen.status.summary) }
+        }
+
+        // One-tap mute for THIS train's pushes (FR-7.4).
+        item {
+            val muteKey = MuteKeys.train(screen.trainNo)
+            MuteJourneyChip(
+                muted = alertPrefs.isMuted(muteKey),
+                onToggle = { alerts.setMuted(muteKey, !alertPrefs.isMuted(muteKey)) },
+            )
         }
 
         if (RunDateSheet.hasChoice(screen)) {
