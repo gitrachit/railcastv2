@@ -1,9 +1,28 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.ksp)
+}
+
+// BFF base URL, overridable per checkout without touching source:
+//   -PbaseUrl=https://… beats local.properties `railcast.baseUrl` beats prod.
+val localProps = Properties().apply {
+    val f = rootProject.file("local.properties")
+    if (f.exists()) f.inputStream().use(::load)
+}
+val railcastBaseUrl = ((project.findProperty("baseUrl") as String?)
+    ?: localProps.getProperty("railcast.baseUrl")
+    ?: "https://api.railcast.app/").let { if (it.endsWith("/")) it else "$it/" }
+
+// Release signing from android/keystore.properties (gitignored). Absent →
+// release builds stay unsigned; debug is unaffected.
+val keystoreProps = Properties().apply {
+    val f = rootProject.file("keystore.properties")
+    if (f.exists()) f.inputStream().use(::load)
 }
 
 android {
@@ -17,8 +36,19 @@ android {
         versionCode = 1
         versionName = "0.1.0"
 
-        // BFF base URL (contracts §0). Env-configurable per build type later.
-        buildConfigField("String", "BASE_URL", "\"https://api.railcast.app/\"")
+        // BFF base URL (contracts §0); see railcastBaseUrl above for overrides.
+        buildConfigField("String", "BASE_URL", "\"$railcastBaseUrl\"")
+    }
+
+    signingConfigs {
+        if (keystoreProps.isNotEmpty()) {
+            create("release") {
+                storeFile = rootProject.file(keystoreProps.getProperty("storeFile"))
+                storePassword = keystoreProps.getProperty("storePassword")
+                keyAlias = keystoreProps.getProperty("keyAlias")
+                keyPassword = keystoreProps.getProperty("keyPassword")
+            }
+        }
     }
 
     buildTypes {
@@ -27,6 +57,7 @@ android {
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            signingConfig = signingConfigs.findByName("release")
         }
     }
 
