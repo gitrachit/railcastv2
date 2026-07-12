@@ -16,7 +16,7 @@ val localProps = Properties().apply {
 }
 val railcastBaseUrl = ((project.findProperty("baseUrl") as String?)
     ?: localProps.getProperty("railcast.baseUrl")
-    ?: "https://api.railcast.app/").let { if (it.endsWith("/")) it else "$it/" }
+    ?: "https://api.railcast.in/").let { if (it.endsWith("/")) it else "$it/" }
 
 // Release signing from android/keystore.properties (gitignored). Absent →
 // release builds stay unsigned; debug is unaffected.
