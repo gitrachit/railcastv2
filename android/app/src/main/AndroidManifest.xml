@@ -19,6 +19,7 @@
     </queries>
 
     <application
+        android:name=".RailcastApplication"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/Theme.Railcast">
@@ -30,6 +31,16 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- FCM entry point (FR-7.2/7.3). Inert until google-services.json is
+             bundled — Firebase never starts it without config. -->
+        <service
+            android:name=".feature.alerts.RailcastMessagingService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
 
         <!-- Full-screen arrival alarm; shows over the lock screen (FR-7.3). -->
         <activity

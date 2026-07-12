@@ -65,6 +65,9 @@ private class FakeApi(
         Response.success(EnvelopeDto(ok = false, data = null, meta = null))
     override suspend fun createWatch(body: app.railcast.core.net.WatchRequest): Response<EnvelopeDto<app.railcast.core.net.WatchCreated>> =
         Response.success(EnvelopeDto(ok = true, data = app.railcast.core.net.WatchCreated("w1", "2026-07-20T00:00:00Z"), meta = app.railcast.core.net.MetaDto("2026-07-10T00:00:00Z", false, 0)))
+
+    override suspend fun registerPushToken(body: app.railcast.core.net.PushTokenRequest): Response<EnvelopeDto<app.railcast.core.net.EmptyData>> =
+        Response.success(EnvelopeDto(ok = true, data = app.railcast.core.net.EmptyData(), meta = app.railcast.core.net.MetaDto("2026-07-10T00:00:00Z", false, 0)))
 }
 
 private fun okEnvelope(screen: TrainScreen, ttl: Int = 45, stale: Boolean = false) =

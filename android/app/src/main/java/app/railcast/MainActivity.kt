@@ -12,7 +12,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.lifecycleScope
 import app.railcast.core.AppContainer
+import app.railcast.feature.alerts.PushBootstrap
 import app.railcast.core.design.RailcastTheme
 import app.railcast.core.i18n.AppLanguage
 import app.railcast.core.i18n.LanguageStore
@@ -33,11 +35,14 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        // Composition root, created once per activity. Polling follows the
-        // activity lifecycle: it runs only in the foreground (PRD §6.4, NFR-3).
-        container = AppContainer(this)
+        // Process-scoped composition root (shared with the FCM service). Polling
+        // follows this activity's lifecycle: foreground only (PRD §6.4, NFR-3).
+        container = (application as RailcastApplication).container
         container.poller.bindTo(lifecycle)
         container.notifications.ensureChannels() // alerts + alarm channels (4.8)
+        // Upload the FCM token so watch pushes reach this install (contracts §5).
+        // No-op until google-services.json is bundled.
+        PushBootstrap.register(applicationContext, container.pushTokens, lifecycleScope)
 
         setContent {
             val context = LocalContext.current

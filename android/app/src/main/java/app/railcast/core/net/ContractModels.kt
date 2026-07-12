@@ -215,3 +215,11 @@ data class WatchRequest(val type: String, val entity: WatchEntity, val params: W
 
 @Serializable
 data class WatchCreated(val watchId: String, val expiresAt: String)
+
+// POST /device/push-token — registers this install for watch push fan-out.
+@Serializable
+data class PushTokenRequest(val fcmToken: String)
+
+/** Contract `Ok<{}>`: an acknowledgement carrying no fields. */
+@Serializable
+class EmptyData

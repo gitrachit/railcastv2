@@ -16,6 +16,7 @@ import app.railcast.core.analytics.NoopAnalytics
 import app.railcast.core.net.AndroidConnectivity
 import app.railcast.core.net.ApiResult
 import app.railcast.core.net.Connectivity
+import app.railcast.core.net.PushTokenRegistrar
 import app.railcast.core.net.RailcastApi
 import app.railcast.core.poll.PollController
 import app.railcast.directory.Directory
@@ -56,6 +57,10 @@ class AppContainer(context: Context) {
     )
 
     val api: RailcastApi = NetworkModule.railcastApi(BuildConfig.BASE_URL, session)
+
+    // FCM token upload (contracts §5): called by the messaging service on token
+    // rotation and by PushBootstrap once per app start.
+    val pushTokens = PushTokenRegistrar(api, session)
 
     private val pnrKeySalt = app.railcast.core.data.PnrKeySalt(appContext)
 
@@ -136,6 +141,9 @@ class AppContainer(context: Context) {
         analyticsConsent.enabled.stateIn(appScope, SharingStarted.Eagerly, true)
     val analytics: Analytics = ConsentGatedAnalytics(NoopAnalytics) { analyticsEnabled.value }
 
-    // Alerts settings: notification prefs (4.8) + analytics opt-out (5.5).
-    val alerts: AlertsViewModel = AlertsViewModel(AlertPrefsStore(appContext), analyticsConsent, appScope)
+    // Alerts settings: notification prefs (4.8) + analytics opt-out (5.5). The
+    // store is shared with the FCM service, which applies the same prefs to
+    // incoming pushes (NotificationPolicy).
+    val alertPrefs = AlertPrefsStore(appContext)
+    val alerts: AlertsViewModel = AlertsViewModel(alertPrefs, analyticsConsent, appScope)
 }

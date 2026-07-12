@@ -112,6 +112,16 @@ dependencies {
     implementation(libs.androidx.room.ktx)
     ksp(libs.androidx.room.compiler)
 
+    // Push (backlog 4.8): classes compile without Firebase config; the runtime
+    // is inert until google-services.json is bundled (see apply below).
+    implementation(libs.firebase.messaging)
+
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)
+}
+
+// FCM config ships only when the Firebase file exists — the build stays green
+// (and push stays off, mirroring the server's NoopSender) until it lands.
+if (file("google-services.json").exists()) {
+    apply(plugin = "com.google.gms.google-services")
 }

@@ -54,4 +54,7 @@ interface RailcastApi {
 
     @POST("watch")
     suspend fun createWatch(@Body body: WatchRequest): Response<EnvelopeDto<WatchCreated>>
+
+    @POST("device/push-token")
+    suspend fun registerPushToken(@Body body: PushTokenRequest): Response<EnvelopeDto<EmptyData>>
 }

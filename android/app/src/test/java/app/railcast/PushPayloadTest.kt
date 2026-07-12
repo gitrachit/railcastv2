@@ -69,6 +69,15 @@ class PushPayloadTest {
         assertEquals(MuteKeys.pnr("••••2882"), chart.entityKey) // masked — never the raw PNR
     }
 
+    @Test fun `notification ids are stable per entity+type and distinct across types`() {
+        val delayA = PushPayload.parse(mapOf("kind" to "DELAY", "trainNo" to "12780", "delayMin" to "5"))!!
+        val delayB = PushPayload.parse(mapOf("kind" to "DELAY", "trainNo" to "12780", "delayMin" to "25"))!!
+        val platform = PushPayload.parse(mapOf("kind" to "PLATFORM_CHANGE", "trainNo" to "12780", "platform" to "5"))!!
+        // A newer delay replaces the older one; a platform change stays separate.
+        assertEquals(PushHandler.notificationId(delayA), PushHandler.notificationId(delayB))
+        assertFalse(PushHandler.notificationId(delayA) == PushHandler.notificationId(platform))
+    }
+
     @Test fun `oem vendor detection groups families`() {
         assertEquals(OemVendor.XIAOMI, OemGuidance.vendorOf("Redmi"))
         assertEquals(OemVendor.XIAOMI, OemGuidance.vendorOf("POCO"))

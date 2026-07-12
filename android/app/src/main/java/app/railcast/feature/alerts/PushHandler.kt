@@ -57,4 +57,10 @@ object PushHandler {
             listOf(payload.trainNo, payload.runDate), payload.entityKey,
         )
     }
+
+    /** Stable id per entity+type so a newer push replaces its predecessor
+     *  (successive delay updates for one train) instead of stacking, while
+     *  different alert types for the same entity stay separate. */
+    fun notificationId(payload: PushPayload): Int =
+        "${payload.type.name}:${payload.entityKey}".hashCode()
 }
