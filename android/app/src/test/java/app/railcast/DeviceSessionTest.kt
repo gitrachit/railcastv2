@@ -38,6 +38,7 @@ private class MintingApi(private val tokens: Iterator<String>) : RailcastApi {
     override suspend fun planScreen(from: String, to: String, date: String, quota: String) = error("unused")
     override suspend fun planRow(trainNo: String, from: String, to: String, date: String, cls: String, quota: String) = error("unused")
     override suspend fun createWatch(body: app.railcast.core.net.WatchRequest) = error("unused")
+    override suspend fun registerPushToken(body: app.railcast.core.net.PushTokenRequest) = error("unused")
 }
 
 class DeviceSessionTest {

@@ -8,9 +8,11 @@ android/build/
 android/app/build/
 android/local.properties
 *.keystore
+android/keystore.properties
 .claude/settings.local.json
 CLAUDE.local.md
 
 # Redis persistence artifact (redis-server writes it to cwd during local runs)
 dump.rdb
 packages/directory/ingest/raw/
+android/.kotlin/

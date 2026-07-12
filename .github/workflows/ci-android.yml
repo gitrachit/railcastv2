@@ -2,15 +2,22 @@ name: ci-android
 on:
   push: { paths: ["android/**"] }
   pull_request: { paths: ["android/**"] }
+# One live run per ref; a new push cancels the superseded run instead of
+# letting a wedged gradle invocation occupy a runner for 6 h.
+concurrency:
+  group: ci-android-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     defaults: { run: { working-directory: android } }
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v4
         with: { distribution: temurin, java-version: 17, cache: gradle }
-      - run: ./gradlew :app:lintDebug :app:testDebugUnitTest
+      - run: ./gradlew :app:lintDebug
+      - run: ./gradlew :app:testDebugUnitTest
       - run: ./gradlew :app:assembleDebug
       # APK size budget (NFR-1, backlog 5.2). Guards against accidental bloat
       # (e.g. an oversized bundled asset). Budget is on the unminified debug APK;
