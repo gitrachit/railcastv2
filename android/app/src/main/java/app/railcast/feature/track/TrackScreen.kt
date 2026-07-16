@@ -168,7 +168,7 @@ private fun TrackContent(
                 // Error with no cached value → plain-language + retry (PRD §7);
                 // otherwise a loading skeleton.
                 if (resource?.error != null && resource.loading.not()) {
-                    ErrorState(onRetry = track::retry)
+                    ErrorState(onRetry = track::retry, detail = resource.error.let { "${it.code}: ${it.message}" })
                 } else {
                     Text(
                         stringResource(R.string.home_card_loading, state.trainNo.orEmpty()),

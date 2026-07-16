@@ -79,7 +79,7 @@ fun PnrScreen(pnr: PnrViewModel, alerts: AlertsViewModel, onBack: () -> Unit, mo
                 item { PnrInput(state.input, state.hint, pnr::onInputChange, pnr::lookup) }
                 item { PrivacyNote() }
             } else if (state.resource?.error != null && state.resource?.loading == false) {
-                item { ErrorState(onRetry = pnr::retry) }
+                item { ErrorState(onRetry = pnr::retry, detail = state.resource?.error?.let { "${it.code}: ${it.message}" }) }
             } else {
                 item { LoadingRow() }
             }

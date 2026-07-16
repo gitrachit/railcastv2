@@ -101,7 +101,7 @@ fun PlanScreen(plan: PlanViewModel, modifier: Modifier = Modifier) {
             if (rows.isEmpty() && res.loading.not()) {
                 // Error (no cached rows) → retry; genuinely empty → directive.
                 if (res.error != null && res.value == null) {
-                    item { ErrorState(onRetry = plan::retry) }
+                    item { ErrorState(onRetry = plan::retry, detail = res.error.let { "${it.code}: ${it.message}" }) }
                 } else {
                     item { EmptyState(stringResource(R.string.plan_no_trains)) }
                 }

@@ -212,7 +212,7 @@ private fun StationBoard(
         if (screen == null) {
             item {
                 if (state.resource?.error != null && state.resource?.loading == false) {
-                    ErrorState(onRetry = vm::retry)
+                    ErrorState(onRetry = vm::retry, detail = state.resource?.error?.let { "${it.code}: ${it.message}" })
                 } else {
                     Text(
                         stringResource(R.string.station_loading),
