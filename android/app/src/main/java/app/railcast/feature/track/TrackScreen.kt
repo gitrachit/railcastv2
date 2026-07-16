@@ -24,6 +24,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -46,6 +47,7 @@ import androidx.compose.ui.res.stringResource
 import app.railcast.R
 import app.railcast.core.data.Resource
 import app.railcast.core.design.BoardHero
+import app.railcast.core.design.RailcastIcons
 import app.railcast.core.design.RailcastTheme
 import app.railcast.core.design.trainStatusVisual
 import app.railcast.core.net.CoachGuide
@@ -106,7 +108,9 @@ private fun TrackSearch(
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
                 placeholder = { Text(stringResource(R.string.search_hint)) },
-                leadingIcon = { Text("🔎") },
+                leadingIcon = {
+                    Icon(RailcastIcons.Search, contentDescription = null, tint = RailcastTheme.colors.ink3, modifier = Modifier.size(20.dp))
+                },
             )
         }
         items(results, key = { it.entry.query + "|" + it.entry.label }) { result ->
@@ -401,7 +405,7 @@ private fun AmberBanner(text: String) {
         modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)).background(colors.amberSoft).padding(14.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        Text("⚠", fontSize = 15.sp)
+        Icon(RailcastIcons.Warning, contentDescription = null, tint = colors.amber, modifier = Modifier.size(18.dp))
         Text(text, fontSize = 14.sp, color = colors.amber, fontWeight = FontWeight.SemiBold)
     }
 }

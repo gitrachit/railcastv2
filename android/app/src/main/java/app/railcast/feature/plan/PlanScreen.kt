@@ -18,6 +18,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -35,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.res.stringResource
 import app.railcast.R
+import app.railcast.core.design.RailcastIcons
 import app.railcast.core.design.RailcastTheme
 import app.railcast.core.net.AvailabilityCell
 import app.railcast.core.net.FareCell
@@ -226,26 +228,40 @@ private fun PlanRowCard(row: PlanRow, expanded: Boolean, onToggle: () -> Unit, t
             }
         }
         tatkal?.let { chip ->
-            Text(
-                text = when {
-                    chip.reminded -> "✓ " + stringResource(R.string.plan_tatkal_reminded)
-                    chip.failed -> stringResource(R.string.plan_tatkal_failed)
-                    else -> "🔔 " + stringResource(R.string.plan_tatkal_remind)
-                },
-                fontSize = 13.sp,
-                fontWeight = FontWeight.SemiBold,
-                color = when {
-                    chip.reminded -> colors.green
-                    chip.failed -> colors.amber
-                    else -> colors.brand
-                },
+            val chipColor = when {
+                chip.reminded -> colors.green
+                chip.failed -> colors.amber
+                else -> colors.brand
+            }
+            Row(
                 modifier = Modifier
                     .clip(RoundedCornerShape(999.dp))
                     .clickable(enabled = !chip.reminded, onClick = chip.onRemind)
                     .background(if (chip.reminded) colors.greenSoft else colors.brandSoft)
                     .heightIn(min = 48.dp)
                     .padding(horizontal = 14.dp, vertical = 13.dp),
-            )
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(6.dp),
+            ) {
+                if (!chip.failed) {
+                    Icon(
+                        imageVector = if (chip.reminded) RailcastIcons.Check else RailcastIcons.Bell,
+                        contentDescription = null, // label carries the meaning (FR-10.3)
+                        tint = chipColor,
+                        modifier = Modifier.size(16.dp),
+                    )
+                }
+                Text(
+                    text = when {
+                        chip.reminded -> stringResource(R.string.plan_tatkal_reminded)
+                        chip.failed -> stringResource(R.string.plan_tatkal_failed)
+                        else -> stringResource(R.string.plan_tatkal_remind)
+                    },
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = chipColor,
+                )
+            }
         }
         if (expanded) {
             val fare = row.fare

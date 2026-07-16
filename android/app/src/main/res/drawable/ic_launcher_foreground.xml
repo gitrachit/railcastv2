@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Front-facing train mark, drawn as one even-odd path so the windshield,
+     headlight and marker lights are true cutouts — the monochrome (themed
+     icon) variant keeps its detail. Sized for the 66dp adaptive safe zone. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path
+        android:fillColor="#FFFFFF"
+        android:fillType="evenOdd"
+        android:pathData="M40,24 H68 A10,10 0 0 1 78,34 V64 A10,10 0 0 1 68,74 H40 A10,10 0 0 1 30,64 V34 A10,10 0 0 1 40,24 Z M40,30 H68 A4,4 0 0 1 72,34 V38 A4,4 0 0 1 68,42 H40 A4,4 0 0 1 36,38 V34 A4,4 0 0 1 40,30 Z M47,57 A7,7 0 1 1 61,57 A7,7 0 1 1 47,57 Z M35,66 A3,3 0 1 1 41,66 A3,3 0 1 1 35,66 Z M67,66 A3,3 0 1 1 73,66 A3,3 0 1 1 67,66 Z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M31,78 H77 A3,3 0 0 1 77,84 H31 A3,3 0 0 1 31,78 Z" />
+</vector>

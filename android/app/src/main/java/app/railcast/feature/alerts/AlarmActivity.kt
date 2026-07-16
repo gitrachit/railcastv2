@@ -11,9 +11,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -23,6 +25,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.railcast.R
+import app.railcast.core.design.RailcastIcons
 import app.railcast.core.design.RailcastTheme
 
 /**
@@ -78,7 +81,7 @@ private fun AlarmContent(title: String, body: String, onDismiss: () -> Unit) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
-        Text("⏰", fontSize = 56.sp)
+        Icon(RailcastIcons.Alarm, contentDescription = null, tint = colors.brand, modifier = Modifier.size(72.dp))
         Text(title, fontSize = 26.sp, fontWeight = FontWeight.Bold, color = colors.ink, modifier = Modifier.padding(top = 16.dp))
         Text(body, fontSize = 16.sp, color = colors.ink2, modifier = Modifier.padding(top = 8.dp))
         Button(
