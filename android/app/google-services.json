@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "636838975152",
+    "project_id": "in-railcast",
+    "storage_bucket": "in-railcast.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:636838975152:android:d0e8b4b468a10c38d50d75",
+        "android_client_info": {
+          "package_name": "app.railcast"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC_WDPPWsX3uDTLd47g1tgUOKhI5Xfjy6o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
