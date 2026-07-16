@@ -8,7 +8,9 @@ import kotlinx.serialization.Serializable
 
 // ─── §7 Auth ────────────────────────────────────────────────────────────────
 @Serializable
-data class DeviceAuthRequest(val platform: String = "android", val appVersion: String)
+// No default on `platform`: encodeDefaults=false silently DROPS defaulted
+// fields from the wire body, and the server rejects a mint without it.
+data class DeviceAuthRequest(val platform: String, val appVersion: String)
 
 @Serializable
 data class DeviceAuthResponse(val deviceToken: String)
