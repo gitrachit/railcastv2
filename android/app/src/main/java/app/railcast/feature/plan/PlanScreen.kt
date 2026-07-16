@@ -19,6 +19,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -60,7 +61,7 @@ fun PlanScreen(plan: PlanViewModel, modifier: Modifier = Modifier) {
         verticalArrangement = Arrangement.spacedBy(10.dp),
         contentPadding = PaddingValues(vertical = 16.dp),
     ) {
-        item { Text(stringResource(R.string.nav_plan), fontSize = 28.sp, fontWeight = FontWeight.Bold, color = colors.ink) }
+        item { Text(stringResource(R.string.nav_plan), style = MaterialTheme.typography.headlineLarge, color = colors.ink) }
 
         item {
             OutlinedTextField(
