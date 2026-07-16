@@ -28,7 +28,7 @@ private class TrackFakeSearch(private val hits: List<SearchResult>) : TrainSearc
     override suspend fun search(query: String, limit: Int) = hits
 }
 
-private class FakeSaved(initial: List<String> = emptyList()) : SavedTrains {
+private class TrackFakeSaved(initial: List<String> = emptyList()) : SavedTrains {
     private val flow = MutableStateFlow(initial)
     override val trains = flow
     override suspend fun add(trainNo: String) {
@@ -59,7 +59,7 @@ class TrackViewModelTest {
         search: TrainSearch = TrackFakeSearch(listOf(SearchResult(Train("12780", "Goa Express", "NZM", "VSG"), 100))),
         onFactory: (String, String) -> Unit = { _, _ -> },
         state: String = "running",
-        saved: SavedTrains = FakeSaved(),
+        saved: SavedTrains = TrackFakeSaved(),
     ): TrackViewModel = TrackViewModel(
         search = search,
         trainScreen = { no, run ->
@@ -97,7 +97,7 @@ class TrackViewModelTest {
     }
 
     @Test fun `pin toggles saved state and reflects an already-saved train`() = runTest {
-        val store = FakeSaved()
+        val store = TrackFakeSaved()
         val track = vm(backgroundScope, saved = store)
         track.open("12780")
         runCurrent()
@@ -111,7 +111,7 @@ class TrackViewModelTest {
         assertFalse(track.state.value.pinned)
 
         // Opening a train that's already saved comes up pinned.
-        val track2 = vm(backgroundScope, saved = FakeSaved(listOf("22188")))
+        val track2 = vm(backgroundScope, saved = TrackFakeSaved(listOf("22188")))
         track2.open("22188"); runCurrent()
         assertTrue(track2.state.value.pinned)
     }
