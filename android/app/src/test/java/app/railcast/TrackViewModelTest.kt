@@ -8,10 +8,12 @@ import app.railcast.core.poll.PollController
 import app.railcast.directory.SearchResult
 import app.railcast.directory.Train
 import app.railcast.directory.TrainSearch
+import app.railcast.feature.home.SavedTrains
 import app.railcast.feature.track.TrackViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.runCurrent
@@ -24,6 +26,17 @@ import org.junit.Test
 
 private class TrackFakeSearch(private val hits: List<SearchResult>) : TrainSearch {
     override suspend fun search(query: String, limit: Int) = hits
+}
+
+private class FakeSaved(initial: List<String> = emptyList()) : SavedTrains {
+    private val flow = MutableStateFlow(initial)
+    override val trains = flow
+    override suspend fun add(trainNo: String) {
+        flow.value = listOf(trainNo) + flow.value.filterNot { it == trainNo }
+    }
+    override suspend fun remove(trainNo: String) {
+        flow.value = flow.value.filterNot { it == trainNo }
+    }
 }
 
 private fun trackScreen(no: String, state: String = "running", run: String = "auto") = TrainScreen(
@@ -46,6 +59,7 @@ class TrackViewModelTest {
         search: TrainSearch = TrackFakeSearch(listOf(SearchResult(Train("12780", "Goa Express", "NZM", "VSG"), 100))),
         onFactory: (String, String) -> Unit = { _, _ -> },
         state: String = "running",
+        saved: SavedTrains = FakeSaved(),
     ): TrackViewModel = TrackViewModel(
         search = search,
         trainScreen = { no, run ->
@@ -55,6 +69,7 @@ class TrackViewModelTest {
                 emit(Resource(trackScreen(no, state, run), "2026-07-10T10:00Z", stale = false, loading = false, error = null))
             }
         },
+        saved = saved,
         poller = PollController(scope),
         scope = scope,
         cadenceMs = 1000L,
@@ -79,6 +94,26 @@ class TrackViewModelTest {
         assertEquals("Goa Express", s.resource?.value?.name)
         assertFalse(s.resource!!.loading)
         assertTrue(s.results.isEmpty()) // search cleared on open
+    }
+
+    @Test fun `pin toggles saved state and reflects an already-saved train`() = runTest {
+        val store = FakeSaved()
+        val track = vm(backgroundScope, saved = store)
+        track.open("12780")
+        runCurrent()
+        assertFalse(track.state.value.pinned)
+
+        track.togglePin(); runCurrent()
+        assertTrue(track.state.value.pinned)
+        assertEquals(listOf("12780"), store.trains.value)
+
+        track.togglePin(); runCurrent()
+        assertFalse(track.state.value.pinned)
+
+        // Opening a train that's already saved comes up pinned.
+        val track2 = vm(backgroundScope, saved = FakeSaved(listOf("22188")))
+        track2.open("22188"); runCurrent()
+        assertTrue(track2.state.value.pinned)
     }
 
     @Test fun `selecting a run re-fetches with that explicit run date`() = runTest {

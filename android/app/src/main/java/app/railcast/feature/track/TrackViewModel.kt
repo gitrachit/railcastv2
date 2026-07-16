@@ -5,6 +5,7 @@ import app.railcast.core.net.TrainScreen
 import app.railcast.core.poll.PollController
 import app.railcast.directory.SearchResult
 import app.railcast.directory.TrainSearch
+import app.railcast.feature.home.SavedTrains
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -22,6 +23,7 @@ data class TrackUiState(
     val selectedRun: String = AUTO,
     val resource: Resource<TrainScreen>? = null,
     val showRunSheet: Boolean = false,
+    val pinned: Boolean = false, // this train saved to Home (board Pin action)
 ) {
     companion object { const val AUTO = "auto" }
 }
@@ -36,6 +38,7 @@ data class TrackUiState(
 class TrackViewModel(
     private val search: TrainSearch,
     private val trainScreen: (trainNo: String, run: String) -> Flow<Resource<TrainScreen>>,
+    private val saved: SavedTrains,
     private val poller: PollController,
     private val scope: CoroutineScope,
     private val cadenceMs: Long = 45_000L, // trackTrain 30–60 s band (PRD §6.4)
@@ -46,6 +49,24 @@ class TrackViewModel(
 
     private var searchJob: Job? = null
     private var loopKey: String? = null
+    private var savedList: List<String> = emptyList()
+
+    init {
+        // Keep `pinned` reactive to the shared store, so the board's Pin action
+        // and Home's saved list never disagree.
+        scope.launch {
+            saved.trains.collect { list ->
+                savedList = list
+                _state.update { it.copy(pinned = it.trainNo != null && it.trainNo in list) }
+            }
+        }
+    }
+
+    /** Save/unsave the tracked train to Home (board Pin action). */
+    fun togglePin() {
+        val no = _state.value.trainNo ?: return
+        scope.launch { if (_state.value.pinned) saved.remove(no) else saved.add(no) }
+    }
 
     fun onQueryChange(raw: String) {
         _state.update { it.copy(query = raw) }
@@ -64,7 +85,10 @@ class TrackViewModel(
     /** Start tracking a train (run=auto; the server picks the active run). */
     fun open(trainNo: String) {
         _state.update {
-            it.copy(trainNo = trainNo, selectedRun = TrackUiState.AUTO, resource = null, query = "", results = emptyList())
+            it.copy(
+                trainNo = trainNo, selectedRun = TrackUiState.AUTO, resource = null,
+                query = "", results = emptyList(), pinned = trainNo in savedList,
+            )
         }
         startTracking(trainNo, TrackUiState.AUTO)
     }

@@ -21,9 +21,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -33,10 +35,13 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.role
@@ -58,10 +63,10 @@ import app.railcast.ui.ErrorState
 import app.railcast.ui.Skeleton
 import app.railcast.directory.SearchResult
 import app.railcast.directory.Station
+import kotlinx.coroutines.launch
 import app.railcast.directory.Train
 import app.railcast.feature.alerts.AlertPrefs
 import app.railcast.feature.alerts.AlertsViewModel
-import app.railcast.feature.alerts.MuteJourneyChip
 import app.railcast.feature.alerts.MuteKeys
 
 /**
@@ -158,79 +163,169 @@ private fun TrackContent(
     // Coach-guide view state is ephemeral and resets when the train changes.
     var selectedCoach by remember(state.trainNo) { mutableStateOf<String?>(null) }
     var genMode by remember(state.trainNo) { mutableStateOf(false) }
-    LazyColumn(
-        modifier = modifier.fillMaxSize().padding(horizontal = 20.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
-        contentPadding = PaddingValues(vertical = 16.dp),
-    ) {
-        item { TrackHeader(screen?.name, screen?.trainNo ?: state.trainNo, onBack = track::back) }
+    val listState = rememberLazyListState()
+    val scope = rememberCoroutineScope()
+    val muteKey = screen?.let { MuteKeys.train(it.trainNo) }
+    // Coach section's list index, for the action bar's jump. Keep in sync with
+    // the item order below: header(0), hero(1), [amber], [run-date], [position].
+    val coachIndex = screen?.let {
+        var i = 2
+        if (it.status.state == "diverted" || it.status.state == "rescheduled") i++
+        if (RunDateSheet.hasChoice(it)) i++
+        if (it.position != null) i++
+        i
+    }
 
-        if (screen == null) {
-            item {
-                // Error with no cached value → plain-language + retry (PRD §7);
-                // otherwise a loading skeleton.
-                if (resource?.error != null && resource.loading.not()) {
-                    ErrorState(onRetry = track::retry, detail = resource.error.let { "${it.code}: ${it.message}" })
-                } else {
-                    Skeleton(label = stringResource(R.string.home_card_loading, state.trainNo.orEmpty()))
+    Column(modifier.fillMaxSize()) {
+        LazyColumn(
+            state = listState,
+            modifier = Modifier.weight(1f).fillMaxWidth().padding(horizontal = 20.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+            contentPadding = PaddingValues(vertical = 16.dp),
+        ) {
+            item { TrackHeader(screen?.name, screen?.trainNo ?: state.trainNo, onBack = track::back) }
+
+            if (screen == null) {
+                item {
+                    // Error with no cached value → plain-language + retry (PRD §7);
+                    // otherwise a loading skeleton.
+                    if (resource?.error != null && resource.loading.not()) {
+                        ErrorState(onRetry = track::retry, detail = resource.error.let { "${it.code}: ${it.message}" })
+                    } else {
+                        Skeleton(label = stringResource(R.string.home_card_loading, state.trainNo.orEmpty()))
+                    }
                 }
+                return@LazyColumn
             }
-            return@LazyColumn
-        }
 
-        if (screen.status.state == "cancelled") {
-            item { CancelledState(screen.status.summary, onAlternatives) }
-            return@LazyColumn
-        }
+            if (screen.status.state == "cancelled") {
+                item { CancelledState(screen.status.summary, onAlternatives) }
+                return@LazyColumn
+            }
 
-        item {
-            val visual = trainStatusVisual(screen.status.state, screen.status.delayMin)
-            BoardHero(
-                title = "${screen.name} · ${screen.trainNo}",
-                answer = screen.status.summary,
-                answerIcon = visual.icon,
-                level = visual.level,
-                freshness = freshnessLabel(resource),
-            )
-        }
-
-        if (screen.status.state == "diverted" || screen.status.state == "rescheduled") {
-            item { AmberBanner(screen.status.summary) }
-        }
-
-        // One-tap mute for THIS train's pushes (FR-7.4).
-        item {
-            val muteKey = MuteKeys.train(screen.trainNo)
-            MuteJourneyChip(
-                muted = alertPrefs.isMuted(muteKey),
-                onToggle = { alerts.setMuted(muteKey, !alertPrefs.isMuted(muteKey)) },
-            )
-        }
-
-        if (RunDateSheet.hasChoice(screen)) {
-            item { RunDatePanel(screen, state.showRunSheet, track) }
-        }
-
-        screen.position?.let { pos ->
-            item { EstimatedPosition(pos.betweenCodes.getOrNull(0), pos.betweenCodes.getOrNull(1), pos.progress) }
-        }
-
-        screen.coach?.let { guide ->
             item {
-                CoachGuideSection(
-                    guide = guide,
-                    selectedCoach = selectedCoach,
-                    genMode = genMode,
-                    onSelectCoach = { selectedCoach = if (selectedCoach == it) null else it },
-                    onToggleGen = { genMode = !genMode },
+                val visual = trainStatusVisual(screen.status.state, screen.status.delayMin)
+                BoardHero(
+                    title = "${screen.name} · ${screen.trainNo}",
+                    answer = screen.status.summary,
+                    answerIcon = visual.icon,
+                    level = visual.level,
+                    freshness = freshnessLabel(resource),
                 )
             }
+
+            if (screen.status.state == "diverted" || screen.status.state == "rescheduled") {
+                item { AmberBanner(screen.status.summary) }
+            }
+
+            if (RunDateSheet.hasChoice(screen)) {
+                item { RunDatePanel(screen, state.showRunSheet, track) }
+            }
+
+            screen.position?.let { pos ->
+                item { EstimatedPosition(pos.betweenCodes.getOrNull(0), pos.betweenCodes.getOrNull(1), pos.progress) }
+            }
+
+            screen.coach?.let { guide ->
+                item {
+                    CoachGuideSection(
+                        guide = guide,
+                        selectedCoach = selectedCoach,
+                        genMode = genMode,
+                        onSelectCoach = { selectedCoach = if (selectedCoach == it) null else it },
+                        onToggleGen = { genMode = !genMode },
+                    )
+                }
+            }
+
+            item {
+                Text(stringResource(R.string.track_timeline), fontSize = 15.sp, fontWeight = FontWeight.SemiBold, color = colors.ink2)
+            }
+            timeline(screen.route)
         }
 
-        item {
-            Text(stringResource(R.string.track_timeline), fontSize = 15.sp, fontWeight = FontWeight.SemiBold, color = colors.ink2)
+        // Sticky actions for the two things you do after reading a board
+        // (design review, phase 2) — shown only over a live board.
+        if (screen != null && screen.status.state != "cancelled" && muteKey != null) {
+            BoardActionBar(
+                muted = alertPrefs.isMuted(muteKey),
+                onToggleMute = { alerts.setMuted(muteKey, !alertPrefs.isMuted(muteKey)) },
+                pinned = state.pinned,
+                onTogglePin = track::togglePin,
+                hasCoach = screen.coach != null,
+                onCoach = { coachIndex?.let { scope.launch { listState.animateScrollToItem(it) } } },
+            )
         }
-        timeline(screen.route)
+    }
+}
+
+@Composable
+private fun BoardActionBar(
+    muted: Boolean,
+    onToggleMute: () -> Unit,
+    pinned: Boolean,
+    onTogglePin: () -> Unit,
+    hasCoach: Boolean,
+    onCoach: () -> Unit,
+) {
+    val colors = RailcastTheme.colors
+    Column {
+        HorizontalDivider(color = colors.line)
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(colors.surface)
+                .padding(horizontal = 8.dp, vertical = 6.dp),
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
+        ) {
+            ActionButton(
+                icon = if (muted) RailcastIcons.BellOff else RailcastIcons.Bell,
+                label = stringResource(if (muted) R.string.track_action_muted else R.string.track_action_mute),
+                tint = if (muted) colors.amber else colors.ink2,
+                onClick = onToggleMute,
+                modifier = Modifier.weight(1f),
+            )
+            if (hasCoach) {
+                ActionButton(
+                    icon = RailcastIcons.Seat,
+                    label = stringResource(R.string.track_action_coach),
+                    tint = colors.ink2,
+                    onClick = onCoach,
+                    modifier = Modifier.weight(1f),
+                )
+            }
+            ActionButton(
+                icon = RailcastIcons.Pin,
+                label = stringResource(if (pinned) R.string.track_action_saved else R.string.track_action_save),
+                tint = if (pinned) colors.brand else colors.ink2,
+                onClick = onTogglePin,
+                modifier = Modifier.weight(1f),
+            )
+        }
+    }
+}
+
+@Composable
+private fun ActionButton(
+    icon: ImageVector,
+    label: String,
+    tint: Color,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    // clickable(role) merges the child label + keeps the click action for
+    // TalkBack — so this reads as "<label>, button" (FR-10.3).
+    Column(
+        modifier = modifier
+            .clip(RoundedCornerShape(12.dp))
+            .clickable(role = Role.Button, onClick = onClick)
+            .heightIn(min = 48.dp)
+            .padding(vertical = 8.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(3.dp),
+    ) {
+        Icon(icon, contentDescription = null, tint = tint, modifier = Modifier.size(22.dp))
+        Text(label, color = tint, fontSize = 11.sp, fontWeight = FontWeight.SemiBold)
     }
 }
 

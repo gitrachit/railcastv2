@@ -97,6 +97,12 @@
     <string name="track_on_time">On time</string>
     <string name="track_delay_late">%1$d min late</string>
     <string name="track_estimated_position">Estimated position</string>
+    <!-- Board action bar (design review, phase 2) -->
+    <string name="track_action_mute">Mute</string>
+    <string name="track_action_muted">Muted</string>
+    <string name="track_action_coach">Coach</string>
+    <string name="track_action_save">Save</string>
+    <string name="track_action_saved">Saved</string>
     <string name="track_cancelled_title">Train cancelled</string>
     <string name="track_alternatives_cta">See alternatives</string>
 
