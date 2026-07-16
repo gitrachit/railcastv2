@@ -16,6 +16,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -40,6 +41,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.res.stringResource
 import app.railcast.R
+import app.railcast.core.design.RailcastIcons
 import app.railcast.core.design.RailcastTheme
 import app.railcast.core.design.StatusChip
 import app.railcast.core.net.StationTrain
@@ -95,7 +97,9 @@ private fun StationSearch(
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
                 placeholder = { Text(stringResource(R.string.station_search_hint)) },
-                leadingIcon = { Text("🔎") },
+                leadingIcon = {
+                    Icon(RailcastIcons.Search, contentDescription = null, tint = RailcastTheme.colors.ink3, modifier = Modifier.size(20.dp))
+                },
             )
         }
         item {
@@ -149,7 +153,7 @@ private fun NearMeRow(onClick: () -> Unit) {
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        Text("📍", fontSize = 18.sp)
+        Icon(RailcastIcons.Place, contentDescription = null, tint = colors.brand, modifier = Modifier.size(20.dp))
         Text(
             stringResource(R.string.station_near_me),
             fontSize = 15.sp,

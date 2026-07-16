@@ -8,6 +8,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
@@ -15,6 +16,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import app.railcast.R
+import app.railcast.core.design.RailcastIcons
 import app.railcast.core.i18n.AppLanguage
 import app.railcast.feature.alerts.AlertsScreen
 import app.railcast.feature.alerts.AlertsViewModel
@@ -31,19 +33,19 @@ import app.railcast.feature.track.TrackScreen
 
 /**
  * The five tabs (PRD §7). Nothing important deeper than two taps; icons are
- * always labelled. Emoji glyphs match the prototype and keep the APK lean
- * (no icon font — NFR-1).
+ * always labelled. Inlined vector glyphs (RailcastIcons) tint with selection
+ * and keep the APK lean — no icon font (NFR-1).
  */
 /** PNR is reached from Home, not a bottom tab (PRD's five tabs), so it's a
  *  plain nested route rather than a [Destination]. */
 private const val PNR_ROUTE = "pnr"
 
-enum class Destination(val route: String, @StringRes val label: Int, val icon: String) {
-    HOME("home", R.string.nav_home, "🏠"),
-    TRACK("track", R.string.nav_track, "🧭"),
-    STATION("station", R.string.nav_station, "📍"),
-    PLAN("plan", R.string.nav_plan, "📅"),
-    ALERTS("alerts", R.string.nav_alerts, "🔔"),
+enum class Destination(val route: String, @StringRes val label: Int, val icon: ImageVector) {
+    HOME("home", R.string.nav_home, RailcastIcons.Home),
+    TRACK("track", R.string.nav_track, RailcastIcons.Train),
+    STATION("station", R.string.nav_station, RailcastIcons.Place),
+    PLAN("plan", R.string.nav_plan, RailcastIcons.Calendar),
+    ALERTS("alerts", R.string.nav_alerts, RailcastIcons.Bell),
 }
 
 @Composable

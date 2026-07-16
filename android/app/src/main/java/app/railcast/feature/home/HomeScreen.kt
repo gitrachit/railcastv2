@@ -13,9 +13,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -37,6 +39,7 @@ import androidx.compose.ui.res.stringResource
 import app.railcast.R
 import app.railcast.core.data.Resource
 import app.railcast.core.design.BoardHero
+import app.railcast.core.design.RailcastIcons
 import app.railcast.core.design.RailcastTheme
 import app.railcast.core.design.trainStatusVisual
 import app.railcast.core.net.TrainScreen
@@ -132,7 +135,7 @@ private fun CheckPnrRow(onClick: () -> Unit) {
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        Text("🎫", fontSize = 20.sp)
+        Icon(RailcastIcons.Ticket, contentDescription = null, tint = colors.brand, modifier = Modifier.size(22.dp))
         Text(stringResource(R.string.home_check_pnr), fontSize = 16.sp, fontWeight = FontWeight.SemiBold, color = colors.ink)
     }
 }
@@ -150,11 +153,15 @@ private fun SearchField(
         singleLine = true,
         modifier = Modifier.fillMaxWidth(),
         placeholder = { Text(stringResource(R.string.search_hint)) },
-        leadingIcon = { Text("🔎") },
+        leadingIcon = {
+            Icon(RailcastIcons.Search, contentDescription = null, tint = RailcastTheme.colors.ink3, modifier = Modifier.size(20.dp))
+        },
         trailingIcon = {
-            Text(
-                text = "🎤",
-                fontSize = 18.sp,
+            Icon(
+                imageVector = RailcastIcons.Mic,
+                // Named via the modifier semantics below (FR-10.3).
+                contentDescription = null,
+                tint = RailcastTheme.colors.brand,
                 modifier = Modifier
                     .clip(RoundedCornerShape(999.dp))
                     .clickable(onClick = onVoice)

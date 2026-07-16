@@ -6,7 +6,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -18,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.res.stringResource
 import app.railcast.R
+import app.railcast.core.design.RailcastIcons
 import app.railcast.core.design.RailcastTheme
 
 /**
@@ -34,7 +37,7 @@ fun ErrorState(onRetry: () -> Unit, modifier: Modifier = Modifier) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(6.dp),
     ) {
-        Text("⚠", fontSize = 26.sp)
+        Icon(RailcastIcons.Warning, contentDescription = null, tint = colors.amber, modifier = Modifier.size(28.dp))
         Text(stringResource(R.string.state_error_title), fontSize = 16.sp, fontWeight = FontWeight.Bold, color = colors.ink)
         Text(stringResource(R.string.state_error_body), fontSize = 13.sp, color = colors.ink2)
         TextButton(onClick = onRetry, modifier = Modifier.heightIn(min = 48.dp)) {

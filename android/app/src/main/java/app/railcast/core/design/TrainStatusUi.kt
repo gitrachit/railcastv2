@@ -10,7 +10,7 @@ data class StatusVisual(val level: StatusLevel, val icon: String)
 fun trainStatusVisual(state: String, delayMin: Int?): StatusVisual = when (state) {
     "running" -> if ((delayMin ?: 0) > 15) StatusVisual(StatusLevel.WARN, "▶") else StatusVisual(StatusLevel.GOOD, "▶")
     "arrived" -> StatusVisual(StatusLevel.GOOD, "✓")
-    "not_started" -> StatusVisual(StatusLevel.NEUTRAL, "🕓")
+    "not_started" -> StatusVisual(StatusLevel.NEUTRAL, "◷") // text glyph — tints, unlike the clock emoji
     "rescheduled" -> StatusVisual(StatusLevel.WARN, "↻")
     "cancelled" -> StatusVisual(StatusLevel.BAD, "✕")
     "diverted" -> StatusVisual(StatusLevel.BAD, "⤳")

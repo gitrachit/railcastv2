@@ -193,7 +193,7 @@ private fun ChartStatus(prepared: Boolean) {
     if (prepared) {
         StatusChip(icon = "✓", label = stringResource(R.string.pnr_chart_prepared), level = app.railcast.core.design.StatusLevel.GOOD)
     } else {
-        StatusChip(icon = "🕓", label = stringResource(R.string.pnr_chart_waiting), level = app.railcast.core.design.StatusLevel.NEUTRAL)
+        StatusChip(icon = "◷", label = stringResource(R.string.pnr_chart_waiting), level = app.railcast.core.design.StatusLevel.NEUTRAL)
     }
 }
 

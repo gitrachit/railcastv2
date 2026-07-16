@@ -22,6 +22,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -31,6 +32,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
@@ -137,7 +139,7 @@ private fun LanguageRow(nativeName: String, selected: Boolean, onClick: () -> Un
 }
 
 @Composable
-private fun IntentCard(icon: String, title: String, subtitle: String, onClick: () -> Unit) {
+private fun IntentCard(icon: ImageVector, title: String, subtitle: String, onClick: () -> Unit) {
     val colors = RailcastTheme.colors
     Row(
         modifier = Modifier
@@ -152,7 +154,7 @@ private fun IntentCard(icon: String, title: String, subtitle: String, onClick: (
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        Text(text = icon, fontSize = 26.sp, modifier = Modifier.size(32.dp))
+        Icon(imageVector = icon, contentDescription = null, tint = colors.brand, modifier = Modifier.size(30.dp))
         Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
             Text(title, fontSize = 18.sp, fontWeight = FontWeight.SemiBold, color = colors.ink)
             Text(subtitle, fontSize = 14.sp, color = colors.ink2)

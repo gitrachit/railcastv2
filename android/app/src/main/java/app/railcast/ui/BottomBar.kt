@@ -9,8 +9,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.selection.selectable
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -61,7 +63,13 @@ fun RailcastBottomBar(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center,
             ) {
-                Text(text = dest.icon, fontSize = 18.sp)
+                Icon(
+                    imageVector = dest.icon,
+                    // Decorative: the label below is the accessible name (FR-10.3).
+                    contentDescription = null,
+                    tint = if (isOn) colors.brand else colors.ink3,
+                    modifier = Modifier.size(22.dp),
+                )
                 Text(
                     text = label,
                     color = if (isOn) colors.brand else colors.ink3,
