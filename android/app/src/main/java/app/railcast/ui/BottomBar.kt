@@ -4,9 +4,12 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -36,6 +39,10 @@ fun RailcastBottomBar(
         modifier = modifier
             .fillMaxWidth()
             .background(colors.surface)
+            // Edge-to-edge (MainActivity): keep the tabs above the system
+            // navigation bar — 3-button nav otherwise overlaps them. The inset
+            // strip stays surface-colored because padding comes after background.
+            .windowInsetsPadding(WindowInsets.navigationBars)
             .padding(horizontal = 4.dp, vertical = 6.dp),
     ) {
         for (dest in Destination.entries) {
