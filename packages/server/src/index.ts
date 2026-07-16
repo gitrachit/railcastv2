@@ -7,6 +7,15 @@ import { createPool } from "./db/pool.js";
 import { createSender, EntityPoller, PushFanout, WatchRepo, WatchScheduler } from "./watcher/index.js";
 import { ShareRepo } from "./web/share-repo.js";
 
+// Secrets are read lazily at call sites; check them here too so a deploy
+// missing one fails at boot instead of passing /health and 500ing later.
+for (const name of ["RAILKIT_API_KEY", "AUTH_TOKEN_SECRET"]) {
+  if (!process.env[name]) throw new Error(`${name} is not configured`);
+}
+if (!/^[0-9a-f]{64}$/i.test(process.env.PNR_ENCRYPTION_KEY ?? "")) {
+  throw new Error("PNR_ENCRYPTION_KEY must be 64 hex characters (32 bytes)");
+}
+
 const redisUrl = process.env.REDIS_URL ?? "redis://127.0.0.1:6379";
 const redis = new Redis(redisUrl);
 const pool = createPool();

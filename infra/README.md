@@ -22,7 +22,7 @@ One project, three services: the app + managed Postgres + managed Redis.
    | `AUTH_TOKEN_SECRET` | `openssl rand -hex 32` |
    | `PNR_ENCRYPTION_KEY` | `openssl rand -hex 32` (must be 64 hex chars) |
    | `PUBLIC_BASE_URL` | `https://api.<your-domain>` |
-   | `FIREBASE_SERVICE_ACCOUNT` | optional — service-account JSON; absent → push is a no-op, server still boots |
+   | `FIREBASE_SERVICE_ACCOUNT` | optional — service-account JSON (Firebase console → Project settings → Service accounts → Generate new private key); absent → push is a no-op, server still boots; set → live FCM alerts |
 
    `AUTH_TOKEN_SECRET` invalidates all device tokens if rotated;
    `PNR_ENCRYPTION_KEY` drops encrypted PNRs and cached PNR keys if rotated.
