@@ -50,6 +50,7 @@ import app.railcast.directory.SearchResult
 import app.railcast.directory.Station
 import app.railcast.directory.Train
 import app.railcast.directory.VoiceSearchContract
+import app.railcast.ui.SegmentedControl
 import app.railcast.ui.Skeleton
 
 /**
@@ -82,6 +83,19 @@ fun HomeScreen(home: HomeViewModel, onCheckPnr: () -> Unit, modifier: Modifier =
                 color = RailcastTheme.colors.ink2,
             )
         }
+        // PNR promoted from a buried row to a first-class choice beside train
+        // search (design review, phase 2). Selecting PNR opens the PNR screen;
+        // Train is the resting state, so the control settles back on Train.
+        item {
+            SegmentedControl(
+                options = listOf(
+                    stringResource(R.string.home_mode_train),
+                    stringResource(R.string.home_mode_pnr),
+                ),
+                selectedIndex = 0,
+                onSelect = { if (it == 1) onCheckPnr() },
+            )
+        }
         item {
             SearchField(
                 query = state.query,
@@ -106,7 +120,6 @@ fun HomeScreen(home: HomeViewModel, onCheckPnr: () -> Unit, modifier: Modifier =
                 })
             }
         } else {
-            item { CheckPnrRow(onCheckPnr) }
             if (state.saved.isNotEmpty()) {
                 item {
                     Text(
@@ -121,26 +134,6 @@ fun HomeScreen(home: HomeViewModel, onCheckPnr: () -> Unit, modifier: Modifier =
                 }
             }
         }
-    }
-}
-
-@Composable
-private fun CheckPnrRow(onClick: () -> Unit) {
-    val colors = RailcastTheme.colors
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(12.dp))
-            .clickable(onClick = onClick)
-            .background(colors.surface)
-            .border(1.dp, colors.line, RoundedCornerShape(12.dp))
-            .heightIn(min = 56.dp)
-            .padding(horizontal = 16.dp, vertical = 12.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
-    ) {
-        Icon(RailcastIcons.Ticket, contentDescription = null, tint = colors.brand, modifier = Modifier.size(22.dp))
-        Text(stringResource(R.string.home_check_pnr), fontSize = 16.sp, fontWeight = FontWeight.SemiBold, color = colors.ink)
     }
 }
 

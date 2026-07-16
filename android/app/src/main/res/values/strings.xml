@@ -179,6 +179,8 @@
 
     <!-- Home: search results + saved live cards (backlog 4.2) -->
     <string name="home_check_pnr">Check a PNR</string>
+    <string name="home_mode_train">Train</string>
+    <string name="home_mode_pnr">PNR</string>
     <string name="home_saved_title">Saved trains</string>
     <string name="home_card_loading">Loading %1$s…</string>
     <string name="search_result_train">Train</string>

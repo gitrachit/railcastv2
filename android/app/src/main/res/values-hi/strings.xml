@@ -179,6 +179,8 @@
 
     <!-- Home: search results + saved live cards (backlog 4.2) -->
     <string name="home_check_pnr">PNR जाँचें</string>
+    <string name="home_mode_train">ट्रेन</string>
+    <string name="home_mode_pnr">PNR</string>
     <string name="home_saved_title">सहेजी गई ट्रेनें</string>
     <string name="home_card_loading">%1$s लोड हो रही है…</string>
     <string name="search_result_train">ट्रेन</string>
