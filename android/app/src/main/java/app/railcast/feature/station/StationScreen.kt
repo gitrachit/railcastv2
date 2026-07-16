@@ -17,6 +17,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -91,7 +92,7 @@ private fun StationSearch(
         verticalArrangement = Arrangement.spacedBy(12.dp),
         contentPadding = PaddingValues(vertical = 20.dp),
     ) {
-        item { Text(stringResource(R.string.nav_station), fontSize = 28.sp, fontWeight = FontWeight.Bold, color = colors.ink) }
+        item { Text(stringResource(R.string.nav_station), style = MaterialTheme.typography.headlineLarge, color = colors.ink) }
         item {
             OutlinedTextField(
                 value = state.query,

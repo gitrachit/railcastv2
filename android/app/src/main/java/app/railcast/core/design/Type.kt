@@ -16,6 +16,8 @@ val RailcastMono = FontFamily.Monospace
 val RailcastTypography = Typography(
     // Answer-first: the big answer on every data screen.
     displaySmall = TextStyle(fontWeight = FontWeight.ExtraBold, fontSize = 30.sp, letterSpacing = (-0.03).em),
+    // Screen titles (Track / Station / Plan) — was hardcoded 28sp per screen.
+    headlineLarge = TextStyle(fontWeight = FontWeight.Bold, fontSize = 28.sp, letterSpacing = (-0.02).em),
     headlineMedium = TextStyle(fontWeight = FontWeight.Bold, fontSize = 22.sp, letterSpacing = (-0.02).em),
     titleLarge = TextStyle(fontWeight = FontWeight.Bold, fontSize = 18.sp),
     titleMedium = TextStyle(fontWeight = FontWeight.SemiBold, fontSize = 15.sp),

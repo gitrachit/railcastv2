@@ -25,6 +25,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -99,7 +100,7 @@ private fun TrackSearch(
         contentPadding = PaddingValues(vertical = 20.dp),
     ) {
         item {
-            Text(stringResource(R.string.nav_track), fontSize = 28.sp, fontWeight = FontWeight.Bold, color = colors.ink)
+            Text(stringResource(R.string.nav_track), style = MaterialTheme.typography.headlineLarge, color = colors.ink)
         }
         item {
             OutlinedTextField(
