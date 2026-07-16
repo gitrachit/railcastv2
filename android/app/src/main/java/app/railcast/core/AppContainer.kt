@@ -79,11 +79,15 @@ class AppContainer(context: Context) {
     private val appScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
     val poller: PollController = PollController(appScope)
 
+    // One saved-trains store shared by Home (the cards) and Track (the board's
+    // Pin action), so pinning from the board and the Home list stay in sync.
+    private val savedTrains = SavedStore(appContext)
+
     // Home: directory search + saved live cards (backlog 4.2). Saved-card refresh
     // is owned by `poller` like every other loop — no per-card timers.
     val home: HomeViewModel = HomeViewModel(
         search = directory,
-        saved = SavedStore(appContext),
+        saved = savedTrains,
         trainScreen = { trainNo -> screens.trainScreen(trainNo) },
         poller = poller,
         scope = appScope,
@@ -93,6 +97,7 @@ class AppContainer(context: Context) {
     val track: TrackViewModel = TrackViewModel(
         search = directory,
         trainScreen = { trainNo, run -> screens.trainScreen(trainNo, run) },
+        saved = savedTrains,
         poller = poller,
         scope = appScope,
     )

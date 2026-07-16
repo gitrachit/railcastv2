@@ -98,6 +98,12 @@
     <string name="track_on_time">समय पर</string>
     <string name="track_delay_late">%1$d मिनट देरी</string>
     <string name="track_estimated_position">अनुमानित स्थिति</string>
+    <!-- Board action bar (design review, phase 2) -->
+    <string name="track_action_mute">म्यूट</string>
+    <string name="track_action_muted">म्यूट किया</string>
+    <string name="track_action_coach">कोच</string>
+    <string name="track_action_save">सहेजें</string>
+    <string name="track_action_saved">सहेजा गया</string>
     <string name="track_cancelled_title">ट्रेन रद्द</string>
     <string name="track_alternatives_cta">विकल्प देखें</string>
 
