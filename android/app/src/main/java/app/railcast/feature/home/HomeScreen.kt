@@ -18,6 +18,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -40,6 +41,7 @@ import app.railcast.R
 import app.railcast.core.data.Resource
 import app.railcast.core.design.BoardHero
 import app.railcast.core.design.RailcastIcons
+import app.railcast.core.design.Spacing
 import app.railcast.core.design.RailcastTheme
 import app.railcast.core.design.trainStatusVisual
 import app.railcast.core.net.TrainScreen
@@ -48,6 +50,7 @@ import app.railcast.directory.SearchResult
 import app.railcast.directory.Station
 import app.railcast.directory.Train
 import app.railcast.directory.VoiceSearchContract
+import app.railcast.ui.Skeleton
 
 /**
  * Home (backlog 4.2): search by name/number with voice, and saved trains as
@@ -67,15 +70,16 @@ fun HomeScreen(home: HomeViewModel, onCheckPnr: () -> Unit, modifier: Modifier =
 
     LazyColumn(
         modifier = modifier.fillMaxSize().padding(horizontal = 20.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
+        verticalArrangement = Arrangement.spacedBy(Spacing.md),
         contentPadding = PaddingValues(vertical = 20.dp),
     ) {
+        // Trimmed from a 28sp hero to a calm eyebrow so saved live boards and
+        // the search rise up the fold (design review, phase 1).
         item {
             Text(
                 text = stringResource(R.string.home_greeting),
-                fontSize = 28.sp,
-                fontWeight = FontWeight.Bold,
-                color = RailcastTheme.colors.ink,
+                style = MaterialTheme.typography.titleMedium,
+                color = RailcastTheme.colors.ink2,
             )
         }
         item {
@@ -202,9 +206,8 @@ private fun ResultRow(result: SearchResult, onClick: () -> Unit) {
 
 @Composable
 private fun SavedCardView(trainNo: String, resource: Resource<TrainScreen>?, onRemove: () -> Unit) {
-    val colors = RailcastTheme.colors
     val screen = resource?.value
-    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+    Column(verticalArrangement = Arrangement.spacedBy(Spacing.xs)) {
         if (screen != null) {
             val visual = trainStatusVisual(screen.status.state, screen.status.delayMin)
             BoardHero(
@@ -215,17 +218,8 @@ private fun SavedCardView(trainNo: String, resource: Resource<TrainScreen>?, onR
                 freshness = freshnessLabel(resource),
             )
         } else {
-            // No cached value yet — a labelled placeholder, never a blank (FR-9.1).
-            Text(
-                text = stringResource(R.string.home_card_loading, trainNo),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(20.dp))
-                    .background(colors.surface2)
-                    .heightIn(min = 72.dp)
-                    .padding(20.dp),
-                color = colors.ink2,
-            )
+            // No cached value yet — a labelled skeleton, never a blank (FR-9.1).
+            Skeleton(label = stringResource(R.string.home_card_loading, trainNo))
         }
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
             TextButton(onClick = onRemove) { Text(stringResource(R.string.action_remove)) }

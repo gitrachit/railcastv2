@@ -41,6 +41,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.res.stringResource
 import androidx.compose.runtime.collectAsState
 import app.railcast.R
+import app.railcast.core.design.Radius
 import app.railcast.core.design.RailcastTheme
 import app.railcast.core.design.StatusChip
 import app.railcast.core.design.trainStatusVisual
@@ -51,6 +52,7 @@ import app.railcast.feature.alerts.AlertsViewModel
 import app.railcast.feature.alerts.MuteJourneyChip
 import app.railcast.feature.alerts.MuteKeys
 import app.railcast.ui.ErrorState
+import app.railcast.ui.Skeleton
 
 /**
  * PNR screen (backlog 4.5). The PNR is masked everywhere it appears (FR-4.3):
@@ -165,13 +167,7 @@ private fun PnrInput(input: String, hint: String?, onChange: (String) -> Unit, o
 
 @Composable
 private fun LoadingRow() {
-    val colors = RailcastTheme.colors
-    Text(
-        text = stringResource(R.string.pnr_loading),
-        color = colors.ink2,
-        modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp)).background(colors.surface2)
-            .heightIn(min = 64.dp).padding(20.dp),
-    )
+    Skeleton(label = stringResource(R.string.pnr_loading), corner = Radius.md, height = 64.dp)
 }
 
 @Composable

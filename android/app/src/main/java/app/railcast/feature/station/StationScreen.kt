@@ -41,6 +41,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.res.stringResource
 import app.railcast.R
+import app.railcast.core.design.Radius
 import app.railcast.core.design.RailcastIcons
 import app.railcast.core.design.RailcastTheme
 import app.railcast.core.design.StatusChip
@@ -49,6 +50,7 @@ import app.railcast.directory.SearchResult
 import app.railcast.directory.Station
 import app.railcast.ui.EmptyState
 import app.railcast.ui.ErrorState
+import app.railcast.ui.Skeleton
 
 /**
  * Station board (backlog 4.6, FR-5.1). Search a station → live arrivals/
@@ -214,12 +216,7 @@ private fun StationBoard(
                 if (state.resource?.error != null && state.resource?.loading == false) {
                     ErrorState(onRetry = vm::retry, detail = state.resource?.error?.let { "${it.code}: ${it.message}" })
                 } else {
-                    Text(
-                        stringResource(R.string.station_loading),
-                        color = colors.ink2,
-                        modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp))
-                            .background(colors.surface2).heightIn(min = 64.dp).padding(20.dp),
-                    )
+                    Skeleton(label = stringResource(R.string.station_loading), corner = Radius.md, height = 64.dp)
                 }
             }
             return@LazyColumn
