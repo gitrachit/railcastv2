@@ -58,7 +58,7 @@ class DeviceSession(
             token.get()?.let { return it }
 
             val result = apiResult({ NetworkModule.parseError(it) }) {
-                api.authDevice(DeviceAuthRequest(appVersion = appVersion))
+                api.authDevice(DeviceAuthRequest(platform = "android", appVersion = appVersion))
             }
             if (result is ApiResult.Ok) {
                 token.set(result.data.deviceToken)
@@ -79,7 +79,7 @@ class DeviceSession(
         token.get()?.takeIf { it != rejectedToken }?.let { return@withLock it }
 
         val result = apiResult({ NetworkModule.parseError(it) }) {
-            api.authDevice(DeviceAuthRequest(appVersion = appVersion))
+            api.authDevice(DeviceAuthRequest(platform = "android", appVersion = appVersion))
         }
         if (result is ApiResult.Ok) {
             token.set(result.data.deviceToken)
