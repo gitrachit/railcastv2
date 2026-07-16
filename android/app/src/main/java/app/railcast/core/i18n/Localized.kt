@@ -1,6 +1,9 @@
 package app.railcast.core.i18n
 
+import android.content.Context
+import android.content.ContextWrapper
 import android.content.res.Configuration
+import android.content.res.Resources
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
@@ -22,7 +25,12 @@ fun LocalizedContent(language: AppLanguage, content: @Composable () -> Unit) {
         val locale = Locale.forLanguageTag(language.tag)
         Locale.setDefault(locale)
         val config = Configuration(configuration).apply { setLocale(locale) }
-        context.createConfigurationContext(config)
+        // Wrap rather than replace: a bare createConfigurationContext() result
+        // severs the ContextWrapper chain to the Activity, so anything that
+        // unwraps LocalContext for an owner — rememberLauncherForActivityResult
+        // on Home/Station/Alerts — crashes with "No ActivityResultRegistryOwner".
+        // Only the resources are overridden with the localized ones.
+        LocalizedContextWrapper(context, context.createConfigurationContext(config).resources)
     }
     CompositionLocalProvider(
         LocalContext provides localizedContext,
@@ -30,4 +38,12 @@ fun LocalizedContent(language: AppLanguage, content: @Composable () -> Unit) {
     ) {
         content()
     }
+}
+
+/** Base context (and its Activity chain) intact, resources localized. */
+private class LocalizedContextWrapper(
+    base: Context,
+    private val localizedResources: Resources,
+) : ContextWrapper(base) {
+    override fun getResources(): Resources = localizedResources
 }
