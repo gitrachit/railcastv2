@@ -51,6 +51,7 @@
     <string name="alert_time_earlier">पहले</string>
     <string name="alert_time_later">बाद में</string>
     <string name="alert_oem_title">बैकग्राउंड डिलीवरी</string>
+    <string name="alert_oem_expand">अलर्ट नहीं मिल रहे?</string>
     <string name="alert_oem_body_xiaomi">Xiaomi/Redmi/POCO पर, ऑटोस्टार्ट चालू करें और बैटरी सेवर को \"कोई प्रतिबंध नहीं\" पर सेट करें ताकि ऐप बंद होने पर भी अलर्ट आएँ।</string>
     <string name="alert_oem_body_oppo">Oppo/Realme/OnePlus पर, ऑटो-लॉन्च चालू करें और बैकग्राउंड गतिविधि की अनुमति दें।</string>
     <string name="alert_oem_body_vivo">Vivo/iQOO पर, ऑटो-स्टार्ट चालू करें और उच्च बैकग्राउंड पावर की अनुमति दें।</string>
