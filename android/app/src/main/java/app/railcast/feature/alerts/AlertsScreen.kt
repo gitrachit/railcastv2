@@ -30,6 +30,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -170,8 +173,29 @@ private fun OemGuidanceSection() {
     val context = LocalContext.current
     val vendor = OemGuidance.vendorOf(Build.MANUFACTURER ?: "")
     if (!OemGuidance.needsGuidance(vendor)) return
+    // Progressive disclosure (design review, phase 3): most users never need
+    // the OEM battery steps, so collapse them behind a one-tap prompt instead
+    // of always occupying the screen.
+    var expanded by remember { mutableStateOf(false) }
     Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-        SectionTitle(stringResource(R.string.alert_oem_title))
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(12.dp))
+                .clickable(role = Role.Button) { expanded = !expanded }
+                .heightIn(min = 48.dp)
+                .padding(top = 8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                stringResource(R.string.alert_oem_expand),
+                style = MaterialTheme.typography.titleMedium,
+                color = colors.ink,
+                modifier = Modifier.weight(1f),
+            )
+            Text(if (expanded) "▾" else "▸", fontSize = 16.sp, color = colors.ink3)
+        }
+        if (!expanded) return@Column
         Text(stringResource(oemBody(vendor)), fontSize = 13.sp, color = colors.ink2)
         Text(
             text = stringResource(R.string.alert_oem_open_settings),

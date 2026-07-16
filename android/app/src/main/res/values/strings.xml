@@ -50,6 +50,7 @@
     <string name="alert_time_earlier">Earlier</string>
     <string name="alert_time_later">Later</string>
     <string name="alert_oem_title">Background delivery</string>
+    <string name="alert_oem_expand">Not getting alerts?</string>
     <string name="alert_oem_body_xiaomi">On Xiaomi/Redmi/POCO, allow Autostart and set battery saver to No restrictions so alerts arrive with the app closed.</string>
     <string name="alert_oem_body_oppo">On Oppo/Realme/OnePlus, allow Auto-launch and set battery usage to Allow background activity.</string>
     <string name="alert_oem_body_vivo">On Vivo/iQOO, enable Auto-start and allow high background power consumption.</string>
