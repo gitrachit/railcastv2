@@ -209,6 +209,7 @@ private fun SavedCardView(trainNo: String, resource: Resource<TrainScreen>?, onR
                 answerIcon = visual.icon,
                 level = visual.level,
                 freshness = freshnessLabel(resource),
+                stale = resource.stale,
             )
         } else {
             // No cached value yet — a labelled skeleton, never a blank (FR-9.1).

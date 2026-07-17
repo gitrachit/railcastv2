@@ -211,6 +211,7 @@ private fun TrackContent(
                     answerIcon = visual.icon,
                     level = visual.level,
                     freshness = freshnessLabel(resource),
+                    stale = resource.stale,
                 )
             }
 
