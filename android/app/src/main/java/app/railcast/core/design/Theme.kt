@@ -8,6 +8,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Density
 
 private val LocalRailcastColors = staticCompositionLocalOf { RailcastLightColors }
 
@@ -52,9 +54,22 @@ fun RailcastTheme(
         )
     }
 
-    CompositionLocalProvider(LocalRailcastColors provides colors) {
+    // Respect OS font scaling but cap it (design blueprint §2.3/§8): large system
+    // text should enlarge type comfortably, but past ~1.3× it blows through
+    // layouts and clips content. Clamp once, app-wide, at the theme root.
+    val density = LocalDensity.current
+    val clamped =
+        if (density.fontScale <= MAX_FONT_SCALE) density
+        else Density(density.density, MAX_FONT_SCALE)
+
+    CompositionLocalProvider(
+        LocalRailcastColors provides colors,
+        LocalDensity provides clamped,
+    ) {
         MaterialTheme(colorScheme = material, typography = RailcastTypography, content = content)
     }
 }
+
+private const val MAX_FONT_SCALE = 1.3f
 
 private val Color_White = androidx.compose.ui.graphics.Color.White
