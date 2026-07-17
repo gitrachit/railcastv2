@@ -55,6 +55,7 @@ import app.railcast.core.data.Resource
 import app.railcast.core.design.BoardHero
 import app.railcast.core.design.RailcastIcons
 import app.railcast.core.design.RailcastTheme
+import app.railcast.core.design.monoNumerals
 import app.railcast.core.design.trainStatusVisual
 import app.railcast.core.net.CoachGuide
 import app.railcast.core.net.RouteStop
@@ -399,11 +400,14 @@ private fun StopRow(stop: RouteStop) {
         Column(Modifier.weight(1f)) {
             Text(stop.name, fontSize = 15.sp, fontWeight = FontWeight.SemiBold, color = colors.ink)
             Text(
-                text = buildString {
-                    if (sched != null) append(sched)
-                    if (actual != null && actual != sched) append("  →  $actual")
-                    if (platformText != null) append("   $platformText")
-                },
+                // Times / platform numbers in the mono face (blueprint §2.2).
+                text = monoNumerals(
+                    buildString {
+                        if (sched != null) append(sched)
+                        if (actual != null && actual != sched) append("  →  $actual")
+                        if (platformText != null) append("   $platformText")
+                    },
+                ),
                 fontSize = 12.sp,
                 color = colors.ink2,
             )
@@ -419,7 +423,7 @@ private fun DelayTag(delayMin: Int?) {
         delayMin == null -> Unit
         delayMin <= 0 -> Text(stringResource(R.string.track_on_time), fontSize = 12.sp, color = colors.green, fontWeight = FontWeight.Bold)
         else -> Text(
-            stringResource(R.string.track_delay_late, delayMin),
+            monoNumerals(stringResource(R.string.track_delay_late, delayMin)),
             fontSize = 12.sp,
             color = if (delayMin > 15) colors.red else colors.amber,
             fontWeight = FontWeight.Bold,
