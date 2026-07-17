@@ -41,10 +41,21 @@ const app = buildApp({
 });
 
 scheduler.start((entityKey) => poller.poll(entityKey));
-await scheduler.resume(await repo.activeEntityKeys());
 
+// Serve as soon as the schema is ready — /health must NOT wait on the watcher
+// warm-up below. Resuming every active watch's poll-chain touches Redis/BullMQ,
+// and a slow cold-start there would otherwise stall boot past the platform
+// healthcheck window and fail an otherwise-fine deploy.
 const port = Number(process.env.PORT ?? 3000);
-app.listen({ port, host: "0.0.0.0" }).catch((err) => {
+try {
+  await app.listen({ port, host: "0.0.0.0" });
+} catch (err) {
   app.log.error(err);
   process.exit(1);
-});
+}
+
+// Warm existing watch poll-chains in the background (does not gate /health).
+repo
+  .activeEntityKeys()
+  .then((keys) => scheduler.resume(keys))
+  .catch((err) => app.log.error({ err }, "watch scheduler resume failed"));
