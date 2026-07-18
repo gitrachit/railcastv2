@@ -76,6 +76,12 @@ fun PlanScreen(plan: PlanViewModel, modifier: Modifier = Modifier) {
         items(state.fromResults, key = { "from-" + it.code }) { s -> Suggestion(s) { plan.selectFrom(s) } }
 
         item {
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+                SwapButton(onClick = plan::swap)
+            }
+        }
+
+        item {
             OutlinedTextField(
                 value = state.toQuery, onValueChange = plan::onToQuery, singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
@@ -347,6 +353,24 @@ private fun runsOnText(runsOn: List<Boolean>): String {
         active.size >= 7 -> stringResource(R.string.plan_runs_daily)
         else -> stringResource(R.string.plan_runs_on, active.joinToString(", "))
     }
+}
+
+@Composable
+private fun SwapButton(onClick: () -> Unit) {
+    val colors = RailcastTheme.colors
+    val label = stringResource(R.string.plan_swap)
+    Icon(
+        imageVector = RailcastIcons.SwapVert,
+        contentDescription = label,
+        tint = colors.brand,
+        modifier = Modifier
+            .clip(RoundedCornerShape(999.dp))
+            .clickable(onClick = onClick)
+            .background(colors.brandSoft)
+            .size(44.dp)
+            .padding(11.dp)
+            .semantics { role = Role.Button },
+    )
 }
 
 private fun quotaLabel(q: PlanQuota): Int = when (q) {

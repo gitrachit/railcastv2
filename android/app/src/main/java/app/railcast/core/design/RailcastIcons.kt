@@ -103,4 +103,10 @@ object RailcastIcons {
         "Pin",
         "M16 12V4h1c.55 0 1-.45 1-1s-.45-1-1-1H7c-.55 0-1 .45-1 1s.45 1 1 1h1v8l-2 2v2h5.2v6h1.6v-6H18v-2l-2-2z",
     )
+
+    /** Reverse origin ↔ destination (swap_vert). */
+    val SwapVert = icon(
+        "SwapVert",
+        "M16 17.01V10h-2v7.01h-3L15 21l4-3.99h-3zM9 3L5 6.99h3V14h2V6.99h3L9 3z",
+    )
 }

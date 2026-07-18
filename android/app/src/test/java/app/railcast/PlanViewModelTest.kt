@@ -88,6 +88,18 @@ class PlanViewModelTest {
         assertEquals("Jabalpur", plan.state.value.fromQuery)
     }
 
+    @Test fun `swap reverses origin and destination`() = runTest {
+        val plan = vm(backgroundScope)
+        plan.selectFrom(stationA); plan.selectTo(stationB)
+        plan.swap()
+        val s = plan.state.value
+        assertEquals(stationB, s.from)
+        assertEquals(stationA, s.to)
+        assertEquals("Narsinghpur", s.fromQuery)
+        assertEquals("Jabalpur", s.toQuery)
+        assertTrue(s.canSearch) // still valid after swapping
+    }
+
     @Test fun `search loads rows then hydrates each one`() = runTest {
         val plan = vm(backgroundScope)
         plan.selectFrom(stationA); plan.selectTo(stationB)

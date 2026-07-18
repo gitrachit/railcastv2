@@ -80,6 +80,15 @@ class PlanViewModel(
     fun selectTo(station: Station) =
         _state.update { it.copy(to = station, toQuery = station.name, toResults = emptyList()) }
 
+    /** Reverse the journey — swap origin and destination so a return trip
+     *  needs no retyping. Clears in-flight suggestions on both fields. */
+    fun swap() = _state.update {
+        it.copy(
+            from = it.to, fromQuery = it.toQuery, fromResults = emptyList(),
+            to = it.from, toQuery = it.fromQuery, toResults = emptyList(),
+        )
+    }
+
     // The journey date can't go before "today" (the date the screen opened).
     private val floorDate: String = initialDate
 

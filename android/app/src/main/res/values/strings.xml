@@ -126,6 +126,7 @@
     <string name="plan_prev_day">Previous day</string>
     <string name="plan_next_day">Next day</string>
     <string name="plan_search">Find trains</string>
+    <string name="plan_swap">Swap origin and destination</string>
     <string name="plan_quota_general">General</string>
     <string name="plan_quota_tatkal">Tatkal</string>
     <string name="plan_quota_ladies">Ladies</string>
