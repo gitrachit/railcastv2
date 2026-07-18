@@ -13,6 +13,9 @@
     <string name="home_demo_train">Goa Express · 12780</string>
     <string name="home_demo_status">Running · on time</string>
     <string name="freshness_demo">Updated just now</string>
+    <string name="freshness_just_now">just now</string>
+    <string name="freshness_min_ago">%1$d min ago</string>
+    <string name="freshness_hr_ago">%1$d h ago</string>
 
     <!-- Placeholder copy until each feature lands (M4) -->
     <string name="placeholder_track">Search a train by name or number to see live status.</string>

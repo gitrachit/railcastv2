@@ -52,6 +52,7 @@ import app.railcast.directory.Train
 import app.railcast.directory.VoiceSearchContract
 import app.railcast.ui.SegmentedControl
 import app.railcast.ui.Skeleton
+import app.railcast.ui.freshnessLabel
 
 /**
  * Home (backlog 4.2): search by name/number with voice, and saved trains as
@@ -208,7 +209,7 @@ private fun SavedCardView(trainNo: String, resource: Resource<TrainScreen>?, onR
                 answer = screen.status.summary,
                 answerIcon = visual.icon,
                 level = visual.level,
-                freshness = freshnessLabel(resource),
+                freshness = freshnessLabel(resource.freshness, resource.stale),
                 stale = resource.stale,
             )
         } else {
@@ -221,11 +222,6 @@ private fun SavedCardView(trainNo: String, resource: Resource<TrainScreen>?, onR
     }
 }
 
-@Composable
-private fun freshnessLabel(resource: Resource<TrainScreen>): String {
-    val base = resource.freshness ?: stringResource(R.string.freshness_demo)
-    return if (resource.stale) stringResource(R.string.freshness_offline, base) else base
-}
 
 @StringRes
 private fun validationRes(key: String): Int = when (key) {

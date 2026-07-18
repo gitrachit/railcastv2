@@ -39,6 +39,8 @@ import androidx.compose.ui.res.stringResource
 import app.railcast.R
 import app.railcast.core.design.RailcastIcons
 import app.railcast.core.design.RailcastTheme
+import app.railcast.core.design.monoNumerals
+import app.railcast.core.format.IsoTime
 import app.railcast.core.net.AvailabilityCell
 import app.railcast.core.net.FareCell
 import app.railcast.core.net.PlanRow
@@ -218,8 +220,8 @@ private fun PlanRowCard(row: PlanRow, expanded: Boolean, onToggle: () -> Unit, t
             Column(Modifier.weight(1f)) {
                 Text("${row.name} · ${row.no}", fontSize = 15.sp, fontWeight = FontWeight.SemiBold, color = colors.ink)
                 Text(
-                    "${row.dep} – ${row.arr}  ·  ${durationText(row.durationMin)}",
-                    fontSize = 12.sp, color = colors.ink2,
+                    monoNumerals("${IsoTime.clock(row.dep)} – ${IsoTime.clock(row.arr)}  ·  ${durationText(row.durationMin)}"),
+                    fontSize = 12.sp, color = colors.ink2, maxLines = 1,
                 )
                 Text(runsOnText(row.runsOn), fontSize = 11.sp, color = colors.ink3)
             }
