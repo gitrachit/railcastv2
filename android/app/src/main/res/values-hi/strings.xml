@@ -127,6 +127,7 @@
     <string name="plan_prev_day">पिछला दिन</string>
     <string name="plan_next_day">अगला दिन</string>
     <string name="plan_search">ट्रेनें खोजें</string>
+    <string name="plan_swap">आरंभ और गंतव्य बदलें</string>
     <string name="plan_quota_general">सामान्य</string>
     <string name="plan_quota_tatkal">तत्काल</string>
     <string name="plan_quota_ladies">महिला</string>
