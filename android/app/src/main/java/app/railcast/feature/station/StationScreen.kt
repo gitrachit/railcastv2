@@ -45,6 +45,8 @@ import app.railcast.R
 import app.railcast.core.design.Radius
 import app.railcast.core.design.RailcastIcons
 import app.railcast.core.design.RailcastTheme
+import app.railcast.core.design.monoNumerals
+import app.railcast.core.format.IsoTime
 import app.railcast.core.design.StatusChip
 import app.railcast.core.net.StationTrain
 import app.railcast.directory.SearchResult
@@ -52,6 +54,7 @@ import app.railcast.directory.Station
 import app.railcast.ui.EmptyState
 import app.railcast.ui.ErrorState
 import app.railcast.ui.Skeleton
+import app.railcast.ui.freshnessLabel
 
 /**
  * Station board (backlog 4.6, FR-5.1). Search a station → live arrivals/
@@ -201,9 +204,8 @@ private fun StationBoard(
         state.resource?.let { res ->
             if (res.value != null) {
                 item {
-                    val base = res.freshness ?: stringResource(R.string.freshness_demo)
                     Text(
-                        if (res.stale) stringResource(R.string.freshness_offline, base) else base,
+                        freshnessLabel(res.freshness, res.stale),
                         fontSize = 11.sp, color = colors.ink3,
                     )
                 }
@@ -326,14 +328,21 @@ private fun TrainRow(t: StationTrain, onAlternatives: () -> Unit) {
                 Text("${t.source.name} → ${t.dest.name}", fontSize = 12.sp, color = colors.ink2)
                 val line = buildString {
                     if (time != null) {
-                        append(time.scheduled)
-                        if (time.actual != null && time.actual != time.scheduled) append("  →  ${time.actual}")
+                        append(IsoTime.clock(time.scheduled))
+                        val actual = IsoTime.clock(time.actual)
+                        if (actual.isNotEmpty() && actual != IsoTime.clock(time.scheduled)) append("  →  $actual")
                     }
-                    if (t.platform != null) append("   ")
                 }
                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    if (line.isNotBlank()) Text(line, fontSize = 12.sp, color = colors.ink2)
-                    t.platform?.let { Text(stringResource(R.string.track_platform, it), fontSize = 12.sp, color = colors.ink3) }
+                    if (line.isNotBlank()) Text(monoNumerals(line), fontSize = 12.sp, color = colors.ink2, maxLines = 1)
+                    // maxLines=1 + weight-free short strings: the platform label can
+                    // never be crushed into a one-char-per-line column again.
+                    t.platform?.let {
+                        Text(
+                            stringResource(R.string.track_platform, it),
+                            fontSize = 12.sp, color = colors.ink3, maxLines = 1,
+                        )
+                    }
                 }
             }
             StatusChip(icon = icon, label = statusWord(t.status, time?.delayMin), level = level)

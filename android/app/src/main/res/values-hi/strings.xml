@@ -14,6 +14,9 @@
     <string name="home_demo_train">गोवा एक्सप्रेस · 12780</string>
     <string name="home_demo_status">चल रही है · समय पर</string>
     <string name="freshness_demo">अभी अपडेट किया गया</string>
+    <string name="freshness_just_now">अभी</string>
+    <string name="freshness_min_ago">%1$d मिनट पहले</string>
+    <string name="freshness_hr_ago">%1$d घंटे पहले</string>
 
     <!-- Placeholder copy until each feature lands (M4) -->
     <string name="placeholder_track">लाइव स्थिति देखने के लिए ट्रेन का नाम या नंबर खोजें।</string>

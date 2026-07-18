@@ -56,12 +56,14 @@ import app.railcast.core.design.BoardHero
 import app.railcast.core.design.RailcastIcons
 import app.railcast.core.design.RailcastTheme
 import app.railcast.core.design.monoNumerals
+import app.railcast.core.format.IsoTime
 import app.railcast.core.design.trainStatusVisual
 import app.railcast.core.net.CoachGuide
 import app.railcast.core.net.RouteStop
 import app.railcast.core.net.TrainScreen
 import app.railcast.ui.ErrorState
 import app.railcast.ui.Skeleton
+import app.railcast.ui.freshnessLabel
 import app.railcast.directory.SearchResult
 import app.railcast.directory.Station
 import kotlinx.coroutines.launch
@@ -211,7 +213,7 @@ private fun TrackContent(
                     answer = screen.status.summary,
                     answerIcon = visual.icon,
                     level = visual.level,
-                    freshness = freshnessLabel(resource),
+                    freshness = freshnessLabel(resource.freshness, resource.stale),
                     stale = resource.stale,
                 )
             }
@@ -384,8 +386,8 @@ private fun DayHeader(day: Int) {
 private fun StopRow(stop: RouteStop) {
     val colors = RailcastTheme.colors
     val isNext = stop.state == "next"
-    val sched = listOfNotNull(stop.scheduled.arr, stop.scheduled.dep).firstOrNull()
-    val actual = listOfNotNull(stop.actual.arr, stop.actual.dep).firstOrNull()
+    val sched = IsoTime.clock(listOfNotNull(stop.scheduled.arr, stop.scheduled.dep).firstOrNull())
+    val actual = IsoTime.clock(listOfNotNull(stop.actual.arr, stop.actual.dep).firstOrNull())
     val platformText = stop.platform?.let { stringResource(R.string.track_platform, it) }
     Row(
         modifier = Modifier
@@ -403,13 +405,14 @@ private fun StopRow(stop: RouteStop) {
                 // Times / platform numbers in the mono face (blueprint §2.2).
                 text = monoNumerals(
                     buildString {
-                        if (sched != null) append(sched)
-                        if (actual != null && actual != sched) append("  →  $actual")
-                        if (platformText != null) append("   $platformText")
+                        if (sched.isNotEmpty()) append(sched)
+                        if (actual.isNotEmpty() && actual != sched) append("  →  $actual")
+                        if (platformText != null) append("   ·   $platformText")
                     },
                 ),
                 fontSize = 12.sp,
                 color = colors.ink2,
+                maxLines = 1,
             )
         }
         DelayTag(stop.delayMin)
@@ -632,11 +635,6 @@ private fun standRes(zone: PlatformZone): Int = when (zone) {
     PlatformZone.REAR -> R.string.coach_stand_rear
 }
 
-@Composable
-private fun freshnessLabel(resource: Resource<TrainScreen>): String {
-    val base = resource.freshness ?: stringResource(R.string.freshness_demo)
-    return if (resource.stale) stringResource(R.string.freshness_offline, base) else base
-}
 
 @StringRes
 private fun runLabelRes(label: RunLabel?): Int =
