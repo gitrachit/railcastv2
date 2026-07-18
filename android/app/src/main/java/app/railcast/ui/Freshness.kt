@@ -18,7 +18,7 @@ fun freshnessLabel(freshness: String?, stale: Boolean): String {
         IsoTime.Age.JustNow -> stringResource(R.string.freshness_just_now)
         is IsoTime.Age.Minutes -> stringResource(R.string.freshness_min_ago, a.n)
         is IsoTime.Age.Hours -> stringResource(R.string.freshness_hr_ago, a.n)
-        is IsoTime.Age.Clock -> a.hhmm
+        is IsoTime.Age.Days -> stringResource(R.string.freshness_day_ago, a.n)
         IsoTime.Age.Unknown -> stringResource(R.string.freshness_demo)
     }
     return if (stale) stringResource(R.string.freshness_offline, base) else base
