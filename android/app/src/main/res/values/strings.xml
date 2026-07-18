@@ -142,7 +142,9 @@
     <string name="plan_checking">Checking…</string>
     <string name="plan_duration">%1$dh %2$dm</string>
     <string name="plan_day_letters" translatable="false">SMTWTFS</string>
+    <string name="plan_day_names">Sun,Mon,Tue,Wed,Thu,Fri,Sat</string>
     <string name="plan_runs_on">Runs: %1$s</string>
+    <string name="plan_runs_daily">Runs daily</string>
     <string name="plan_confirm_chance">%1$d%% chance</string>
     <string name="plan_fare_total">₹%1$s</string>
     <string name="plan_fare_base">Base</string>

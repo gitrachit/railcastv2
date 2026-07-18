@@ -1,5 +1,8 @@
 package app.railcast.core.format
 
+import java.text.SimpleDateFormat
+import java.util.Locale
+
 /**
  * Tiny, dependency-free ISO-8601 display formatter. minSdk 24 has no java.time
  * without desugaring, and pulling that in for two helpers isn't worth the APK
@@ -19,6 +22,15 @@ object IsoTime {
 
     /** "2026-07-18T02:50:00+05:30" → "02:50". Blank when absent/unparseable. */
     fun clock(iso: String?): String = iso?.let { CLOCK.find(it)?.groupValues?.get(1) } ?: ""
+
+    /** "2026-07-18" → "Sat, 18 Jul", localized to [locale]. Falls back to the
+     *  raw string if it isn't a plain date. Locale defaults to the app's chosen
+     *  language (LocalizedContent sets the default), so weekday/month names
+     *  translate without a per-name resource table. */
+    fun friendlyDate(dateIso: String, locale: Locale = Locale.getDefault()): String = runCatching {
+        val parsed = SimpleDateFormat("yyyy-MM-dd", Locale.US).parse(dateIso) ?: return dateIso
+        SimpleDateFormat("EEE, d MMM", locale).format(parsed)
+    }.getOrDefault(dateIso)
 
     /** Epoch millis (UTC) for an ISO instant with `Z` or a `±HH:MM` offset. */
     fun epochMillis(iso: String): Long? {
