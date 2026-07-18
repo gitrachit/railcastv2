@@ -42,6 +42,7 @@ class IsoTimeTest {
         assertEquals(IsoTime.Age.JustNow, IsoTime.age("2026-07-18T11:59:40Z", now)) // 20s
         assertEquals(IsoTime.Age.Minutes(6), IsoTime.age("2026-07-18T11:54:00Z", now)) // 6m
         assertEquals(IsoTime.Age.Hours(2), IsoTime.age("2026-07-18T10:00:00Z", now)) // 2h
+        assertEquals(IsoTime.Age.Days(3), IsoTime.age("2026-07-15T11:00:00Z", now)) // ~3d, stale offline
         assertEquals(IsoTime.Age.Unknown, IsoTime.age(null, now))
     }
 }

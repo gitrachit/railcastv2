@@ -54,7 +54,7 @@ object IsoTime {
         data object JustNow : Age
         data class Minutes(val n: Int) : Age
         data class Hours(val n: Int) : Age
-        data class Clock(val hhmm: String) : Age // older than a day → show the time
+        data class Days(val n: Int) : Age // "3 d ago" — unambiguous for stale offline cards
         data object Unknown : Age
     }
 
@@ -66,7 +66,7 @@ object IsoTime {
             d < 45_000L -> Age.JustNow
             d < 3_600_000L -> Age.Minutes((d / 60_000L).toInt())
             d < 86_400_000L -> Age.Hours((d / 3_600_000L).toInt())
-            else -> Age.Clock(clock(iso))
+            else -> Age.Days((d / 86_400_000L).toInt())
         }
     }
 
