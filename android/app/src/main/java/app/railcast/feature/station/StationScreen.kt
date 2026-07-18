@@ -290,6 +290,10 @@ private fun Filters(state: StationUiState, vm: StationViewModel) {
             singleLine = true,
             modifier = Modifier.fillMaxWidth(),
             placeholder = { Text(stringResource(R.string.station_dest_filter)) },
+            // A leading glyph so this reads as a filter, not a mystery empty box.
+            leadingIcon = {
+                Icon(RailcastIcons.Search, contentDescription = null, tint = colors.ink3, modifier = Modifier.size(20.dp))
+            },
         )
     }
 }
