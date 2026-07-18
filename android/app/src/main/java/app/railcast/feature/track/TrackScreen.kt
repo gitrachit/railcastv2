@@ -552,12 +552,12 @@ private fun CoachGuideSection(
                 color = colors.ink3,
                 modifier = Modifier.weight(1f),
             )
-            // GEN mode toggle (FR-3.3): highlights all unreserved coaches.
-            Text(
-                text = stringResource(R.string.coach_gen_mode),
-                fontSize = 12.sp,
-                fontWeight = FontWeight.Bold,
-                color = if (genMode) colors.brand else colors.ink2,
+            // GEN mode toggle (FR-3.3): highlights all unreserved coaches. The
+            // seat glyph + fill state signal it's a toggle, not a static label.
+            val genTint = if (genMode) colors.brand else colors.ink2
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
                 modifier = Modifier
                     .clip(RoundedCornerShape(999.dp))
                     .clickable(onClick = onToggleGen)
@@ -565,7 +565,15 @@ private fun CoachGuideSection(
                     .heightIn(min = 48.dp)
                     .padding(horizontal = 12.dp, vertical = 9.dp)
                     .semantics { role = Role.Switch },
-            )
+            ) {
+                Icon(RailcastIcons.Seat, contentDescription = null, tint = genTint, modifier = Modifier.size(15.dp))
+                Text(
+                    text = stringResource(R.string.coach_gen_mode),
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = genTint,
+                )
+            }
         }
 
         // Reversal notes in plain language (FR-3.2).
