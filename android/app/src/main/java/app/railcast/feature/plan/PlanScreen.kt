@@ -33,6 +33,7 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.res.stringResource
@@ -149,7 +150,11 @@ private fun DateStepper(date: String, onStep: (Int) -> Unit) {
     val colors = RailcastTheme.colors
     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
         StepArrow("‹", stringResource(R.string.plan_prev_day)) { onStep(-1) }
-        Text(date, fontSize = 16.sp, fontWeight = FontWeight.SemiBold, color = colors.ink, modifier = Modifier.weight(1f))
+        Text(
+            IsoTime.friendlyDate(date),
+            fontSize = 16.sp, fontWeight = FontWeight.SemiBold, color = colors.ink,
+            textAlign = TextAlign.Center, modifier = Modifier.weight(1f),
+        )
         StepArrow("›", stringResource(R.string.plan_next_day)) { onStep(1) }
     }
 }
@@ -333,9 +338,15 @@ private fun durationText(mins: Int): String = stringResource(R.string.plan_durat
 
 @Composable
 private fun runsOnText(runsOn: List<Boolean>): String {
-    val letters = stringResource(R.string.plan_day_letters) // 7 chars, Sun..Sat
-    val active = runsOn.mapIndexedNotNull { i, on -> if (on) letters.getOrNull(i) else null }.joinToString(" ")
-    return stringResource(R.string.plan_runs_on, active.ifBlank { "—" })
+    // Unambiguous day names (Mon, Thu) instead of single letters (M, S T),
+    // and "Runs daily" when every day is set.
+    val names = stringResource(R.string.plan_day_names).split(",")
+    val active = runsOn.mapIndexedNotNull { i, on -> if (on) names.getOrNull(i) else null }
+    return when {
+        active.isEmpty() -> stringResource(R.string.plan_runs_on, "—")
+        active.size >= 7 -> stringResource(R.string.plan_runs_daily)
+        else -> stringResource(R.string.plan_runs_on, active.joinToString(", "))
+    }
 }
 
 private fun quotaLabel(q: PlanQuota): Int = when (q) {

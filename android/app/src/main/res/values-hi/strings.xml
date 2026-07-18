@@ -142,7 +142,9 @@
     <string name="plan_no_trains">कोई ट्रेन नहीं मिली</string>
     <string name="plan_checking">जाँच हो रही है…</string>
     <string name="plan_duration">%1$dघं %2$dमि</string>
+    <string name="plan_day_names">रवि,सोम,मंगल,बुध,गुरु,शुक्र,शनि</string>
     <string name="plan_runs_on">चलती है: %1$s</string>
+    <string name="plan_runs_daily">रोज़ चलती है</string>
     <string name="plan_confirm_chance">%1$d%% संभावना</string>
     <string name="plan_fare_total">₹%1$s</string>
     <string name="plan_fare_base">मूल</string>

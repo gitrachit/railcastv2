@@ -32,6 +32,11 @@ class IsoTimeTest {
         assertNull(IsoTime.epochMillis("2026-07-18"))
     }
 
+    @Test fun `friendly date is a readable weekday plus day plus month`() {
+        assertEquals("Sat, 18 Jul", IsoTime.friendlyDate("2026-07-18", java.util.Locale.US))
+        assertEquals("not-a-date", IsoTime.friendlyDate("not-a-date", java.util.Locale.US))
+    }
+
     @Test fun `age buckets by how old the instant is`() {
         val now = IsoTime.epochMillis("2026-07-18T12:00:00Z")!!
         assertEquals(IsoTime.Age.JustNow, IsoTime.age("2026-07-18T11:59:40Z", now)) // 20s
