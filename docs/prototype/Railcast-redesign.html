@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Railcast — Redesign Prototype</title>
+<style>:root{color-scheme:light dark;}body{margin:0;}</style>
+</head>
+<body>
+<style>
+/* ============ Railcast redesign prototype — Signalbox ============ */
+:root{ --stage:#0b1418; --stage2:#0f1c22; --stagink:#c9dde2; --staginkdim:#7f9aa2; --stageline:#1c2f37; }
+@media (prefers-color-scheme: light){ :root{ --stage:#dde5e8; --stage2:#eef2f4; --stagink:#28414a; --staginkdim:#5d757d; --stageline:#cdd8dc; } }
+:root[data-theme="dark"]{ --stage:#0b1418; --stage2:#0f1c22; --stagink:#c9dde2; --staginkdim:#7f9aa2; --stageline:#1c2f37; }
+:root[data-theme="light"]{ --stage:#dde5e8; --stage2:#eef2f4; --stagink:#28414a; --staginkdim:#5d757d; --stageline:#cdd8dc; }
+
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+.stage{
+  min-height:100vh; margin:0; background:
+   radial-gradient(120% 80% at 50% -10%, color-mix(in srgb, var(--stage2) 70%, transparent), transparent 60%), var(--stage);
+  color:var(--stagink);
+  font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans",sans-serif;
+  display:flex; flex-direction:column; align-items:center; padding:28px 16px 60px; gap:22px;
+}
+.mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-variant-numeric:tabular-nums;letter-spacing:-.01em;}
+a{color:inherit;}
+
+/* ---- studio header ---- */
+.studio{width:100%;max-width:900px;display:flex;flex-direction:column;gap:14px;}
+.studio-top{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;}
+.studio h1{font-size:19px;font-weight:680;letter-spacing:-.02em;margin:0;display:flex;align-items:center;gap:10px;}
+.studio h1 .dot{width:9px;height:9px;border-radius:99px;background:#3DE08A;box-shadow:0 0 0 4px color-mix(in srgb,#3DE08A 22%,transparent);}
+.studio p{margin:3px 0 0;color:var(--staginkdim);font-size:13px;max-width:60ch;line-height:1.5;}
+.seg{display:flex;background:color-mix(in srgb,var(--stage2) 80%,transparent);border:1px solid var(--stageline);border-radius:999px;padding:3px;gap:2px;}
+.seg button{border:none;background:none;color:var(--staginkdim);font-family:inherit;font-size:12.5px;font-weight:600;padding:7px 13px;border-radius:999px;cursor:pointer;letter-spacing:.01em;}
+.seg button[aria-pressed="true"]{background:var(--stagink);color:var(--stage);}
+.seg button:focus-visible{outline:2px solid #8098FF;outline-offset:2px;}
+.studio-legend{display:flex;gap:16px;flex-wrap:wrap;color:var(--staginkdim);font-size:11.5px;}
+.studio-legend b{color:var(--stagink);font-weight:640;}
+
+/* ============ PHONE ============ */
+.rc{
+  --bg:#E7ECEF; --surface:#FFFFFF; --surface2:#F1F4F6; --ink:#0F2A33; --ink2:#54696F; --ink3:#8FA1A8;
+  --line:#DCE3E7; --brand:#2743C4; --brandsoft:#EAEEFB; --green:#178A52; --greensoft:rgba(23,138,82,.13);
+  --amber:#C9770B; --ambersoft:rgba(201,119,11,.13); --red:#C33F3F; --redsoft:#FBECEC;
+  --board:#0F2A33; --board2:#153742; --boardgreen:#3DE08A; --boardamber:#FFC24D; --boardred:#FF7A7A;
+  --boardink:#7FA6AE; --estink:#54696F; --focus:#2743C4;
+  --map1:#dfe7ea; --map2:#eef3f5; --maproute:#2743C4;
+  width:100%;max-width:392px;height:812px;position:relative;
+  background:var(--bg);color:var(--ink);border-radius:42px;overflow:hidden;
+  box-shadow:0 40px 90px -30px rgba(0,0,0,.55), 0 0 0 1px rgba(255,255,255,.04), inset 0 0 0 8px #05090b, inset 0 0 0 10px #1b2a30;
+  display:flex;flex-direction:column;font-size:15px;line-height:1.4;
+}
+.rc[data-pt="dark"]{
+  --bg:#081115; --surface:#0F2129; --surface2:#15303A; --ink:#EAF3F4; --ink2:#9DB4BB; --ink3:#6C868E;
+  --line:#1E3B45; --brand:#8098FF; --brandsoft:#182747; --green:#3DBB77; --greensoft:rgba(61,187,119,.15);
+  --amber:#E7A542; --ambersoft:rgba(231,165,66,.15); --red:#E36868; --redsoft:#3A1E1E;
+  --board:#06151A; --board2:#0e2029; --boardink:#6E969E; --estink:#9DB4BB; --focus:#8098FF;
+  --map1:#0c1b21; --map2:#102630; --maproute:#8098FF;
+}
+.rc[data-pt="sun"]{
+  --bg:#FFFFFF; --surface:#FFFFFF; --surface2:#F2F2F2; --ink:#000000; --ink2:#2A2A2A; --ink3:#555555;
+  --line:#BBBBBB; --brand:#1D33A0; --brandsoft:#D8DEF6; --green:#0B6B3C; --greensoft:rgba(11,107,60,.14);
+  --amber:#8F5400; --ambersoft:rgba(143,84,0,.14); --red:#9E2B2B; --redsoft:#F6E4E4;
+  --board:#FFFFFF; --board2:#EDEDED; --boardgreen:#0B6B3C; --boardamber:#8F5400; --boardred:#9E2B2B;
+  --boardink:#333333; --estink:#2A2A2A; --focus:#000000;
+  --map1:#eaeaea; --map2:#f6f6f6; --maproute:#1D33A0;
+}
+.rc[data-pt="sun"] .board{border:2px solid #000;}
+.rc[data-pt="sun"] .hair{background:#BBBBBB;height:1.5px;}
+
+.rc *:focus-visible{outline:2px solid var(--focus);outline-offset:2px;border-radius:6px;}
+
+/* status bar */
+.sbar{height:34px;display:flex;align-items:center;justify-content:space-between;padding:0 22px;font-size:12px;font-weight:650;color:var(--ink);flex:none;}
+.sbar .r{display:flex;gap:6px;align-items:center;}
+
+/* main scroll */
+.body{flex:1;overflow-y:auto;overflow-x:hidden;position:relative;scrollbar-width:none;}
+.body::-webkit-scrollbar{display:none;}
+.view{display:none;flex-direction:column;padding:4px 16px 108px;gap:14px;min-height:100%;}
+.view.on{display:flex;}
+
+/* tab bar */
+.tabs{flex:none;display:flex;background:color-mix(in srgb,var(--surface) 88%,transparent);backdrop-filter:blur(14px);
+  border-top:1px solid var(--line);padding:9px 10px calc(9px + env(safe-area-inset-bottom,6px));gap:4px;}
+.tab{flex:1;border:none;background:none;font-family:inherit;color:var(--ink3);display:flex;flex-direction:column;align-items:center;gap:3px;
+  padding:6px 4px;border-radius:14px;cursor:pointer;font-size:11px;font-weight:640;letter-spacing:.01em;position:relative;}
+.tab .g{font-size:20px;line-height:1;}
+.tab[aria-selected="true"]{color:var(--brand);}
+.tab[aria-selected="true"] .g{transform:translateY(-1px);}
+.tab .dot{position:absolute;top:4px;right:calc(50% - 15px);width:7px;height:7px;border-radius:99px;background:var(--amber);}
+
+/* headers */
+.brandbar{display:flex;align-items:center;justify-content:space-between;padding:8px 0 2px;}
+.wordmark{font-weight:720;font-size:19px;letter-spacing:-.03em;display:flex;align-items:center;gap:9px;}
+.logo{width:26px;height:26px;border-radius:8px;background:var(--brand);color:#fff;display:grid;place-items:center;font-size:15px;font-weight:800;transform:rotate(-6deg);}
+.rc[data-pt="sun"] .logo{color:#fff;}
+.hchrome{display:flex;gap:8px;}
+.icobtn{width:36px;height:36px;border-radius:11px;border:1px solid var(--line);background:var(--surface);color:var(--ink2);display:grid;place-items:center;cursor:pointer;font-size:16px;}
+.eyebrow{font-size:11px;font-weight:720;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);}
+.rowb{display:flex;align-items:center;justify-content:space-between;}
+
+/* ---------- Journey card / board ---------- */
+.board{background:var(--board);color:#fff;border-radius:22px;padding:18px 18px 16px;position:relative;overflow:hidden;}
+.rc[data-pt="sun"] .board{color:#000;}
+.board::after{content:"";position:absolute;inset:0;background:
+  repeating-linear-gradient(0deg,transparent 0 15px,rgba(255,255,255,.018) 15px 16px);pointer-events:none;}
+.rc[data-pt="sun"] .board::after{display:none;}
+.board .topline{display:flex;align-items:center;justify-content:space-between;position:relative;z-index:1;}
+.board .tno{font-size:12.5px;color:var(--boardink);font-weight:640;letter-spacing:.02em;}
+.board .tno b{color:#fff;font-weight:700;}
+.rc[data-pt="sun"] .board .tno b{color:#000;}
+.livechip{display:inline-flex;align-items:center;gap:6px;font-size:10.5px;font-weight:750;letter-spacing:.09em;color:var(--boardgreen);}
+.livechip .p{width:7px;height:7px;border-radius:99px;background:var(--boardgreen);animation:pulse 2.4s ease-in-out infinite;}
+.fact{position:relative;z-index:1;margin:12px 0 2px;font-size:40px;font-weight:640;letter-spacing:-.02em;line-height:1.02;display:flex;align-items:baseline;gap:10px;color:#fff;}
+.rc[data-pt="sun"] .fact{color:#000;}
+.fact.green{color:var(--boardgreen);} .fact.amber{color:var(--boardamber);} .fact.red{color:var(--boardred);}
+.fact .ic{font-size:26px;}
+.conseq{position:relative;z-index:1;color:var(--boardink);font-size:14.5px;font-weight:560;margin-top:2px;}
+.conseq b{color:#fff;font-weight:680;}
+.rc[data-pt="sun"] .conseq b{color:#000;}
+.board-meta{position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between;margin-top:13px;gap:10px;}
+.fresh{display:inline-flex;align-items:center;gap:7px;font-size:11.5px;color:var(--boardink);font-weight:560;}
+.fresh .fp{width:8px;height:8px;border-radius:99px;background:var(--boardgreen);}
+.fresh.stale .fp{background:var(--boardink);}
+.rundate{font-size:11px;color:var(--boardink);border:1px solid color-mix(in srgb,var(--boardink) 40%,transparent);padding:4px 9px;border-radius:99px;font-weight:600;}
+
+/* mini spine */
+.minispine{display:flex;align-items:center;gap:0;margin-top:14px;position:relative;z-index:1;}
+.minispine .end{font-size:10.5px;font-weight:700;color:var(--boardink);letter-spacing:.03em;}
+.minispine .track{flex:1;height:3px;margin:0 8px;border-radius:2px;background:color-mix(in srgb,var(--boardink) 32%,transparent);position:relative;}
+.minispine .fill{position:absolute;left:0;top:0;bottom:0;border-radius:2px;background:var(--boardgreen);}
+.minispine .fill.amber{background:var(--boardamber);}
+.minispine .m{position:absolute;top:50%;width:11px;height:11px;border-radius:99px;background:#fff;border:3px solid var(--boardamber);transform:translate(-50%,-50%);box-shadow:0 0 0 4px color-mix(in srgb,var(--boardamber) 26%,transparent);animation:breathe 2.6s ease-in-out infinite;}
+
+/* board action */
+.boardact{position:relative;z-index:1;margin-top:15px;}
+.bbtn{width:100%;border:none;border-radius:14px;padding:14px;font-family:inherit;font-size:15px;font-weight:680;cursor:pointer;
+  background:rgba(255,255,255,.12);color:#fff;display:flex;align-items:center;justify-content:center;gap:9px;backdrop-filter:blur(4px);}
+.rc[data-pt="sun"] .bbtn{background:#000;color:#fff;}
+.bbtn.solid{background:#fff;color:var(--board);}
+.rc[data-pt="sun"] .bbtn.solid{background:#000;color:#fff;}
+
+/* flap roll */
+.flap{display:inline-block;position:relative;overflow:hidden;}
+.flap .cur{display:inline-block;}
+@keyframes rollout{from{transform:translateY(0);opacity:1}to{transform:translateY(-70%);opacity:0}}
+@keyframes rollin{from{transform:translateY(70%);opacity:0}to{transform:translateY(0);opacity:1}}
+.flap.rolling .cur{animation:rollout .2s ease forwards;}
+.flap.rolling .nxt{animation:rollin .42s .12s cubic-bezier(.2,.9,.25,1) forwards;}
+.flap .nxt{position:absolute;left:0;top:0;}
+
+/* ---------- compact journey card ---------- */
+.jcard{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:15px 16px;display:flex;flex-direction:column;gap:9px;cursor:pointer;}
+.jcard .h{display:flex;align-items:center;justify-content:space-between;gap:10px;}
+.jcard .pnrline{font-size:13px;color:var(--ink2);font-weight:600;display:flex;align-items:center;gap:8px;}
+.jcard .name{font-size:15px;font-weight:680;letter-spacing:-.01em;}
+.jcard .sub{font-size:12.5px;color:var(--ink3);}
+
+/* status chip */
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:680;padding:5px 10px;border-radius:99px;letter-spacing:.01em;}
+.chip.green{background:var(--greensoft);color:var(--green);}
+.chip.amber{background:var(--ambersoft);color:var(--amber);}
+.chip.red{background:var(--redsoft);color:var(--red);}
+.chip.neutral{background:var(--surface2);color:var(--ink2);}
+.chip.brand{background:var(--brandsoft);color:var(--brand);}
+.chip .ic{font-size:13px;}
+
+/* context row */
+.ctxrow{display:flex;align-items:center;gap:12px;background:var(--brandsoft);border:1px solid color-mix(in srgb,var(--brand) 18%,transparent);
+  border-radius:16px;padding:13px 14px;}
+.ctxrow .ic{font-size:19px;color:var(--brand);}
+.ctxrow .t{flex:1;font-size:13.5px;font-weight:620;color:var(--ink);line-height:1.35;}
+.ctxrow .t small{display:block;color:var(--ink2);font-weight:520;font-size:12px;}
+.ctxrow .go{border:none;background:var(--brand);color:#fff;font-family:inherit;font-weight:680;font-size:13px;padding:9px 13px;border-radius:11px;cursor:pointer;white-space:nowrap;}
+
+/* docked / omni search */
+.search{display:flex;align-items:center;gap:11px;width:100%;padding:6px 6px 6px 15px;border-radius:16px;background:var(--surface);border:1px solid var(--line);}
+.search .lead{font-size:17px;color:var(--ink3);width:20px;text-align:center;flex:none;transition:color .2s;}
+.search input{flex:1;border:none;background:none;outline:none;font-size:15px;color:var(--ink);padding:11px 0;font-family:inherit;min-width:0;}
+.search input::placeholder{color:var(--ink3);}
+.search.train .lead{color:var(--green);} .search.pnr .lead{color:var(--brand);} .search.route .lead{color:var(--brand);}
+.mic{width:42px;height:42px;border-radius:12px;border:none;background:var(--brandsoft);color:var(--brand);display:grid;place-items:center;cursor:pointer;flex:none;font-size:17px;}
+.hint{font-size:12px;color:var(--ink3);padding:2px 4px;font-weight:560;display:flex;align-items:center;gap:6px;}
+.hint b{color:var(--ink2);}
+
+/* result rows */
+.res{display:flex;align-items:center;gap:12px;padding:12px 12px;border:none;background:var(--surface);border:1px solid var(--line);border-radius:14px;cursor:pointer;text-align:left;color:var(--ink);font-family:inherit;width:100%;}
+.res .rg{width:34px;height:34px;border-radius:10px;background:var(--surface2);display:grid;place-items:center;font-size:16px;flex:none;}
+.res .rt{flex:1;min-width:0;}
+.res .rt .a{font-size:14.5px;font-weight:660;}
+.res .rt .b{font-size:12px;color:var(--ink3);}
+.res .kind{font-size:10.5px;font-weight:700;letter-spacing:.06em;color:var(--ink3);text-transform:uppercase;}
+.res.demoted{opacity:.7;border-style:dashed;}
+
+.shortcuts{display:flex;gap:8px;flex-wrap:wrap;}
+.sc{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font-family:inherit;
+  font-size:13.5px;font-weight:640;padding:11px 14px;border-radius:13px;cursor:pointer;}
+.sc .ic{font-size:16px;}
+
+/* empty state */
+.empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:16px;padding:30px 10px;min-height:70vh;}
+.empty .art{font-size:52px;filter:grayscale(.2);}
+.empty h2{font-size:21px;font-weight:700;letter-spacing:-.02em;margin:0;max-width:16ch;line-height:1.2;text-wrap:balance;}
+.empty .promise{font-size:12px;color:var(--ink3);font-weight:560;margin-top:2px;}
+
+/* ---------- Journey overlay (sheet over map) ---------- */
+.overlay{position:absolute;inset:0;z-index:40;display:none;flex-direction:column;background:var(--bg);}
+.overlay.on{display:flex;animation:slideup .28s cubic-bezier(.2,.9,.25,1);}
+@keyframes slideup{from{transform:translateY(14px);opacity:.4}to{transform:translateY(0);opacity:1}}
+.ov-head{flex:none;display:flex;align-items:center;gap:10px;padding:8px 14px 8px;}
+.ov-back{width:38px;height:38px;border-radius:12px;border:1px solid var(--line);background:var(--surface);color:var(--ink);display:grid;place-items:center;cursor:pointer;font-size:18px;}
+.ov-title{flex:1;font-size:16px;font-weight:700;letter-spacing:-.01em;display:flex;flex-direction:column;}
+.ov-title small{font-size:11.5px;color:var(--ink3);font-weight:560;}
+
+/* map canvas */
+.map{position:relative;flex:none;height:230px;overflow:hidden;background:linear-gradient(160deg,var(--map2),var(--map1));transition:height .28s cubic-bezier(.2,.9,.25,1);}
+.map svg{position:absolute;inset:0;width:100%;height:100%;}
+.maplabel{position:absolute;left:12px;bottom:12px;font-size:10.5px;font-weight:640;color:var(--ink2);background:color-mix(in srgb,var(--surface) 80%,transparent);
+  padding:5px 9px;border-radius:8px;backdrop-filter:blur(4px);display:flex;align-items:center;gap:6px;}
+.estmark{fill:#fff;stroke:var(--amber);stroke-width:3;}
+.estring{fill:none;stroke:var(--amber);stroke-width:2;opacity:.3;animation:ring 2.6s ease-out infinite;}
+@keyframes ring{0%{r:6;opacity:.5}100%{r:16;opacity:0}}
+
+/* sheet */
+.sheet{flex:1;margin-top:-22px;background:var(--bg);border-radius:22px 22px 0 0;box-shadow:0 -14px 30px -18px rgba(0,0,0,.3);
+  overflow-y:auto;scrollbar-width:none;position:relative;z-index:2;padding:0 16px 120px;}
+.sheet::-webkit-scrollbar{display:none;}
+.grab{width:38px;height:5px;border-radius:99px;background:var(--line);margin:9px auto 6px;cursor:grab;}
+.sheet-sections{display:flex;flex-direction:column;gap:14px;padding-top:2px;}
+
+/* spine */
+.spine{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:6px 4px 8px;}
+.node{display:grid;grid-template-columns:26px 1fr auto;gap:10px;padding:9px 12px;position:relative;align-items:start;}
+.node .rail{position:relative;display:flex;justify-content:center;}
+.node .rail::before{content:"";position:absolute;top:16px;bottom:-14px;width:2px;background:var(--line);}
+.node:last-child .rail::before{display:none;}
+.node .d{width:14px;height:14px;border-radius:99px;margin-top:3px;z-index:1;background:var(--surface);}
+.node.past .d{background:var(--green);border:0;}
+.node.future .d{border:2px solid var(--ink3);}
+.node.here{padding-top:2px;padding-bottom:2px;}
+.node.here .rail::before{background:linear-gradient(var(--green),var(--amber));}
+.node.here .d{width:16px;height:16px;border:3px solid var(--amber);background:#fff;box-shadow:0 0 0 4px var(--ambersoft);animation:breathe 2.6s ease-in-out infinite;}
+.node.mine{background:var(--brandsoft);border-radius:12px;}
+.node.mine .stn{color:var(--brand);}
+.node .stn{font-size:14.5px;font-weight:660;letter-spacing:-.01em;}
+.node .stn .star{color:var(--brand);}
+.node .meta{font-size:11.5px;color:var(--ink3);margin-top:1px;}
+.node .meta .plat{color:var(--ink2);font-weight:600;}
+.node .times{text-align:right;font-size:12.5px;font-weight:600;}
+.node .times .sch{color:var(--ink3);text-decoration:line-through;font-size:11px;}
+.node .times .act{color:var(--ink);}
+.node .times .eta{color:var(--amber);}
+.node.here .hereband{font-size:11px;font-weight:700;color:var(--amber);letter-spacing:.02em;padding:2px 0;}
+.daypill{text-align:center;font-size:10.5px;font-weight:700;letter-spacing:.08em;color:var(--ink3);text-transform:uppercase;padding:8px 0 4px;}
+.collapse{display:flex;align-items:center;gap:8px;justify-content:center;padding:10px;color:var(--ink3);font-size:12.5px;font-weight:620;cursor:pointer;}
+
+/* section card */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:15px 16px;}
+.card h3{margin:0 0 3px;font-size:12.5px;font-weight:720;letter-spacing:.02em;color:var(--ink2);text-transform:uppercase;display:flex;align-items:center;gap:8px;}
+
+/* coach diagram */
+.coach-answer{font-size:16px;font-weight:700;letter-spacing:-.01em;margin:8px 0 3px;}
+.coach-answer .hl{color:var(--brand);}
+.approach{font-size:11.5px;color:var(--ink3);font-weight:640;display:flex;align-items:center;gap:5px;margin-bottom:8px;}
+.platform{position:relative;padding-top:6px;}
+.platedge{height:3px;background:repeating-linear-gradient(90deg,var(--ink3) 0 8px,transparent 8px 14px);border-radius:2px;margin-bottom:9px;}
+.coaches{display:flex;gap:5px;overflow-x:auto;padding-bottom:6px;scrollbar-width:none;}
+.coaches::-webkit-scrollbar{display:none;}
+.cx{flex:none;min-width:42px;height:40px;border-radius:9px;background:var(--surface2);border:1px solid var(--line);display:flex;flex-direction:column;
+  align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--ink2);}
+.cx.mine{background:var(--brand);color:#fff;border-color:var(--brand);box-shadow:0 4px 12px -4px var(--brand);}
+.cx.gen{background:var(--greensoft);color:var(--green);border-color:color-mix(in srgb,var(--green) 30%,transparent);}
+.cx small{font-size:8px;font-weight:600;opacity:.8;}
+.platends{display:flex;justify-content:space-between;font-size:10px;color:var(--ink3);font-weight:640;margin-top:5px;letter-spacing:.04em;}
+.reversal{display:flex;align-items:flex-start;gap:8px;margin-top:11px;padding:10px 12px;background:var(--ambersoft);border-radius:11px;font-size:12px;color:var(--amber);font-weight:600;line-height:1.4;}
+.gentoggle{margin-top:10px;}
+.toggle-btn{border:1px solid var(--line);background:var(--surface);color:var(--ink);font-family:inherit;font-weight:640;font-size:13px;padding:9px 13px;border-radius:11px;cursor:pointer;display:inline-flex;align-items:center;gap:8px;}
+.toggle-btn[aria-pressed="true"]{background:var(--greensoft);color:var(--green);border-color:color-mix(in srgb,var(--green) 30%,transparent);}
+
+/* PNR pass */
+.pass{background:var(--surface);border:1px solid var(--line);border-radius:18px;overflow:hidden;}
+.pass .pt{padding:15px 16px 13px;display:flex;flex-direction:column;gap:8px;}
+.pass .pnrtop{display:flex;align-items:center;justify-content:space-between;}
+.pass .pnrno{font-size:16px;font-weight:720;letter-spacing:.04em;}
+.pass .route{font-size:13px;color:var(--ink2);font-weight:600;}
+.perf{height:1px;border-top:2px dashed var(--line);position:relative;margin:2px 0;}
+.perf::before,.perf::after{content:"";position:absolute;top:-9px;width:16px;height:16px;border-radius:99px;background:var(--bg);}
+.perf::before{left:-24px;} .perf::after{right:-24px;}
+.pax{display:flex;align-items:center;gap:11px;padding:11px 16px;border-top:1px solid var(--line);}
+.pax:first-of-type{border-top:none;}
+.pax .pn{width:24px;height:24px;border-radius:7px;background:var(--surface2);display:grid;place-items:center;font-size:11px;font-weight:700;color:var(--ink2);flex:none;}
+.pax .pd{flex:1;font-size:13.5px;font-weight:600;}
+.pax .pd small{display:block;color:var(--ink3);font-weight:520;font-size:11.5px;margin-top:1px;}
+.privacy{padding:11px 16px;font-size:11.5px;color:var(--ink3);border-top:1px solid var(--line);display:flex;gap:7px;align-items:flex-start;line-height:1.4;}
+.privacy a{color:var(--brand);font-weight:640;text-decoration:none;}
+
+/* action dock */
+.dock{position:absolute;left:0;right:0;bottom:0;z-index:3;padding:12px 16px calc(14px + env(safe-area-inset-bottom,4px));
+  background:linear-gradient(transparent,var(--bg) 26%);display:flex;gap:10px;}
+.dock .primary{flex:1;border:none;border-radius:15px;padding:15px;font-family:inherit;font-size:15.5px;font-weight:700;cursor:pointer;
+  background:var(--brand);color:#fff;display:flex;align-items:center;justify-content:center;gap:9px;box-shadow:0 10px 24px -10px var(--brand);}
+.dock .primary.red{background:var(--red);box-shadow:0 10px 24px -10px var(--red);}
+.dock .primary.set{background:var(--greensoft);color:var(--green);box-shadow:none;border:1px solid color-mix(in srgb,var(--green) 30%,transparent);}
+.dock .more{width:52px;border:1px solid var(--line);background:var(--surface);color:var(--ink2);border-radius:15px;cursor:pointer;font-size:20px;}
+
+/* amber banner */
+.banner{display:flex;gap:10px;align-items:flex-start;background:var(--ambersoft);color:var(--amber);border-radius:14px;padding:12px 14px;font-size:13px;font-weight:600;line-height:1.4;}
+
+/* ---------- Station board ---------- */
+.stationboard{background:var(--board);border-radius:20px;overflow:hidden;}
+.rc[data-pt="sun"] .stationboard{border:2px solid #000;}
+.brow{display:grid;grid-template-columns:auto 1fr auto;gap:12px;padding:14px 16px;align-items:center;border-bottom:1px solid rgba(127,166,174,.16);cursor:pointer;position:relative;}
+.brow:last-child{border-bottom:none;}
+.brow .time{font-size:22px;font-weight:640;color:#fff;letter-spacing:-.01em;}
+.rc[data-pt="sun"] .brow .time{color:#000;}
+.brow .mid .tn{font-size:13.5px;font-weight:660;color:#fff;}
+.rc[data-pt="sun"] .brow .mid .tn{color:#000;}
+.brow .mid .dest{font-size:11.5px;color:var(--boardink);margin-top:2px;display:flex;align-items:center;gap:7px;}
+.brow .plat{font-size:26px;font-weight:700;color:var(--boardgreen);width:30px;text-align:center;line-height:1;}
+.brow .plat.na{color:var(--boardred);font-size:20px;}
+.brow .plat.changed{animation:platflash 1s ease;position:relative;}
+.brow .plat.changed::after{content:"";position:absolute;left:-2px;right:-2px;bottom:-6px;height:2px;background:var(--boardamber);border-radius:2px;}
+@keyframes platflash{0%,100%{color:var(--boardamber)}50%{color:#fff}}
+.bstat{font-size:11px;font-weight:680;display:inline-flex;align-items:center;gap:5px;}
+.bstat.green{color:var(--boardgreen);} .bstat.amber{color:var(--boardamber);} .bstat.red{color:var(--boardred);}
+.altbtn{border:1px solid var(--boardamber);color:var(--boardamber);background:none;font-family:inherit;font-size:11px;font-weight:680;padding:5px 9px;border-radius:9px;cursor:pointer;}
+
+.controlsrow{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+.selchip{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);background:var(--surface);color:var(--ink);
+  font-family:inherit;font-size:13px;font-weight:640;padding:9px 13px;border-radius:12px;cursor:pointer;}
+.selchip .c{color:var(--ink3);}
+
+/* ---------- Plan ---------- */
+.dayscrub{display:flex;gap:7px;overflow-x:auto;padding:2px 0 6px;scrollbar-width:none;margin:0 -16px;padding-left:16px;padding-right:16px;}
+.dayscrub::-webkit-scrollbar{display:none;}
+.day{flex:none;border:1px solid var(--line);background:var(--surface);border-radius:13px;padding:9px 13px;cursor:pointer;text-align:center;
+  font-family:inherit;color:var(--ink);min-width:58px;}
+.day .dow{font-size:10.5px;color:var(--ink3);font-weight:660;letter-spacing:.02em;}
+.day .dn{font-size:16px;font-weight:700;margin-top:1px;}
+.day.on{background:var(--brand);border-color:var(--brand);}
+.day.on .dow,.day.on .dn{color:#fff;}
+.day.disabled{opacity:.4;pointer-events:none;}
+
+.plancard{background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow:hidden;}
+.plancard .ph{padding:14px 16px;cursor:pointer;display:flex;flex-direction:column;gap:8px;}
+.plancard .toprow{display:flex;align-items:baseline;justify-content:space-between;gap:10px;}
+.plancard .pname{font-size:14.5px;font-weight:680;}
+.plancard .ptime{font-size:15px;font-weight:640;}
+.plancard .prow2{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:12px;color:var(--ink3);}
+.plancard .prow3{display:flex;align-items:center;justify-content:space-between;gap:10px;}
+.plancard .fare{font-size:15px;font-weight:700;}
+.plancard .punct{font-size:11.5px;color:var(--ink3);font-weight:600;}
+.farebreak{border-top:1px dashed var(--line);padding:13px 16px;display:none;font-size:12.5px;color:var(--ink2);gap:6px;flex-direction:column;}
+.farebreak.on{display:flex;}
+.farebreak .fr{display:flex;justify-content:space-between;}
+.farebreak .fr.tot{border-top:1px solid var(--line);padding-top:7px;margin-top:3px;font-weight:700;color:var(--ink);}
+.checking{color:var(--ink3);font-style:italic;font-size:12px;}
+.tatkalchip{border:1px solid var(--amber);color:var(--amber);background:var(--ambersoft);font-family:inherit;font-size:11.5px;font-weight:680;padding:6px 10px;border-radius:10px;cursor:pointer;display:inline-flex;gap:6px;align-items:center;}
+
+/* ---------- Activity ---------- */
+.jgroup{font-size:11px;font-weight:720;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);margin:6px 2px 2px;}
+.jentry{display:grid;grid-template-columns:auto auto 1fr;gap:11px;padding:12px 13px;background:var(--surface);border:1px solid var(--line);border-radius:13px;align-items:center;cursor:pointer;}
+.jentry .jt{font-size:12px;font-weight:640;color:var(--ink3);width:42px;}
+.jentry .ji{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;font-size:15px;}
+.jentry .ji.green{background:var(--greensoft);color:var(--green);}
+.jentry .ji.amber{background:var(--ambersoft);color:var(--amber);}
+.jentry .ji.brand{background:var(--brandsoft);color:var(--brand);}
+.jentry .ji.neutral{background:var(--surface2);color:var(--ink2);}
+.jentry .jc{font-size:13.5px;font-weight:600;line-height:1.3;}
+.jentry .jc small{display:block;color:var(--ink3);font-weight:520;font-size:11.5px;margin-top:1px;}
+
+.togglelist{display:flex;flex-direction:column;gap:2px;}
+.tgl{display:flex;align-items:center;justify-content:space-between;padding:13px 4px;border-bottom:1px solid var(--line);}
+.tgl:last-child{border-bottom:none;}
+.tgl .tl{font-size:14.5px;font-weight:600;display:flex;align-items:center;gap:10px;}
+.tgl .tl .ic{font-size:16px;color:var(--ink2);width:20px;text-align:center;}
+.tgl .tl small{display:block;color:var(--ink3);font-weight:520;font-size:12px;margin-top:1px;}
+.sw{width:46px;height:28px;border-radius:99px;background:var(--line);position:relative;cursor:pointer;border:none;flex:none;transition:background .2s;}
+.sw::after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:99px;background:#fff;transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,.2);}
+.sw[aria-pressed="true"]{background:var(--brand);}
+.sw[aria-pressed="true"]::after{left:21px;}
+.typechips{display:flex;flex-wrap:wrap;gap:7px;}
+.tchip{border:1px solid var(--line);background:var(--surface);color:var(--ink2);font-family:inherit;font-size:12.5px;font-weight:640;padding:8px 11px;border-radius:10px;cursor:pointer;display:inline-flex;gap:6px;align-items:center;}
+.tchip[aria-pressed="true"]{background:var(--brandsoft);color:var(--brand);border-color:color-mix(in srgb,var(--brand) 26%,transparent);}
+
+/* onboarding */
+.ob{position:absolute;inset:0;z-index:60;background:var(--bg);display:none;flex-direction:column;padding:0 22px;}
+.ob.on{display:flex;}
+.ob .obtop{flex:1;display:flex;flex-direction:column;justify-content:center;gap:8px;}
+.ob .biglogo{width:56px;height:56px;border-radius:17px;background:var(--brand);color:#fff;display:grid;place-items:center;font-size:28px;font-weight:800;transform:rotate(-6deg);margin-bottom:8px;}
+.ob h1{font-size:29px;font-weight:760;letter-spacing:-.03em;margin:0;line-height:1.05;text-wrap:balance;}
+.ob p{color:var(--ink2);font-size:14.5px;margin:2px 0 0;line-height:1.5;}
+.ob .langs{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:26px;}
+.ob .lang{padding:16px 12px;border-radius:15px;border:1px solid var(--line);background:var(--surface);font-family:inherit;font-size:16px;font-weight:680;color:var(--ink);cursor:pointer;display:flex;flex-direction:column;gap:2px;align-items:flex-start;}
+.ob .lang.on{border-color:var(--brand);box-shadow:0 0 0 2px var(--brandsoft);}
+.ob .lang small{font-size:11px;color:var(--ink3);font-weight:520;}
+.ob .obfoot{padding:22px 0 34px;display:flex;flex-direction:column;gap:12px;}
+.ob .cont{border:none;background:var(--brand);color:#fff;font-family:inherit;font-weight:700;font-size:16px;padding:16px;border-radius:15px;cursor:pointer;}
+.ob .skip{background:none;border:none;color:var(--ink3);font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;}
+
+.snack{position:absolute;left:16px;right:16px;bottom:96px;z-index:55;background:var(--board);color:#fff;border-radius:13px;padding:13px 15px;
+  display:none;align-items:center;justify-content:space-between;gap:12px;font-size:13.5px;font-weight:600;box-shadow:0 14px 34px -12px rgba(0,0,0,.5);}
+.rc[data-pt="sun"] .snack{color:#000;border:2px solid #000;}
+.snack.on{display:flex;animation:slideup .28s ease;}
+.snack button{background:none;border:none;color:var(--boardamber);font-family:inherit;font-weight:700;font-size:13.5px;cursor:pointer;}
+
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+@keyframes breathe{0%,100%{box-shadow:0 0 0 4px color-mix(in srgb,var(--boardamber) 26%,transparent);transform:translate(-50%,-50%) scale(1);}50%{box-shadow:0 0 0 8px color-mix(in srgb,var(--boardamber) 6%,transparent);transform:translate(-50%,-50%) scale(1.12);}}
+.node.here .d{transform:none;}
+@keyframes breathe2{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.14);opacity:.85}}
+
+@media (prefers-reduced-motion: reduce){
+  *{animation:none !important;transition:none !important;}
+}
+
+.footnote{max-width:900px;width:100%;color:var(--staginkdim);font-size:12px;line-height:1.6;}
+.footnote b{color:var(--stagink);}
+.footnote code{font-family:ui-monospace,monospace;font-size:11px;background:color-mix(in srgb,var(--stage2) 70%,transparent);padding:1px 5px;border-radius:4px;}
+</style>
+
+<div class="stage" id="stage">
+  <header class="studio">
+    <div class="studio-top">
+      <div>
+        <h1><span class="dot"></span>Railcast — redesign prototype</h1>
+        <p>A working walkthrough of the first-principles redesign: the <b>Journey object</b>, a three-tab shell (Home · Search · Activity), the merged sheet-over-map <b>Journey surface</b>, omnisearch, the alert journal, and Sunlight mode. Tap around — cards open, search classifies as you type, the board flap-rolls when the delay changes.</p>
+      </div>
+      <div class="seg" role="group" aria-label="Product theme">
+        <button data-pt="light" aria-pressed="false">Light</button>
+        <button data-pt="dark" aria-pressed="true">Dark</button>
+        <button data-pt="sun" aria-pressed="false">☀ Sunlight</button>
+      </div>
+    </div>
+    <div class="studio-legend">
+      <span><b>Paper</b> surfaces = read &amp; decide</span>
+      <span><b>Board</b> (dark panels) = live operational truth</span>
+      <span><b>Brand blue</b> = tappable only</span>
+      <span><b>Green / amber / red</b> = what the train is doing</span>
+      <span><b>Dashed marker</b> = estimated, never claimed as GPS</span>
+    </div>
+  </header>
+
+  <!-- ================= PHONE ================= -->
+  <div class="rc" data-pt="dark" id="phone">
+    <div class="sbar">
+      <span class="mono">9:41</span>
+      <span class="r mono">📶 5G 84﹪</span>
+    </div>
+
+    <div class="body" id="body">
+
+      <!-- ============ HOME ============ -->
+      <section class="view on" id="v-home">
+        <div class="brandbar">
+          <span class="wordmark"><span class="logo">R</span>Railcast</span>
+          <div class="hchrome">
+            <button class="icobtn" title="Search" onclick="go('search')">⌕</button>
+            <button class="icobtn" title="Activity" onclick="go('activity')">≋</button>
+          </div>
+        </div>
+
+        <!-- LIVE HERO journey -->
+        <div class="board" role="button" tabindex="0" onclick="openJourney()" onkeypress="if(event.key==='Enter')openJourney()">
+          <div class="topline">
+            <span class="tno">12952 · <b>Tejas Rajdhani</b></span>
+            <span class="livechip"><span class="p"></span>LIVE</span>
+          </div>
+          <div class="fact amber"><span class="ic">▶</span><span class="flap" id="homeflap"><span class="cur">12 min late</span></span></div>
+          <div class="conseq">Bhopal <b>~16:49</b> · Platform <b>4</b></div>
+          <div class="minispine">
+            <span class="end">NDLS</span>
+            <span class="track"><span class="fill amber" style="width:62%"></span><span class="m" style="left:62%"></span></span>
+            <span class="end">BPL</span>
+          </div>
+          <div class="board-meta">
+            <span class="fresh"><span class="fp"></span>live · updated 40s ago</span>
+            <span class="rundate">Started yesterday</span>
+          </div>
+          <div class="boardact">
+            <button class="bbtn solid" onclick="event.stopPropagation();toast('⏰ Arrival alarm set — we\'ll wake you ~15 min before Bhopal')">🔔 Set arrival alarm</button>
+          </div>
+        </div>
+
+        <!-- UPCOMING compact journey -->
+        <div class="rowb"><span class="eyebrow">Upcoming</span></div>
+        <div class="jcard" role="button" tabindex="0" onclick="openJourney('pnr')">
+          <div class="h">
+            <span class="pnrline">🎫 ••••7431 · Sat 26 Jul</span>
+            <span class="chip neutral"><span class="ic">⏳</span>Waiting for chart</span>
+          </div>
+          <div>
+            <div class="name">12622 · Tamil Nadu Express</div>
+            <div class="sub mono">NDLS → MAS · 3A · chart usually out ~21:00</div>
+          </div>
+        </div>
+
+        <!-- CONTEXT ROW -->
+        <div class="ctxrow" id="ctxrow">
+          <span class="ic">📍</span>
+          <span class="t">You're near Itarsi Junction<small>See what's arriving &amp; departing now</small></span>
+          <button class="go" onclick="openStation()">Live board</button>
+        </div>
+
+        <!-- DOCKED SEARCH -->
+        <div style="margin-top:6px">
+          <button class="search" style="cursor:pointer;text-align:left" onclick="go('search')">
+            <span class="lead">⌕</span>
+            <span style="flex:1;color:var(--ink3);font-size:15px;padding:11px 0">Track a train, PNR, or station…</span>
+            <span class="mic">🎙</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- ============ SEARCH ============ -->
+      <section class="view" id="v-search">
+        <div class="brandbar"><span class="wordmark" style="font-size:17px">Search</span></div>
+        <div class="search" id="omni">
+          <span class="lead" id="omni-lead">⌕</span>
+          <input id="omni-input" placeholder="Train, station, PNR, or A to B" autocomplete="off"
+                 oninput="classify(this.value)" aria-label="Search anything">
+          <button class="mic" title="Voice search" onclick="voiceDemo()">🎙</button>
+        </div>
+        <div class="hint" id="omni-hint">One box. It figures out what you meant — no train-or-PNR toggle.</div>
+
+        <div id="omni-zero">
+          <div class="eyebrow" style="margin-top:4px">Recent</div>
+          <button class="res" onclick="openJourney()"><span class="rg">🚆</span><span class="rt"><span class="a">12952 Tejas Rajdhani</span><span class="b">Delhi → Bhopal · saved</span></span><span class="kind">↻ Train</span></button>
+          <button class="res" onclick="openPlan()"><span class="rg">⇄</span><span class="rt"><span class="a">NDLS → BPL</span><span class="b">tap to plan the return leg</span></span><span class="kind">↻ Route</span></button>
+          <div class="shortcuts" style="margin-top:6px">
+            <button class="sc" onclick="openStation()"><span class="ic">📍</span>Near me</button>
+            <button class="sc" onclick="openPlan()"><span class="ic">⇄</span>Plan A→B</button>
+            <button class="sc" onclick="prefill('4392456789')"><span class="ic">🎫</span>Check PNR</button>
+          </div>
+        </div>
+
+        <div id="omni-results" style="display:none;flex-direction:column;gap:8px"></div>
+      </section>
+
+      <!-- ============ ACTIVITY ============ -->
+      <section class="view" id="v-activity">
+        <div class="brandbar"><span class="wordmark" style="font-size:17px">Activity</span></div>
+
+        <div class="jgroup">Today</div>
+        <div class="jentry" onclick="openJourney('pnr')">
+          <span class="jt mono">04:12</span><span class="ji green">✅</span>
+          <span class="jc">Chart prepared <small>••••7431 · B4-32 confirmed · tap to view ticket</small></span>
+        </div>
+        <div class="jentry" onclick="openJourney()">
+          <span class="jt mono">06:30</span><span class="ji amber">⚠</span>
+          <span class="jc">12952 now 25 min late <small>Arrival Bhopal pushed to ~17:02</small></span>
+        </div>
+        <div class="jentry" onclick="openStation()">
+          <span class="jt mono">07:02</span><span class="ji amber">🔁</span>
+          <span class="jc">Platform changed: 4 → 6 <small>12952 at Bhopal · check the coach guide</small></span>
+        </div>
+
+        <div class="jgroup">Yesterday</div>
+        <div class="jentry" onclick="openJourney()">
+          <span class="jt mono">21:40</span><span class="ji brand">🔔</span>
+          <span class="jc">Watching 12952 <small>You saved it · checking every ~60s near chart time</small></span>
+        </div>
+
+        <div class="jgroup" style="margin-top:14px">Controls</div>
+        <div class="card">
+          <h3>Alert types</h3>
+          <div class="typechips" style="margin-top:8px" id="alerttypes">
+            <button class="tchip" aria-pressed="true" onclick="tgl(this)">✅ Chart</button>
+            <button class="tchip" aria-pressed="true" onclick="tgl(this)">⚠ Delay</button>
+            <button class="tchip" aria-pressed="true" onclick="tgl(this)">🔁 Platform</button>
+            <button class="tchip" aria-pressed="true" onclick="tgl(this)">⛔ Cancelled</button>
+            <button class="tchip" aria-pressed="true" onclick="tgl(this)">⏰ Arrival</button>
+            <button class="tchip" aria-pressed="true" onclick="tgl(this)">🎟 Tatkal</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="togglelist">
+            <div class="tgl">
+              <span class="tl"><span class="ic">🌙</span><span>Quiet hours<small>22:00 – 06:30 · arrival alarms still come through</small></span></span>
+              <button class="sw" aria-pressed="true" onclick="sw(this)" aria-label="Quiet hours"></button>
+            </div>
+            <div class="tgl">
+              <span class="tl"><span class="ic">🔕</span><span>Muted journeys<small>12138 Punjab Mail · tap to unmute</small></span></span>
+              <button class="selchip" style="padding:7px 11px" onclick="toast('🔔 Unmuted 12138 Punjab Mail')">Unmute</button>
+            </div>
+            <div class="tgl">
+              <span class="tl"><span class="ic">🛡</span><span>Privacy<small>Opt out of anonymous analytics · no PNR data, ever</small></span></span>
+              <button class="sw" aria-pressed="false" onclick="sw(this)" aria-label="Analytics opt-out"></button>
+            </div>
+            <div class="tgl">
+              <span class="tl"><span class="ic">🈯</span><span>Language<small>English</small></span></span>
+              <button class="selchip" style="padding:7px 11px" onclick="toast('भाषा हिन्दी में बदली — no restart needed')">हिन्दी</button>
+            </div>
+          </div>
+        </div>
+        <div class="card" style="background:var(--ambersoft);border-color:transparent">
+          <h3 style="color:var(--amber)">❓ Not getting alerts?</h3>
+          <p style="margin:6px 0 0;font-size:13px;color:var(--ink2);line-height:1.5">Some phones (Xiaomi, Oppo, Vivo) restrict background apps. Two taps fix it →</p>
+        </div>
+      </section>
+
+      <!-- ============ JOURNEY OVERLAY ============ -->
+      <div class="overlay" id="ov-journey">
+        <div class="ov-head">
+          <button class="ov-back" onclick="closeOverlay()" aria-label="Back">‹</button>
+          <span class="ov-title">12952 · Tejas Rajdhani<small id="jsub">Started yesterday · Day 2</small></span>
+          <button class="icobtn" title="Share" onclick="toast('🔗 Live journey link copied — send it to family')">↗</button>
+        </div>
+
+        <div class="map" id="jmap">
+          <svg viewBox="0 0 360 240" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+            <path d="M30,205 C90,180 70,120 140,110 C210,100 200,55 320,40" fill="none" stroke="var(--line)" stroke-width="8" stroke-linecap="round"/>
+            <path id="routedone" d="M30,205 C90,180 70,120 140,110 C185,105 195,80 235,66" fill="none" stroke="var(--maproute)" stroke-width="4" stroke-linecap="round"/>
+            <circle cx="30" cy="205" r="5" fill="var(--maproute)"/>
+            <circle cx="140" cy="110" r="5" fill="var(--maproute)"/>
+            <circle cx="320" cy="40" r="6" fill="none" stroke="var(--ink3)" stroke-width="3"/>
+            <circle class="estring" cx="235" cy="66" r="6"/>
+            <circle class="estmark" cx="235" cy="66" r="7"/>
+          </svg>
+          <div class="maplabel">◉ estimated position · between Itarsi &amp; Hoshangabad</div>
+        </div>
+
+        <div class="sheet" id="jsheet">
+          <div class="grab" onclick="toggleMap()" title="Drag / tap to resize map"></div>
+          <div class="sheet-sections">
+
+            <!-- board hero -->
+            <div class="board">
+              <div class="topline">
+                <span class="tno mono">12952 · run 18 Jul</span>
+                <span class="livechip"><span class="p"></span>LIVE</span>
+              </div>
+              <div class="fact amber"><span class="ic">▶</span><span class="flap" id="jflap"><span class="cur">12 min late</span></span></div>
+              <div class="conseq"><b>Your</b> stop Bhopal <b>~16:49</b> · usually Platform <b>4</b></div>
+              <div class="board-meta">
+                <span class="fresh"><span class="fp"></span>live · updated 40s ago</span>
+                <span class="rundate">Started yesterday</span>
+              </div>
+            </div>
+
+            <div class="banner"><span>🛈</span><span>Running on time until Itarsi, then held ~12 min for a crossing. No diversion.</span></div>
+
+            <!-- spine -->
+            <div class="spine">
+              <div class="node past"><div class="rail"><div class="d"></div></div><div><div class="stn">New Delhi · NDLS</div><div class="meta"><span class="plat">Plat 16</span> · departed</div></div><div class="times"><div class="mono"><span class="act">17:55</span></div></div></div>
+              <div class="daypill">— Day 2 —</div>
+              <div class="node past"><div class="rail"><div class="d"></div></div><div><div class="stn">Itarsi Jn · ET</div><div class="meta"><span class="plat">Plat 3</span></div></div><div class="times mono"><span class="sch">15:50</span> <span class="act">16:02</span></div></div>
+              <div class="node here"><div class="rail"><div class="d"></div></div><div><div class="hereband">◐ YOU ARE HERE · estimated</div><div class="meta">~ between Itarsi and Hoshangabad</div></div><div></div></div>
+              <div class="node future"><div class="rail"><div class="d"></div></div><div><div class="stn">Hoshangabad · HBD</div><div class="meta"><span class="plat">Plat 1</span> · ETA</div></div><div class="times mono"><span class="eta">~16:31</span></div></div>
+              <div class="node future mine"><div class="rail"><div class="d"></div></div><div><div class="stn">Bhopal · BPL <span class="star">★</span></div><div class="meta" style="color:var(--brand)"><b>Your stop</b> · alarm set</div></div><div class="times mono"><span class="eta">~16:49</span></div></div>
+              <div class="collapse" onclick="this.previousElementSibling.insertAdjacentHTML('afterend', collapsedStops); this.remove()">▾ 6 more stops to terminus</div>
+            </div>
+
+            <!-- coach guide -->
+            <div class="card">
+              <h3>🚹 Coach &amp; platform guide</h3>
+              <div class="coach-answer">Your coach <span class="hl">B4</span> stops near the <span class="hl">front</span></div>
+              <div class="approach">▶ direction of approach at Bhopal</div>
+              <div class="platform">
+                <div class="platedge"></div>
+                <div class="coaches" id="coaches">
+                  <div class="cx">ENG</div>
+                  <div class="cx mine">B4<small>you</small></div>
+                  <div class="cx">B3</div>
+                  <div class="cx">A1</div>
+                  <div class="cx">SL</div>
+                  <div class="cx" data-gen>GEN</div>
+                  <div class="cx" data-gen>GEN</div>
+                  <div class="cx">SLR</div>
+                </div>
+                <div class="platends"><span>◀ FRONT</span><span>MIDDLE</span><span>REAR ▶</span></div>
+              </div>
+              <div class="reversal"><span>↺</span><span>Reverses at Itarsi — after that, your coach is toward the rear. This diagram already shows the order for Bhopal.</span></div>
+              <div class="gentoggle"><button class="toggle-btn" aria-pressed="false" onclick="genToggle(this)">⛃ Show GEN coaches</button></div>
+            </div>
+
+            <!-- PNR pass -->
+            <div class="pass">
+              <div class="pt">
+                <div class="pnrtop"><span class="pnrno mono">🎫 ••••7431</span><span class="chip green"><span class="ic">✅</span>CNF · Chart out</span></div>
+                <span class="route mono">NDLS → BPL · Sat 26 Jul · 3A · General quota</span>
+              </div>
+              <div class="perf"></div>
+              <div class="pax"><span class="pn">P1</span><span class="pd">B4 · 32 · Lower<small>Adult</small></span><span class="chip green"><span class="ic">✅</span>CNF</span></div>
+              <div class="pax"><span class="pn">P2</span><span class="pd">B4 · 35 · Side Upper<small>~72% likely to confirm</small></span><span class="chip amber"><span class="ic">⚠</span>WL 4</span></div>
+              <div class="privacy"><span>🔒</span><span>Shown masked, encrypted at rest, deleted after your journey. <a href="#" onclick="return false">Privacy note</a></span></div>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="dock">
+          <button class="primary" onclick="toast('⏰ Arrival alarm set for Bhopal (~16:49)')">🔔 Set arrival alarm</button>
+          <button class="more" onclick="toast('⋯ Share · Mute · Report wrong info · Unsave')" aria-label="More actions">⋯</button>
+        </div>
+      </div>
+
+      <!-- ============ STATION OVERLAY ============ -->
+      <div class="overlay" id="ov-station">
+        <div class="ov-head">
+          <button class="ov-back" onclick="closeOverlay()" aria-label="Back">‹</button>
+          <span class="ov-title">Itarsi Junction<small>📍 nearest to you · departures</small></span>
+          <button class="icobtn" title="Sunlight mode" onclick="cycleSun()">☀</button>
+        </div>
+        <div style="flex:1;overflow-y:auto;padding:6px 16px 30px" class="body">
+          <div class="view on" style="padding:0;gap:12px">
+            <div class="stationboard">
+              <div class="brow" onclick="openJourney()">
+                <span class="time mono">16:25</span>
+                <span class="mid"><span class="tn">12952 Tejas Rajdhani</span><span class="dest">→ Mumbai · <span class="bstat green">✅ on time</span></span></span>
+                <span class="plat mono">4</span>
+              </div>
+              <div class="brow" onclick="openJourney()">
+                <span class="time mono">16:40</span>
+                <span class="mid"><span class="tn">12138 Punjab Mail</span><span class="dest">→ Firozpur · <span class="bstat amber">⚠ 25 min late</span></span></span>
+                <span class="plat mono changed" id="platchg">1</span>
+              </div>
+              <div class="brow">
+                <span class="time mono">17:05</span>
+                <span class="mid"><span class="tn">11058 Amritsar Express</span><span class="dest"><span class="bstat red">⛔ cancelled</span> <button class="altbtn" onclick="event.stopPropagation();openPlan()">→ alternatives</button></span></span>
+                <span class="plat mono na">—</span>
+              </div>
+              <div class="brow" onclick="openJourney()">
+                <span class="time mono">17:20</span>
+                <span class="mid"><span class="tn">22691 Rajdhani Express</span><span class="dest">→ Bengaluru · <span class="bstat green">✅ on time</span></span></span>
+                <span class="plat mono">2</span>
+              </div>
+            </div>
+            <div class="controlsrow">
+              <button class="selchip" onclick="toast('Window: Next 2h / 4h / 8h')">Next 4h <span class="c">▾</span></button>
+              <button class="selchip" onclick="toast('Filter: class chips · destination · on-time only — one sheet')">⚲ filter</button>
+              <span class="hint" style="margin-left:auto">updated 45s ago</span>
+            </div>
+            <div class="hint">Tap ☀ in the header to preview <b>Sunlight mode</b> — deepened contrast for a bright platform.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ PLAN OVERLAY ============ -->
+      <div class="overlay" id="ov-plan">
+        <div class="ov-head">
+          <button class="ov-back" onclick="closeOverlay()" aria-label="Back">‹</button>
+          <span class="ov-title" style="flex-direction:row;align-items:center;gap:8px">
+            <span class="mono">NDLS → BPL</span>
+            <button class="icobtn" style="width:30px;height:30px;font-size:14px" title="Swap" onclick="toast('⇄ Reversed to BPL → NDLS')">⇄</button>
+          </span>
+        </div>
+        <div style="flex:1;overflow-y:auto;padding:6px 0 30px" class="body">
+          <div class="view on" style="padding:6px 16px 30px;gap:12px">
+            <div class="dayscrub" id="dayscrub">
+              <div class="day disabled"><span class="dow">THU</span><span class="dn">24</span></div>
+              <div class="day"><span class="dow">FRI</span><span class="dn">25</span></div>
+              <div class="day on"><span class="dow">SAT</span><span class="dn">26</span></div>
+              <div class="day"><span class="dow">SUN</span><span class="dn">27</span></div>
+              <div class="day"><span class="dow">MON</span><span class="dn">28</span></div>
+              <div class="day"><span class="dow">TUE</span><span class="dn">29</span></div>
+            </div>
+            <button class="selchip" onclick="toast('Quota: Booking normally / Tatkal (opens 10 AM AC · 11 AM non-AC) / Ladies / Senior')">Booking normally <span class="c">▾</span></button>
+            <div class="controlsrow"><span class="hint">Sort:</span><button class="tchip" aria-pressed="true">Departure</button><button class="tchip" aria-pressed="false">Price</button><button class="tchip" aria-pressed="false">Seats</button></div>
+
+            <div class="plancard">
+              <div class="ph" onclick="fare(this)">
+                <div class="toprow"><span class="pname">12002 Shatabdi Exp</span><span class="ptime mono">06:00 → 13:58</span></div>
+                <div class="prow2"><span class="mono">7h 58m · runs daily</span><span class="punct">usually on time</span></div>
+                <div class="prow3"><span class="chip green"><span class="ic">✓</span>AVL 42 · CC</span><span class="fare mono">₹1,240</span></div>
+              </div>
+              <div class="farebreak"><div class="fr"><span>Base fare</span><span class="mono">₹940</span></div><div class="fr"><span>Reservation</span><span class="mono">₹40</span></div><div class="fr"><span>Superfast</span><span class="mono">₹45</span></div><div class="fr"><span>GST</span><span class="mono">₹65</span></div><div class="fr tot"><span>Total</span><span class="mono">₹1,240</span></div></div>
+            </div>
+
+            <div class="plancard">
+              <div class="ph" onclick="fare(this)">
+                <div class="toprow"><span class="pname">12622 Tamil Nadu Exp</span><span class="ptime mono">22:30 → 06:15</span></div>
+                <div class="prow2"><span class="mono">7h 45m · Mon, Thu</span><span class="checking">checking fare…</span></div>
+                <div class="prow3"><span class="chip amber"><span class="ic">⚠</span>WL 12 · ~65% · 3A</span><button class="tatkalchip" onclick="event.stopPropagation();toast('🔔 We\'ll remind you when Tatkal opens at 10:00')">🔔 Tatkal opens 10:00</button></div>
+              </div>
+              <div class="farebreak"><div class="checking">Fare loads per-row after the list — never blocks the fast rows.</div></div>
+            </div>
+
+            <div class="plancard">
+              <div class="ph" onclick="fare(this)">
+                <div class="toprow"><span class="pname">12628 Karnataka Exp</span><span class="ptime mono">21:15 → 05:40</span></div>
+                <div class="prow2"><span class="mono">8h 25m · runs daily</span><span class="punct">usually ~20 min late</span></div>
+                <div class="prow3"><span class="chip green"><span class="ic">✓</span>AVL 8 · SL</span><span class="fare mono">₹640</span></div>
+              </div>
+              <div class="farebreak"><div class="fr"><span>Base fare</span><span class="mono">₹410</span></div><div class="fr"><span>Reservation</span><span class="mono">₹40</span></div><div class="fr"><span>Superfast</span><span class="mono">₹30</span></div><div class="fr"><span>GST</span><span class="mono">₹0</span></div><div class="fr tot"><span>Total</span><span class="mono">₹640</span></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /body -->
+
+    <!-- snackbar -->
+    <div class="snack" id="snack"><span id="snacktext"></span><button onclick="hideToast()">OK</button></div>
+
+    <!-- tab bar -->
+    <nav class="tabs" role="tablist">
+      <button class="tab" role="tab" aria-selected="true" data-tab="home" onclick="go('home')"><span class="g">⌂</span>Home</button>
+      <button class="tab" role="tab" aria-selected="false" data-tab="search" onclick="go('search')"><span class="g">⌕</span>Search</button>
+      <button class="tab" role="tab" aria-selected="false" data-tab="activity" onclick="go('activity')"><span class="g" style="position:relative">≋<span class="dot" style="right:-3px;top:-3px"></span></span>Activity</button>
+    </nav>
+
+    <!-- onboarding -->
+    <div class="ob" id="ob">
+      <div class="obtop">
+        <div class="biglogo">R</div>
+        <h1 id="ob-h">Track any train in India — live, ad-free.</h1>
+        <p id="ob-p">Pick your language. Everything after this speaks it.</p>
+        <div class="langs" id="oblangs">
+          <button class="lang on" onclick="pickLang(this,'Track any train in India — live, ad-free.','Pick your language. Everything after this speaks it.')">English<small>English</small></button>
+          <button class="lang" onclick="pickLang(this,'भारत की कोई भी ट्रेन — लाइव, बिना विज्ञापन।','अपनी भाषा चुनें। इसके बाद सब कुछ उसी में।')">हिन्दी<small>Hindi</small></button>
+          <button class="lang" onclick="pickLang(this,'இந்தியாவின் எந்த ரயிலையும் நேரலையில்.','உங்கள் மொழியைத் தேர்ந்தெடுங்கள்.')">தமிழ்<small>Tamil</small></button>
+          <button class="lang" onclick="pickLang(this,'ভারতের যেকোনো ট্রেন — লাইভ।','আপনার ভাষা বেছে নিন।')">বাংলা<small>Bengali</small></button>
+        </div>
+      </div>
+      <div class="obfoot">
+        <button class="cont" onclick="finishOb()">Continue</button>
+        <button class="skip" onclick="finishOb()">No ads · no login · your ticket stays private</button>
+      </div>
+    </div>
+
+  </div><!-- /phone -->
+
+  <div class="footnote">
+    <b>What you're looking at.</b> This is a clickable HTML prototype of <code>docs/ux-redesign.md</code> — not the Compose build. It renders the redesign's real design tokens (Paper/Board surfaces, brand-vs-signal colour, the dashed <i>estimate</i> style, mono tabular numerals) and the new IA. Try: tap the live board on Home → the merged Journey surface (map + spine + coach guide + PNR pass); type <code>129</code>, <code>4392</code>, or <code>ndls to bpl</code> in Search to watch it classify; open a train and tap ☀ to preview Sunlight mode; drag the sheet grabber to resize the map. The board <b>flap-rolls</b> when the delay changes (watch the live card a few seconds after landing). Reduced-motion is honoured.
+  </div>
+</div>
+
+<script>
+(function(){
+  var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // ---- product theme (Light / Dark / Sunlight) ----
+  var phone = document.getElementById('phone');
+  document.querySelectorAll('.seg button').forEach(function(b){
+    b.addEventListener('click', function(){
+      document.querySelectorAll('.seg button').forEach(function(x){x.setAttribute('aria-pressed','false');});
+      b.setAttribute('aria-pressed','true');
+      phone.setAttribute('data-pt', b.dataset.pt);
+    });
+  });
+  window.cycleSun = function(){
+    var cur = phone.getAttribute('data-pt');
+    var next = cur==='sun' ? 'dark' : 'sun';
+    phone.setAttribute('data-pt', next);
+    document.querySelectorAll('.seg button').forEach(function(x){x.setAttribute('aria-pressed', x.dataset.pt===next?'true':'false');});
+    toast(next==='sun'?'☀ Sunlight mode — high-contrast for a bright platform':'Back to dark');
+  };
+
+  // ---- tab / view routing ----
+  window.go = function(tab){
+    closeOverlay();
+    ['home','search','activity'].forEach(function(t){
+      document.getElementById('v-'+t).classList.toggle('on', t===tab);
+    });
+    document.querySelectorAll('.tab').forEach(function(b){
+      b.setAttribute('aria-selected', b.dataset.tab===tab ? 'true':'false');
+    });
+    document.getElementById('body').scrollTop = 0;
+  };
+
+  // ---- overlays ----
+  var current=null;
+  function openOv(id){ document.getElementById(id).classList.add('on'); current=id; }
+  window.closeOverlay = function(){ if(current){document.getElementById(current).classList.remove('on');current=null;} };
+  window.openJourney = function(focus){
+    openOv('ov-journey');
+    var sheet=document.getElementById('jsheet'); sheet.scrollTop=0;
+    document.getElementById('jmap').style.height='230px';
+    if(focus==='pnr'){ setTimeout(function(){ sheet.scrollTop = sheet.scrollHeight; }, 60); }
+    else { armFlap('jflap','12 min late','25 min late'); }
+  };
+  window.openStation = function(){ openOv('ov-station'); };
+  window.openPlan = function(){ openOv('ov-plan'); };
+
+  window.toggleMap = function(){
+    var m=document.getElementById('jmap');
+    m.style.height = (parseInt(m.style.height)||230) > 120 ? '96px' : '300px';
+  };
+
+  // ---- flap roll ----
+  function armFlap(id, from, to){
+    var el=document.getElementById(id); if(!el)return;
+    el.innerHTML='<span class="cur">'+from+'</span>';
+    if(reduce)return;
+    setTimeout(function(){
+      el.innerHTML='<span class="cur">'+from+'</span><span class="nxt">'+to+'</span>';
+      el.classList.add('rolling');
+      setTimeout(function(){ el.innerHTML='<span class="cur">'+to+'</span>'; el.classList.remove('rolling'); }, 560);
+    }, 3200);
+  }
+  // home hero demo roll on first load
+  setTimeout(function(){ if(!reduce) armFlap('homeflap','12 min late','14 min late'); }, 2600);
+
+  // ---- omnisearch classifier ----
+  var DIR = {
+    trains:[['12951','Mumbai Rajdhani','Delhi → Mumbai'],['12952','Tejas Rajdhani','Delhi → Bhopal'],
+            ['12622','Tamil Nadu Exp','Delhi → Chennai'],['12138','Punjab Mail','Mumbai → Firozpur'],
+            ['12002','Shatabdi Exp','Delhi → Bhopal']],
+    stations:[['NDLS','New Delhi','Delhi'],['BPL','Bhopal','Madhya Pradesh'],['ET','Itarsi Jn','Madhya Pradesh'],
+              ['CSMT','Mumbai CST','Maharashtra'],['MAS','MGR Chennai','Tamil Nadu']]
+  };
+  var STN = {ndls:'NDLS',delhi:'NDLS','new delhi':'NDLS',bpl:'BPL',bhopal:'BPL',et:'ET',itarsi:'ET',mas:'MAS',chennai:'MAS',csmt:'CSMT',mumbai:'CSMT'};
+
+  window.prefill = function(v){ var i=document.getElementById('omni-input'); i.value=v; i.focus(); classify(v); };
+  window.voiceDemo = function(){ toast('🎙 Listening… “goa express”'); setTimeout(function(){ prefill('goa'); }, 700); };
+
+  window.classify = function(q){
+    var lead=document.getElementById('omni-lead'), omni=document.getElementById('omni'),
+        hint=document.getElementById('omni-hint'), zero=document.getElementById('omni-zero'),
+        out=document.getElementById('omni-results');
+    omni.className='search';
+    q=(q||'').trim();
+    if(!q){ zero.style.display=''; out.style.display='none'; lead.textContent='⌕';
+            hint.innerHTML='One box. It figures out what you meant — no train-or-PNR toggle.'; return; }
+    zero.style.display='none'; out.style.display='flex'; out.innerHTML='';
+
+    var digits=q.replace(/\D/g,'');
+    var pureNum = /^[0-9\s]+$/.test(q);
+
+    // PNR (heading to 10 digits)
+    if(pureNum && digits.length>5){
+      omni.classList.add('pnr'); lead.textContent='🎫';
+      var grouped = digits.replace(/(\d{3})(\d{0,3})(\d{0,4}).*/, function(_,a,b,c){return [a,b,c].filter(Boolean).join(' ');});
+      document.getElementById('omni-input').value = grouped;
+      var left=10-digits.length;
+      hint.innerHTML = left>0 ? '<b>PNR</b> — '+left+' digit'+(left>1?'s':'')+' to go' : '<b>PNR</b> — masked the moment it resolves';
+      if(digits.length>=10){
+        out.appendChild(resRow('🎫','••••'+digits.slice(-4),'Tap to check — shown masked, always','PNR', function(){openJourney('pnr');}));
+      }
+      return;
+    }
+    // Train number
+    if(pureNum){
+      omni.classList.add('train'); lead.textContent='🚆';
+      var left=5-digits.length;
+      hint.innerHTML = left>0 ? '<b>Train number</b> — '+left+' more digit'+(left>1?'s':'') : '<b>Train number</b> — pure digits, so stations are skipped';
+      DIR.trains.filter(function(t){return t[0].indexOf(digits)===0;}).forEach(function(t){
+        out.appendChild(resRow('🚆',t[0]+' '+t[1],t[2],'Train',function(){openJourney();}));
+      });
+      return;
+    }
+    // Route intent  "x to y"  /  "x → y" / "x-y"
+    var rm=q.toLowerCase().match(/^(.+?)\s*(?:to|→|-|>)\s*(.+)$/);
+    if(rm && STN[rm[1].trim()] && STN[rm[2].trim()]){
+      omni.classList.add('route'); lead.textContent='⇄';
+      hint.innerHTML='<b>Route</b> — planning '+STN[rm[1].trim()]+' → '+STN[rm[2].trim()];
+      out.appendChild(resRow('⇄',STN[rm[1].trim()]+' → '+STN[rm[2].trim()],'See trains, fares &amp; seats','Route',function(){openPlan();}));
+      return;
+    }
+    // Fuzzy text
+    lead.textContent='⌕';
+    hint.innerHTML='Trains and stations · say it aloud with 🎙 if typing is hard';
+    var ql=q.toLowerCase(), any=false;
+    DIR.trains.filter(function(t){return (t[1]+' '+t[0]).toLowerCase().indexOf(ql)>=0;}).forEach(function(t){
+      any=true; out.appendChild(resRow('🚆',t[0]+' '+t[1],t[2],'Train',function(){openJourney();}));
+    });
+    DIR.stations.filter(function(s){return (s[1]+' '+s[0]+' '+s[2]).toLowerCase().indexOf(ql)>=0;}).forEach(function(s){
+      any=true; out.appendChild(resRow('🚉',s[1]+' · '+s[0],s[2],'Station',function(){openStation();}));
+    });
+    if(ql.indexOf('goa')>=0){ any=true; out.appendChild(resRow('🚆','12779 Goa Express','Vasco → Nizamuddin','Train',function(){openJourney();})); }
+    if(!any){ out.appendChild(resRow('🔎','No exact match','Try a train number, station, or “A to B”','',function(){})); }
+  };
+  function resRow(glyph,a,b,kind,fn){
+    var el=document.createElement('button'); el.className='res'; el.onclick=fn;
+    el.innerHTML='<span class="rg">'+glyph+'</span><span class="rt"><span class="a">'+a+'</span><span class="b">'+b+'</span></span>'+(kind?'<span class="kind">'+kind+'</span>':'');
+    return el;
+  }
+
+  // ---- coach GEN toggle ----
+  window.genToggle=function(btn){
+    var on = btn.getAttribute('aria-pressed')==='true';
+    btn.setAttribute('aria-pressed', on?'false':'true');
+    btn.textContent = on?'⛃ Show GEN coaches':'⛃ GEN coaches highlighted';
+    document.querySelectorAll('#coaches .cx[data-gen]').forEach(function(c){ c.classList.toggle('gen', !on); });
+  };
+
+  // ---- plan fare expand ----
+  window.fare=function(ph){ var fb=ph.nextElementSibling; if(fb) fb.classList.toggle('on'); };
+
+  // ---- day scrubber ----
+  document.querySelectorAll('#dayscrub .day').forEach(function(d){
+    if(d.classList.contains('disabled'))return;
+    d.addEventListener('click',function(){
+      document.querySelectorAll('#dayscrub .day').forEach(function(x){x.classList.remove('on');});
+      d.classList.add('on');
+    });
+  });
+
+  // ---- generic switches / chips ----
+  window.sw=function(b){ b.setAttribute('aria-pressed', b.getAttribute('aria-pressed')==='true'?'false':'true'); };
+  window.tgl=function(b){ b.setAttribute('aria-pressed', b.getAttribute('aria-pressed')==='true'?'false':'true'); };
+
+  // sort chips single-select
+  document.querySelectorAll('#ov-plan .tchip').forEach(function(b){
+    b.addEventListener('click',function(){
+      document.querySelectorAll('#ov-plan .tchip').forEach(function(x){x.setAttribute('aria-pressed','false');});
+      b.setAttribute('aria-pressed','true');
+    });
+  });
+
+  // ---- toast ----
+  var st;
+  window.toast=function(msg){ var s=document.getElementById('snack'); document.getElementById('snacktext').textContent=msg;
+    s.classList.add('on'); clearTimeout(st); st=setTimeout(hideToast,3200); };
+  window.hideToast=function(){ document.getElementById('snack').classList.remove('on'); };
+
+  // ---- context row dismiss on double? keep simple ----
+  // ---- onboarding ----
+  window.pickLang=function(el,h,p){
+    document.querySelectorAll('#oblangs .lang').forEach(function(x){x.classList.remove('on');});
+    el.classList.add('on');
+    document.getElementById('ob-h').textContent=h;
+    document.getElementById('ob-p').textContent=p;
+  };
+  window.finishOb=function(){ document.getElementById('ob').classList.remove('on'); go('home'); };
+  window.showOb=function(){ document.getElementById('ob').classList.add('on'); };
+
+  // collapsed stops (injected on expand)
+  window.collapsedStops =
+    '<div class="node future"><div class="rail"><div class="d"></div></div><div><div class="stn">Vidisha · BHS</div><div class="meta">ETA</div></div><div class="times mono"><span class="eta">~17:22</span></div></div>'+
+    '<div class="node future"><div class="rail"><div class="d"></div></div><div><div class="stn">Bina Jn · BINA</div><div class="meta">ETA</div></div><div class="times mono"><span class="eta">~18:05</span></div></div>'+
+    '<div class="node future"><div class="rail"><div class="d"></div></div><div><div class="stn">Jhansi · VGLJ</div><div class="meta">terminus soon</div></div><div class="times mono"><span class="eta">~19:40</span></div></div>';
+
+})();
+</script>
+
+</body>
+</html>
