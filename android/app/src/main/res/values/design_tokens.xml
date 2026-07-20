@@ -46,4 +46,18 @@
          which is the only channel that survives on RemoteViews. -->
     <color name="rc_estimate">#FF54696F</color>
     <color name="rc_focus">#FF2743C4</color>
+
+    <!--
+      Sunlight (FR-5.3). Deliberately NOT in values-night: sunlight is an
+      explicit user choice, not a device configuration, so no resource
+      qualifier can select it and it must not change with night mode. The
+      widget reads the preference and picks these itself (AmbientPalette).
+      All pairs clear 7:1 against rc_sun_board.
+    -->
+    <color name="rc_sun_board">#FFFFFFFF</color>
+    <color name="rc_sun_ink">#FF000000</color>
+    <color name="rc_sun_ink3">#FF555555</color>
+    <color name="rc_sun_green">#FF095731</color>
+    <color name="rc_sun_amber">#FF6E4100</color>
+    <color name="rc_sun_red">#FF852424</color>
 </resources>

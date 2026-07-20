@@ -205,10 +205,11 @@ private fun TrackContent(
                 )
                 // What the delay MEANS for this user — the line that ends the
                 // anxiety loop (design-system Law 3).
-                JourneyAnswer.consequence(screen.status)?.let { line ->
+                val isStale = resource?.stale == true
+                JourneyAnswer.consequence(screen.status, isStale)?.let { line ->
                     ConfidenceValue(
                         value = line,
-                        confidence = JourneyAnswer.confidence(screen.status),
+                        confidence = JourneyAnswer.confidence(screen.status, isStale),
                         modifier = Modifier.padding(top = Spacing.sm),
                         style = TextStyle(fontSize = 16.sp, fontWeight = FontWeight.SemiBold),
                     )

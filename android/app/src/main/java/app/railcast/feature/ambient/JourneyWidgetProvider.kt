@@ -52,6 +52,16 @@ class JourneyWidgetProvider : AppWidgetProvider() {
     private fun buildViews(context: Context, state: AmbientState): RemoteViews {
         val views = RemoteViews(context.packageName, R.layout.widget_journey)
 
+        // Sunlight has no resource qualifier — it is a user choice, not a device
+        // configuration — so the widget applies it by hand or the user who asked
+        // for the high-contrast theme silently does not get it (FR-5.3).
+        val sunlight = AmbientPalette.isSunlight(context)
+        views.setInt(R.id.widget_root, "setBackgroundResource", AmbientPalette.boardBackground(sunlight))
+        for (id in listOf(R.id.widget_title, R.id.widget_platform, R.id.widget_freshness)) {
+            views.setTextColor(id, context.getColor(AmbientPalette.secondaryInk(sunlight)))
+        }
+        views.setTextColor(R.id.widget_consequence, context.getColor(AmbientPalette.primaryInk(sunlight)))
+
         when (state) {
             // Never blank. An empty widget is wasted home-screen real estate and
             // tells the user nothing; it always offers exactly one action.
@@ -78,16 +88,7 @@ class JourneyWidgetProvider : AppWidgetProvider() {
                 // first (FR-10.2). The board sub-palette is used because the
                 // widget background is the board surface.
                 views.setTextViewText(R.id.widget_status, j.statusWord)
-                views.setTextColor(
-                    R.id.widget_status,
-                    context.getColor(
-                        when {
-                            j.cancelled -> R.color.rc_board_red
-                            j.statusWord.contains("late", ignoreCase = true) -> R.color.rc_board_amber
-                            else -> R.color.rc_board_green
-                        },
-                    ),
-                )
+                views.setTextColor(R.id.widget_status, context.getColor(AmbientPalette.statusColor(j, context)))
 
                 views.setTextViewText(R.id.widget_consequence, Ambient.consequenceLine(j).orEmpty())
                 views.setTextViewText(

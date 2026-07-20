@@ -30,5 +30,12 @@ class SunlightStore(private val context: Context) {
 
     suspend fun setSunlight(enabled: Boolean) {
         context.sunlightDataStore.edit { it[key] = enabled }
+        // Mirror to the ambient layer's SharedPreferences. RemoteViews binds are
+        // synchronous and DataStore is suspend-only, so the widget cannot read
+        // the value above — without this mirror a user who turns sunlight on
+        // keeps getting the ordinary palette on the surface they are most
+        // likely reading in direct sun (FR-5.3).
+        app.railcast.feature.ambient.AmbientPalette.setSunlight(context, enabled)
+        app.railcast.feature.ambient.JourneyWidgetProvider.refresh(context)
     }
 }

@@ -93,6 +93,18 @@ class JourneyAnswerTest {
         assertNull(JourneyAnswer.consequence(s.status))
     }
 
+    /**
+     * A cached ETA is not a live projection. Marking it ESTIMATED would
+     * overclaim -- it implies a calculation from *current* delay that is not
+     * happening. STALE says what it is (FR-9.1).
+     */
+    @Test fun a_cached_answer_is_stale_not_estimated() {
+        val s = screen(next = NextStation("BPL", "Bhopal", etaScheduled = "16:37"))
+        assertEquals(Confidence.STALE, JourneyAnswer.confidence(s.status, stale = true))
+        // and it loses the tilde, which belongs to live projections only
+        assertEquals("Bhopal 16:37", JourneyAnswer.consequence(s.status, stale = true))
+    }
+
     @Test fun the_next_stop_is_always_a_projection_never_observed() {
         val s = screen(next = NextStation("BPL", "Bhopal", etaScheduled = "16:37"))
         assertEquals(Confidence.ESTIMATED, JourneyAnswer.confidence(s.status))
