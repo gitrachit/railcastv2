@@ -24,6 +24,7 @@ import app.railcast.feature.alerts.AlertPrefsStore
 import app.railcast.feature.alerts.AlertsViewModel
 import app.railcast.feature.alerts.NotificationPoster
 import app.railcast.feature.ambient.WidgetAmbientSink
+import app.railcast.feature.find.FindViewModel
 import app.railcast.feature.home.HomeViewModel
 import app.railcast.feature.home.SavedStore
 import app.railcast.feature.pnr.PnrViewModel
@@ -96,6 +97,9 @@ class AppContainer(context: Context) {
         // the ambient surface never polls on its own (NFR-3).
         ambient = WidgetAmbientSink(appContext),
     )
+
+    // Find: one omni-input over trains, PNRs, stations and routes (W8).
+    val find: FindViewModel = FindViewModel(search = directory, scope = appScope)
 
     // Track: search → live train screen, refreshed by the same poller (4.3).
     val track: TrackViewModel = TrackViewModel(

@@ -27,6 +27,7 @@ import app.railcast.feature.pnr.PnrViewModel
 import app.railcast.feature.track.TrackViewModel
 import app.railcast.feature.plan.PlanScreen
 import app.railcast.feature.plan.PlanViewModel
+import app.railcast.feature.find.FindViewModel
 import app.railcast.feature.station.StationScreen
 import app.railcast.feature.station.StationViewModel
 import app.railcast.feature.track.TrackScreen
@@ -60,6 +61,7 @@ fun RailcastApp(
     pnr: PnrViewModel,
     station: StationViewModel,
     plan: PlanViewModel,
+    find: FindViewModel,
     alerts: AlertsViewModel,
     language: AppLanguage,
     onLanguageChange: (AppLanguage) -> Unit,
@@ -123,7 +125,17 @@ fun RailcastApp(
                 TrackScreen(track = track, alerts = alerts, onAlternatives = toAlternatives)
             }
             composable(Destination.FIND.route) {
-                FindScreen(station = station, plan = plan, onAlternatives = toAlternatives)
+                FindScreen(
+                    find = find,
+                    station = station,
+                    plan = plan,
+                    onOpenTrain = { trainNo ->
+                        track.open(trainNo)
+                        navController.navigate(TRACK_ROUTE) { launchSingleTop = true }
+                    },
+                    onOpenPnr = { navController.navigate(PNR_ROUTE) { launchSingleTop = true } },
+                    onAlternatives = toAlternatives,
+                )
             }
             composable(Destination.YOU.route) {
                 AlertsScreen(

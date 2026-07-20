@@ -11,8 +11,9 @@
     <string name="nav_journeys">यात्राएँ</string>
     <string name="nav_find">खोजें</string>
     <string name="nav_you">आप</string>
-    <string name="find_mode_station">स्टेशन बोर्ड</string>
     <string name="find_mode_plan">यात्रा प्लान करें</string>
+    <string name="find_hint">ट्रेन, PNR, स्टेशन, या “दिल्ली से गोवा”</string>
+    <string name="find_open_pnr">यह PNR देखें</string>
     <string name="widget_description">आपकी अगली यात्रा — देरी, आगमन और प्लेटफ़ॉर्म एक नज़र में।</string>
     <string name="widget_empty">ट्रेन ट्रैक करें</string>
     <string name="widget_others">+%1$d और</string>

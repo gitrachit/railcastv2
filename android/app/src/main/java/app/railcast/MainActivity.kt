@@ -86,6 +86,7 @@ class MainActivity : ComponentActivity() {
                             pnr = container.pnr,
                             station = container.station,
                             plan = container.plan,
+                            find = container.find,
                             alerts = container.alerts,
                             language = language,
                             onLanguageChange = { scope.launch { store.setLanguage(it) } },
