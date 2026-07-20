@@ -46,12 +46,14 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.res.stringResource
 import app.railcast.R
 import app.railcast.core.data.Resource
+import app.railcast.core.design.reflowMaxLines
 import app.railcast.core.design.BoardHero
 import app.railcast.core.design.RailcastIcons
 import app.railcast.core.design.RailcastTheme
@@ -412,7 +414,8 @@ private fun StopRow(stop: RouteStop) {
                 ),
                 fontSize = 12.sp,
                 color = colors.ink2,
-                maxLines = 1,
+                maxLines = reflowMaxLines(),
+                overflow = TextOverflow.Ellipsis,
             )
         }
         DelayTag(stop.delayMin)

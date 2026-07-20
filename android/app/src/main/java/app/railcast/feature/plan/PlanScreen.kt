@@ -32,6 +32,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -39,6 +40,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.res.stringResource
 import app.railcast.R
+import app.railcast.core.design.reflowMaxLines
 import app.railcast.core.design.Confidence
 import app.railcast.core.design.ConfidenceValue
 import app.railcast.core.design.RailcastIcons
@@ -235,7 +237,11 @@ private fun PlanRowCard(row: PlanRow, expanded: Boolean, onToggle: () -> Unit, t
                 Text("${row.name} · ${row.no}", fontSize = 15.sp, fontWeight = FontWeight.SemiBold, color = colors.ink)
                 Text(
                     monoNumerals("${IsoTime.clock(row.dep)} – ${IsoTime.clock(row.arr)}  ·  ${durationText(row.durationMin)}"),
-                    fontSize = 12.sp, color = colors.ink2, maxLines = 1,
+                    fontSize = 12.sp, color = colors.ink2,
+                    // One line at default size; grows rather than clipping as
+                    // system text scales (FR-10.3).
+                    maxLines = reflowMaxLines(),
+                    overflow = TextOverflow.Ellipsis,
                 )
                 Text(runsOnText(row.runsOn), fontSize = 11.sp, color = colors.ink3)
             }

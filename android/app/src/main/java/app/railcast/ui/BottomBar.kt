@@ -19,10 +19,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import app.railcast.core.design.reflowMaxLines
 import app.railcast.core.design.RailcastTheme
 
 /**
@@ -76,6 +78,11 @@ fun RailcastBottomBar(
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 10.5f.sp,
                     textAlign = TextAlign.Center,
+                    // Tab labels are always shown (PRD §7: "icons always
+                    // labelled"), so at large text they must wrap rather than
+                    // clip — each tab has only 1/n of the width to work with.
+                    maxLines = reflowMaxLines(base = 1),
+                    overflow = TextOverflow.Ellipsis,
                 )
             }
         }
