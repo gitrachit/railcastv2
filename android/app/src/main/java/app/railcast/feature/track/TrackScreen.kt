@@ -53,6 +53,9 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.res.stringResource
 import app.railcast.R
 import app.railcast.core.data.Resource
+import androidx.compose.ui.text.TextStyle
+import app.railcast.core.design.Spacing
+import app.railcast.core.design.ConfidenceValue
 import app.railcast.core.design.describe
 import app.railcast.core.design.confidencePrefix
 import app.railcast.core.design.reflowMaxLines
@@ -173,25 +176,51 @@ private fun TrackContent(
     val listState = rememberLazyListState()
     val scope = rememberCoroutineScope()
     val muteKey = screen?.let { MuteKeys.train(it.trainNo) }
-    // Coach section's list index, for the action bar's jump. Keep in sync with
-    // the item order below: header(0), hero(1), [amber], [run-date], [position].
-    val coachIndex = screen?.let {
-        var i = 2
-        if (it.status.state == "diverted" || it.status.state == "rescheduled") i++
-        if (RunDateSheet.hasChoice(it)) i++
-        if (it.position != null) i++
-        i
-    }
+    // Coach section's list index, for the action bar's jump. Computed by a
+    // tested function rather than an inline counter — the header and answer
+    // block are pinned above the list now, and the old counter still assumed
+    // they occupied indices 0 and 1.
+    val coachIndex = screen?.let { TrackListIndex.coachIndex(it, RunDateSheet.hasChoice(it)) }
 
     Column(modifier.fillMaxSize()) {
+        // Header and answer both sit above the scroll: back must always be
+        // reachable, and the answer must always be visible.
+        Column(Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 8.dp)) {
+            TrackHeader(screen?.name, screen?.trainNo ?: state.trainNo, onBack = track::back)
+        }
+        // The pinned answer (wireframe W5). The timeline below is chronological,
+        // and chronology buries the present — the single most-asked question
+        // ("how late is it, which platform") must never require scrolling to
+        // find. So the hero lives OUTSIDE the scrolling list, not in it.
+        if (screen != null && JourneyAnswer.hasAnswer(screen.status)) {
+            val visual = trainStatusVisual(screen.status.state, screen.status.delayMin)
+            Column(Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 12.dp)) {
+                BoardHero(
+                    title = "${screen.name} · ${screen.trainNo}",
+                    answer = screen.status.summary,
+                    answerIcon = visual.icon,
+                    level = visual.level,
+                    freshness = freshnessLabel(resource?.freshness, resource?.stale == true),
+                    stale = resource?.stale == true,
+                )
+                // What the delay MEANS for this user — the line that ends the
+                // anxiety loop (design-system Law 3).
+                JourneyAnswer.consequence(screen.status)?.let { line ->
+                    ConfidenceValue(
+                        value = line,
+                        confidence = JourneyAnswer.confidence(screen.status),
+                        modifier = Modifier.padding(top = Spacing.sm),
+                        style = TextStyle(fontSize = 16.sp, fontWeight = FontWeight.SemiBold),
+                    )
+                }
+            }
+        }
         LazyColumn(
             state = listState,
             modifier = Modifier.weight(1f).fillMaxWidth().padding(horizontal = 20.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
             contentPadding = PaddingValues(vertical = 16.dp),
         ) {
-            item { TrackHeader(screen?.name, screen?.trainNo ?: state.trainNo, onBack = track::back) }
-
             if (screen == null) {
                 item {
                     // Error with no cached value → plain-language + retry (PRD §7);
@@ -208,18 +237,6 @@ private fun TrackContent(
             if (screen.status.state == "cancelled") {
                 item { CancelledState(screen.status.summary, onAlternatives) }
                 return@LazyColumn
-            }
-
-            item {
-                val visual = trainStatusVisual(screen.status.state, screen.status.delayMin)
-                BoardHero(
-                    title = "${screen.name} · ${screen.trainNo}",
-                    answer = screen.status.summary,
-                    answerIcon = visual.icon,
-                    level = visual.level,
-                    freshness = freshnessLabel(resource.freshness, resource.stale),
-                    stale = resource.stale,
-                )
             }
 
             if (screen.status.state == "diverted" || screen.status.state == "rescheduled") {
