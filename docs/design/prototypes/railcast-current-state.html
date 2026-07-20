@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Railcast — Current Shipped State</title>
+<style>:root{color-scheme:light dark;}body{margin:0;}</style>
+</head>
+<body>
+<style>
+/* ============ Railcast — CURRENT SHIPPED STATE (as of main HEAD) ============
+   Every screen, string, colour, and behaviour below is transcribed directly
+   from the Kotlin source (android/app/src/main/java/app/railcast/**) and the
+   verified token table in docs/design/design-system.md — not from the design
+   docs' aspirational wireframes. Where the shipped app falls short of the
+   design docs' vision, this prototype shows the SHIPPED version and says so.
+*/
+:root{ --stage:#0a1216; --stage2:#0e1a20; --stagink:#c7dbe1; --staginkdim:#7a959d; --stageline:#1a2c34; --warn:#e7a542; }
+@media (prefers-color-scheme: light){ :root{ --stage:#dde5e8; --stage2:#eef2f4; --stagink:#263f48; --staginkdim:#5b737b; --stageline:#ccd7db; } }
+:root[data-theme="dark"]{ --stage:#0a1216; --stage2:#0e1a20; --stagink:#c7dbe1; --staginkdim:#7a959d; --stageline:#1a2c34; }
+:root[data-theme="light"]{ --stage:#dde5e8; --stage2:#eef2f4; --stagink:#263f48; --staginkdim:#5b737b; --stageline:#ccd7db; }
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+.stage{min-height:100vh;margin:0;background:radial-gradient(130% 90% at 50% -20%,color-mix(in srgb,var(--stage2) 65%,transparent),transparent 55%),var(--stage);
+  color:var(--stagink);font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans",sans-serif;
+  display:flex;flex-direction:column;align-items:center;padding:30px 16px 64px;gap:22px;}
+.mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-variant-numeric:tabular-nums;letter-spacing:-.01em;}
+a{color:inherit;}
+.ic{width:1em;height:1em;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;vertical-align:-.13em;}
+
+/* studio header */
+.studio{width:100%;max-width:980px;display:flex;flex-direction:column;gap:14px;}
+.studio-top{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;flex-wrap:wrap;}
+.studio h1{font-size:19px;font-weight:660;letter-spacing:-.02em;margin:0;display:flex;align-items:center;gap:10px;}
+.studio h1 .d{width:9px;height:9px;border-radius:99px;background:#37d98a;box-shadow:0 0 0 4px color-mix(in srgb,#37d98a 22%,transparent);}
+.studio p{margin:4px 0 0;color:var(--staginkdim);font-size:13px;max-width:70ch;line-height:1.55;}
+.seg{display:flex;background:color-mix(in srgb,var(--stage2) 75%,transparent);border:1px solid var(--stageline);border-radius:999px;padding:3px;gap:2px;}
+.seg button{border:none;background:none;color:var(--staginkdim);font-family:inherit;font-size:12.5px;font-weight:600;padding:8px 14px;border-radius:999px;cursor:pointer;}
+.seg button[aria-pressed="true"]{background:var(--stagink);color:var(--stage);}
+.seg button:focus-visible{outline:2px solid #8098FF;outline-offset:2px;}
+.honest{display:flex;gap:10px;align-items:flex-start;background:color-mix(in srgb,var(--warn) 14%,transparent);border:1px solid color-mix(in srgb,var(--warn) 34%,transparent);
+  border-radius:12px;padding:12px 14px;font-size:12.5px;line-height:1.55;color:var(--stagink);max-width:980px;}
+.honest b{color:var(--warn);}
+.honest .ic{color:var(--warn);font-size:16px;margin-top:1px;}
+.legend{display:flex;gap:16px;flex-wrap:wrap;color:var(--staginkdim);font-size:11.5px;}
+.legend b{color:var(--stagink);font-weight:620;}
+
+/* layout: two phones side by side (in-app) + ambient panel */
+.rig{width:100%;max-width:980px;display:flex;gap:26px;flex-wrap:wrap;justify-content:center;align-items:flex-start;}
+.col{display:flex;flex-direction:column;gap:12px;align-items:center;}
+.col-label{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--staginkdim);}
+
+/* ===== PHONE (verified Semaphore tokens, WCAG-corrected) ===== */
+.rc{
+  --bg:#E7ECEF; --surface:#FFFFFF; --surface2:#F1F4F6; --ink:#0F2A33; --ink2:#54696F; --ink3:#5B6E75;
+  --line:#DCE3E7; --brand:#2743C4; --brandSoft:#EAEEFB; --green:#126C40; --greenSoft:rgba(18,108,64,.13);
+  --amber:#8B5208; --amberSoft:rgba(139,82,8,.13); --red:#C03C3C; --redSoft:rgba(192,60,60,.10);
+  --board:#0F2A33; --boardGreen:#3DE08A; --boardAmber:#FFC24D; --boardRed:#FF7A7A; --boardInk:#7FA6AE;
+  --estimate:#54696F; --focus:#2743C4; --shadow:0 1px 2px rgba(15,42,51,.04),0 8px 24px -14px rgba(15,42,51,.22);
+  width:100%;max-width:376px;height:800px;position:relative;background:var(--bg);color:var(--ink);
+  border-radius:40px;overflow:hidden;display:flex;flex-direction:column;font-size:15px;line-height:1.4;
+  box-shadow:0 40px 90px -30px rgba(0,0,0,.55), inset 0 0 0 8px #04080a, inset 0 0 0 9px #1a2930;
+}
+.rc[data-pt="dark"]{
+  --bg:#081115; --surface:#0F2129; --surface2:#15303A; --ink:#EAF3F4; --ink2:#9DB4BB; --ink3:#708A92;
+  --line:#1E3B45; --brand:#8098FF; --brandSoft:#182747; --green:#3DBB77; --greenSoft:rgba(61,187,119,.14);
+  --amber:#E7A542; --amberSoft:rgba(231,165,66,.14); --red:#E36868; --redSoft:rgba(227,104,104,.12);
+  --estimate:#9DB4BB; --focus:#8098FF;
+}
+.rc[data-pt="sun"]{
+  --bg:#FFFFFF; --surface:#FFFFFF; --surface2:#F2F2F2; --ink:#000000; --ink2:#2A2A2A; --ink3:#555555;
+  --line:#BBBBBB; --brand:#1D33A0; --brandSoft:#D8DEF6; --green:#095731; --greenSoft:rgba(9,87,49,.13);
+  --amber:#6E4100; --amberSoft:rgba(110,65,0,.13); --red:#852424; --redSoft:rgba(133,36,36,.10);
+  --board:#FFFFFF; --boardGreen:#095731; --boardAmber:#6E4100; --boardRed:#852424; --boardInk:#333333;
+  --estimate:#2A2A2A; --focus:#000000; --shadow:0 0 0 1px #d0d0d0;
+}
+.rc[data-pt="sun"] .board{border:2px solid #000;}
+.rc *:focus-visible{outline:2px solid var(--focus);outline-offset:2px;border-radius:6px;}
+.sbar{height:32px;display:flex;align-items:center;justify-content:space-between;padding:0 22px;font-size:12px;font-weight:650;flex:none;}
+.sbar .r{display:flex;gap:6px;align-items:center;}
+.body{flex:1;overflow-y:auto;overflow-x:hidden;position:relative;scrollbar-width:none;}
+.body::-webkit-scrollbar{display:none;}
+.view{display:none;flex-direction:column;min-height:100%;}
+.view.on{display:flex;}
+.pad20{padding:0 20px;}
+
+/* tabs — 3, exact strings from strings.xml: Journeys / Find / You */
+.tabs{flex:none;display:flex;background:var(--surface);border-top:1px solid var(--line);
+  padding:6px 4px calc(6px + env(safe-area-inset-bottom,6px));gap:4px;}
+.tab{flex:1;border:none;background:none;font-family:inherit;color:var(--ink3);display:flex;flex-direction:column;align-items:center;gap:3px;
+  padding:6px 4px;border-radius:14px;cursor:pointer;font-size:10.5px;font-weight:600;min-height:48px;justify-content:center;}
+.tab .ic{font-size:22px;}
+.tab[aria-selected="true"]{color:var(--brand);}
+
+/* ---- shared bits ---- */
+.hdr{display:flex;align-items:center;gap:8px;padding:8px 20px 2px;}
+.hdrback{width:48px;height:48px;border-radius:999px;border:none;background:none;color:var(--ink);font-size:22px;display:grid;place-items:center;cursor:pointer;margin-left:-12px;}
+.hdrtitle{font-size:22px;font-weight:700;color:var(--ink);}
+.hdrtitle.lg{font-size:26px;}
+.section-title{font-size:15px;font-weight:600;color:var(--ink2);margin:14px 0 8px;}
+.eyebrow{font-size:15px;color:var(--ink2);font-weight:500;}
+
+/* segmented control (Journeys tab: Train | PNR) */
+.segc{display:flex;background:var(--surface2);border-radius:12px;padding:3px;gap:2px;}
+.segc button{flex:1;border:none;background:none;font-family:inherit;font-size:14px;font-weight:600;color:var(--ink2);
+  padding:9px 0;border-radius:9px;cursor:pointer;}
+.segc button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.08);}
+
+/* text field */
+.tf{border:1px solid var(--line);border-radius:8px;background:var(--surface);display:flex;align-items:center;gap:8px;padding:0 12px;min-height:52px;}
+.tf input{border:none;background:none;outline:none;flex:1;font-size:16px;color:var(--ink);font-family:inherit;min-width:0;}
+.tf input::placeholder{color:var(--ink3);}
+.tf .lead{color:var(--ink3);font-size:19px;}
+.tf .mic{width:44px;height:44px;border-radius:999px;border:none;background:none;color:var(--brand);display:grid;place-items:center;cursor:pointer;font-size:19px;}
+.hint-amber{color:var(--amber);font-size:13px;margin-top:4px;}
+
+/* result row */
+.res{display:flex;align-items:center;gap:12px;padding:10px 16px;border:1px solid var(--line);border-radius:12px;background:var(--surface);cursor:pointer;min-height:56px;margin-top:8px;}
+.res .rt{flex:1;min-width:0;}
+.res .rt .a{font-size:16px;font-weight:600;color:var(--ink);}
+.res .rt .b{font-size:13px;color:var(--ink2);margin-top:1px;}
+.res .kind{font-size:12px;color:var(--ink3);}
+
+/* board hero — EXACT BoardHero.kt contract: title / icon+answer mono / freshness dot+label */
+.board{background:var(--board);border-radius:20px;padding:20px;position:relative;overflow:hidden;}
+.board .title{color:var(--boardInk);font-size:13px;font-weight:600;}
+.board .answer{margin-top:2px;font-family:ui-monospace,monospace;font-weight:800;font-size:26px;display:flex;align-items:baseline;gap:8px;}
+.board .answer.green{color:var(--boardGreen);} .board .answer.amber{color:var(--boardAmber);} .board .answer.red{color:var(--red);} .board .answer.neutral{color:var(--boardInk);}
+.board .fresh{display:flex;align-items:center;gap:6px;margin-top:8px;font-size:11px;color:var(--boardInk);}
+.board .fresh .d{width:6px;height:6px;border-radius:99px;background:var(--boardGreen);}
+.board .fresh.stale .d{background:var(--boardInk);}
+.rc[data-pt="sun"] .board .title,.rc[data-pt="sun"] .board .fresh{color:#000;}
+
+/* consequence line — ConfidenceValue: dashed underline + ~ prefix when ESTIMATED */
+.conseq{margin-top:10px;font-size:16px;font-weight:600;color:var(--ink);}
+.conseq.estimated{color:var(--estimate);text-decoration:none;border-bottom:1.5px dashed var(--estimate);padding-bottom:2px;display:inline-block;}
+
+/* saved card (Journeys tab — exactly SavedCardView: BoardHero + Remove button, nothing else) */
+.savedcard{margin-top:14px;}
+.savedcard .removerow{display:flex;justify-content:flex-end;margin-top:4px;}
+.removebtn{border:none;background:none;color:var(--brand);font-family:inherit;font-weight:600;font-size:13px;padding:8px 10px;cursor:pointer;}
+
+/* action rows (Find zero-state) */
+.actionrow{display:flex;align-items:center;background:var(--brandSoft);border-radius:12px;padding:0 16px;min-height:56px;color:var(--brand);
+  font-weight:600;font-size:15px;cursor:pointer;margin-top:10px;}
+
+/* chips / status */
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:700;padding:0;}
+.chip.green{color:var(--green);} .chip.neutral{color:var(--ink3);}
+
+/* pnr pass */
+.pnr-header{font-size:22px;font-weight:700;color:var(--ink);font-family:ui-monospace,monospace;}
+.celebrate{display:flex;align-items:center;gap:10px;background:var(--greenSoft);border-radius:14px;padding:16px;cursor:pointer;margin-top:8px;}
+.celebrate span{font-weight:700;color:var(--green);font-size:15px;}
+.journeycard{border:1px solid var(--line);border-radius:16px;padding:16px;margin-top:12px;background:var(--surface);}
+.journeycard .t1{font-size:16px;font-weight:600;color:var(--ink);}
+.journeycard .t2{font-size:14px;color:var(--ink);margin-top:4px;}
+.journeycard .t3{font-size:13px;color:var(--ink2);margin-top:2px;}
+.paxrow{display:flex;align-items:center;gap:12px;border:1px solid var(--line);border-radius:12px;padding:10px 14px;margin-top:8px;background:var(--surface);}
+.paxrow .l{flex:1;} .paxrow .l .a{font-size:13px;color:var(--ink2);} .paxrow .l .b{font-size:13px;color:var(--ink);margin-top:1px;}
+.paxrow .r{text-align:right;} .paxrow .r .a{font-size:15px;font-weight:700;color:var(--ink);} .paxrow .r .b{font-size:11px;color:var(--ink3);}
+.bigbtn{width:100%;min-height:52px;border:none;border-radius:14px;background:var(--brand);color:#fff;font-family:inherit;font-weight:600;font-size:16px;cursor:pointer;margin-top:14px;}
+.mutechip{display:flex;align-items:center;justify-content:center;gap:8px;border:1px solid var(--line);border-radius:12px;min-height:48px;margin-top:12px;color:var(--ink2);font-weight:600;font-size:14px;cursor:pointer;}
+.privacylink{color:var(--brand);font-weight:600;font-size:12px;margin-top:16px;cursor:pointer;min-height:48px;display:flex;align-items:center;}
+.privacybody{font-size:12px;color:var(--ink2);margin-top:4px;line-height:1.5;}
+
+/* track detail */
+.amberbanner{display:flex;gap:8px;background:var(--amberSoft);border-radius:12px;padding:14px;color:var(--amber);font-weight:600;font-size:14px;margin-top:12px;}
+.rundatepill{display:inline-flex;background:var(--brandSoft);color:var(--brand);font-weight:600;font-size:13px;border-radius:999px;padding:9px 14px;margin-top:12px;cursor:pointer;}
+.estpos{background:var(--surface2);border-radius:16px;padding:16px;margin-top:12px;}
+.estpos .lbl{font-size:12px;font-weight:700;color:var(--ink2);}
+.estpos .row{display:flex;align-items:center;gap:8px;margin-top:8px;}
+.estpos .row span{font-size:13px;font-weight:600;color:var(--ink);}
+.estpos .track2{flex:1;height:6px;border-radius:999px;background:var(--line);position:relative;}
+.estpos .fill{position:absolute;left:0;top:0;bottom:0;border-radius:999px;background:var(--brand);}
+.coachsec{margin-top:14px;}
+.coachtop{display:flex;align-items:center;gap:8px;}
+.coachtop .lbl{font-size:15px;font-weight:600;color:var(--ink2);}
+.coachtop .at{flex:1;font-size:12px;color:var(--ink3);}
+.gentoggle{display:inline-flex;align-items:center;gap:5px;border-radius:999px;padding:9px 12px;background:var(--surface2);color:var(--ink2);font-size:12px;font-weight:700;cursor:pointer;min-height:48px;}
+.gentoggle[aria-pressed="true"]{background:var(--brandSoft);color:var(--brand);}
+.reversal{font-size:13px;color:var(--amber);margin-top:6px;}
+.coachrow{display:flex;gap:6px;overflow-x:auto;margin-top:10px;padding-bottom:4px;}
+.coachtile{flex:none;min-width:52px;border-radius:8px;border:1px solid var(--line);background:var(--surface2);padding:8px 12px;text-align:center;min-height:48px;}
+.coachtile .n{font-size:14px;font-weight:700;color:var(--ink);}
+.coachtile .t{font-size:10px;color:var(--ink3);}
+.coachtile.on{background:var(--brand);border-color:var(--brand);}
+.coachtile.on .n,.coachtile.on .t{color:var(--board);}
+.timeline-title{font-size:15px;font-weight:600;color:var(--ink2);margin-top:16px;}
+.dayhdr{font-size:12px;font-weight:700;color:var(--ink3);margin-top:14px;}
+.stoprow{border:1px solid var(--line);border-radius:12px;padding:10px 14px;margin-top:8px;display:flex;align-items:center;gap:12px;}
+.stoprow.next{background:var(--brandSoft);border-color:var(--brand);}
+.stoprow .l{flex:1;} .stoprow .name{font-size:15px;font-weight:600;color:var(--ink);}
+.stoprow .times{font-size:12px;color:var(--ink2);margin-top:2px;font-family:ui-monospace,monospace;}
+.stoprow .times .est{color:var(--estimate);border-bottom:1.5px dashed var(--estimate);}
+.delaytag{font-size:12px;font-weight:700;} .delaytag.ok{color:var(--green);} .delaytag.warn{color:var(--amber);} .delaytag.bad{color:var(--red);}
+.cancelled{display:flex;flex-direction:column;align-items:center;gap:14px;padding:40px 20px;text-align:center;}
+.cancelled .x{font-size:40px;color:var(--red);}
+.cancelled h3{font-size:22px;font-weight:700;color:var(--red);margin:0;}
+.cancelled p{font-size:15px;color:var(--ink2);margin:0;}
+
+/* sticky action bar */
+.actionbar{flex:none;display:flex;border-top:1px solid var(--line);background:var(--surface);padding:6px 8px;}
+.actionbtn{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 0;border-radius:12px;cursor:pointer;color:var(--ink2);}
+.actionbtn .ic{font-size:22px;} .actionbtn .lb{font-size:11px;font-weight:600;}
+.actionbtn.on{color:var(--brand);}
+.actionbtn.muted{color:var(--amber);}
+
+/* You (Alerts) screen */
+.togglerow{display:flex;align-items:center;justify-content:space-between;min-height:48px;padding:4px 0;}
+.togglerow .lb{font-size:15px;color:var(--ink);}
+.sw{width:46px;height:28px;border-radius:99px;background:var(--line);position:relative;cursor:pointer;border:none;flex:none;}
+.sw::after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:99px;background:#fff;transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,.2);}
+.sw[aria-pressed="true"]{background:var(--brand);}
+.sw[aria-pressed="true"]::after{left:21px;}
+.timestepper{display:flex;align-items:center;gap:12px;margin-top:4px;}
+.timestepper .lb{flex:1;font-size:14px;color:var(--ink2);}
+.steparrow{width:36px;height:36px;border-radius:999px;background:var(--brandSoft);color:var(--brand);border:none;font-size:18px;font-weight:700;cursor:pointer;}
+.oemrow{display:flex;align-items:center;min-height:48px;padding-top:8px;cursor:pointer;}
+.oemrow .lb{flex:1;font-size:15px;font-weight:600;color:var(--ink);}
+.oembody{font-size:13px;color:var(--ink2);margin-top:6px;line-height:1.5;}
+.oemsettings{color:var(--brand);font-weight:600;font-size:13px;margin-top:8px;}
+.sunhint{font-size:13px;color:var(--ink2);margin-top:4px;}
+
+/* ===== AMBIENT PREVIEW PANEL (widget + lockscreen — real RemoteViews/Notification code, previewed since it can't render as HTML "in" the phone) ===== */
+.ambientpanel{width:280px;display:flex;flex-direction:column;gap:16px;}
+.widgetmock{border-radius:18px;background:var(--board,#0F2A33);padding:16px;color:#fff;position:relative;overflow:hidden;
+  box-shadow:0 20px 40px -20px rgba(0,0,0,.5);}
+.widgetmock .t{font-size:12px;font-weight:600;color:#7FA6AE;}
+.widgetmock .status{font-size:13px;font-weight:700;margin-top:4px;}
+.widgetmock .conseq{font-size:15px;font-weight:700;color:#fff;margin-top:4px;}
+.widgetmock .plat{font-size:12px;color:#7FA6AE;margin-top:6px;}
+.widgetmock .fresh{font-size:10.5px;color:#7FA6AE;margin-top:6px;}
+.notifmock{border-radius:16px;background:#fff;color:#111;padding:14px 16px;box-shadow:0 12px 28px -14px rgba(0,0,0,.4);}
+.notifmock .app{font-size:11px;font-weight:600;color:#666;display:flex;align-items:center;gap:6px;}
+.notifmock .title{font-size:14px;font-weight:700;margin-top:4px;}
+.notifmock .body{font-size:13px;color:#333;margin-top:3px;line-height:1.4;}
+.notifmock .acts{display:flex;gap:16px;margin-top:10px;}
+.notifmock .acts button{border:none;background:none;color:#2743C4;font-weight:700;font-size:13px;cursor:pointer;font-family:inherit;}
+.panelcap{font-size:12px;color:var(--staginkdim);line-height:1.5;}
+.panelcap b{color:var(--stagink);}
+
+.footnote{max-width:980px;width:100%;color:var(--staginkdim);font-size:12px;line-height:1.65;}
+.footnote b{color:var(--stagink);} .footnote code{font-family:ui-monospace,monospace;font-size:11px;background:color-mix(in srgb,var(--stage2) 70%,transparent);padding:1px 5px;border-radius:4px;}
+</style>
+
+<div class="stage" id="stage">
+  <header class="studio">
+    <div class="studio-top">
+      <div>
+        <h1><span class="d"></span>Railcast — current shipped state</h1>
+        <p>Not a redesign pitch — a faithful reconstruction of what's actually in <code>main</code> right now, transcribed screen-by-screen from the Kotlin source (colours, strings, component contracts) rather than from the design docs' wireframes. Where the two disagree, this shows what's really there.</p>
+      </div>
+      <div class="seg" role="group" aria-label="Theme">
+        <button data-pt="light" aria-pressed="false">Light</button>
+        <button data-pt="dark" aria-pressed="true">Dark</button>
+        <button data-pt="sun" aria-pressed="false">☀ Sunlight</button>
+      </div>
+    </div>
+    <div class="legend">
+      <span><b>Board</b> = live truth (dark, mono, flap-roll)</span>
+      <span><b>Dashed underline</b> = ESTIMATED (Confidence System)</span>
+      <span><b>Brand blue</b> = tappable only</span>
+    </div>
+  </header>
+
+  <div class="honest">
+    <svg class="ic"><use href="#i-warn"/></svg>
+    <span><b>The gap worth knowing about:</b> the <b>Journeys</b> tab is still, almost byte-for-byte, the pre-redesign Home screen — including the Train / PNR toggle the design study's own Finding 7 argued against ("modes are where errors live"). The new single-input classifier only exists on <b>Find</b>. Saved-train cards on Journeys are a plain board (title + status + freshness) — no consequence line, no urgency ranking, no mini-spine; those only appear on the Track detail screen. Track/PNR and the ambient widget/notification are genuinely new and match the design docs closely. This prototype shows the real, current mix of both.</span>
+  </div>
+
+  <div class="rig">
+
+    <!-- ============ PHONE ============ -->
+    <div class="col">
+      <span class="col-label">In-app · Journeys tab</span>
+      <div class="rc" data-pt="dark" id="phone">
+        <div class="sbar"><span class="mono">9:41</span><span class="r mono">5G · 84%</span></div>
+        <div class="body" id="body">
+
+          <!-- ===================== JOURNEYS (= HomeScreen.kt, largely pre-redesign) ===================== -->
+          <section class="view on pad20" id="v-journeys" style="padding-top:16px;padding-bottom:20px">
+            <div class="eyebrow">Where to?</div>
+            <div class="segc" style="margin-top:12px">
+              <button aria-pressed="true" onclick="segSelect(this,'train')">Train</button>
+              <button aria-pressed="false" onclick="segSelect(this,'pnr')">PNR</button>
+            </div>
+            <div class="tf" style="margin-top:10px">
+              <span class="lead"><svg class="ic"><use href="#i-search"/></svg></span>
+              <input id="j-query" placeholder="Train name or number" oninput="jQuery(this.value)">
+              <button class="mic" title="Voice search" onclick="toast('mic','Listening…')"><svg class="ic"><use href="#i-mic"/></svg></button>
+            </div>
+            <div id="j-hint" class="hint-amber" style="display:none"></div>
+
+            <div id="j-results" style="display:none"></div>
+
+            <div id="j-saved">
+              <div class="section-title">Saved trains</div>
+              <div class="savedcard" onclick="openTrack()">
+                <div class="board">
+                  <div class="title">Tejas Rajdhani · 12952</div>
+                  <div class="answer amber" id="j-flap"><svg class="ic" style="font-size:16px"><use href="#i-play"/></svg><span>12 min late</span></div>
+                  <div class="fresh"><span class="d"></span><span>updated 40s ago</span></div>
+                </div>
+                <div class="removerow"><button class="removebtn" onclick="event.stopPropagation();toast('check','Removed 12952 from saved trains')">Remove</button></div>
+              </div>
+              <div class="savedcard" onclick="openTrack('12622')">
+                <div class="board">
+                  <div class="title">Tamil Nadu Express · 12622</div>
+                  <div class="answer neutral"><svg class="ic" style="font-size:16px"><use href="#i-clock"/></svg><span>Not started</span></div>
+                  <div class="fresh stale"><span class="d"></span><span>6 min ago</span></div>
+                </div>
+                <div class="removerow"><button class="removebtn" onclick="event.stopPropagation();toast('check','Removed 12622 from saved trains')">Remove</button></div>
+              </div>
+            </div>
+          </section>
+
+          <!-- ===================== FIND (= FindScreen.kt, genuinely new) ===================== -->
+          <section class="view pad20" id="v-find" style="padding-top:16px;padding-bottom:20px">
+            <div class="tf">
+              <span class="lead" id="f-lead"><svg class="ic"><use href="#i-search"/></svg></span>
+              <input id="f-query" placeholder="Train, PNR, station, or “Delhi to Goa”" oninput="fClassify(this.value)">
+            </div>
+            <div id="f-hint" class="hint-amber" style="display:none"></div>
+
+            <div id="f-zero">
+              <div class="actionrow" onclick="findShowStation()"><svg class="ic" style="margin-right:10px"><use href="#i-pin"/></svg>Trains near me</div>
+              <div class="actionrow" onclick="findShowPlan()"><svg class="ic" style="margin-right:10px"><use href="#i-swap"/></svg>Plan a trip</div>
+            </div>
+            <div id="f-pnr-action" style="display:none">
+              <div class="actionrow" onclick="openPnr()"><svg class="ic" style="margin-right:10px"><use href="#i-ticket"/></svg>Check this PNR</div>
+            </div>
+            <div id="f-results" style="display:none"></div>
+            <div id="f-station" style="display:none">
+              <div class="section-title" style="margin-top:16px">Itarsi Junction · departures</div>
+              <div class="res"><div class="rt"><div class="a mono">16:25 · 12952 Tejas Rajdhani</div><div class="b">→ Mumbai · Platform 4 · on time</div></div></div>
+              <div class="res"><div class="rt"><div class="a mono">16:40 · 12138 Punjab Mail</div><div class="b">→ Firozpur · Platform 1 · 25 min late</div></div></div>
+              <div class="res"><div class="rt"><div class="a mono">17:05 · 11058 Amritsar Exp</div><div class="b" style="color:var(--red)">cancelled — see alternatives</div></div></div>
+            </div>
+            <div id="f-plan" style="display:none">
+              <div class="section-title" style="margin-top:16px">Delhi → Goa · Fri 24 Jul</div>
+              <div class="res"><div class="rt"><div class="a">12779 Goa Express</div><div class="b mono">15:20 → 09:45 (18h 25m) · 3A · AVL 42 · ₹1,845</div></div></div>
+              <div class="res"><div class="rt"><div class="a">22413 Rajdhani</div><div class="b mono">3A · WL 8 · ₹2,190 · loading seats…</div></div></div>
+            </div>
+          </section>
+
+          <!-- ===================== TRACK (nested route, opened from Journeys or Find) ===================== -->
+          <div class="view" id="v-track" style="display:none;flex-direction:column;height:100%">
+            <div class="hdr">
+              <button class="hdrback" onclick="closeDetail('v-track')">‹</button>
+              <span class="hdrtitle">Tejas Rajdhani · 12952</span>
+            </div>
+            <!-- PINNED answer, outside the scroll (design-review W5 change) -->
+            <div class="pad20" style="padding-top:6px;padding-bottom:10px">
+              <div class="board">
+                <div class="title">Tejas Rajdhani · 12952</div>
+                <div class="answer amber" id="t-flap"><svg class="ic" style="font-size:16px"><use href="#i-play"/></svg><span>12 min late</span></div>
+                <div class="fresh"><span class="d"></span><span>updated 40s ago</span></div>
+              </div>
+              <div class="conseq estimated">Bhopal ~16:49</div>
+            </div>
+            <div class="body pad20" style="flex:1">
+              <div class="amberbanner"><svg class="ic" style="font-size:16px;flex:none"><use href="#i-warn"/></svg><span>Held ~12 min for a crossing near Itarsi. No diversion.</span></div>
+
+              <div class="rundatepill" onclick="toast('info','Today · Yesterday — the only two options, never a calendar (FR-2.3)')">Started yesterday ▾</div>
+
+              <div class="estpos">
+                <div class="lbl">ESTIMATED POSITION</div>
+                <div class="row"><span>Itarsi</span><span class="track2"><span class="fill" style="width:62%"></span></span><span>Hoshangabad</span></div>
+              </div>
+
+              <div class="coachsec">
+                <div class="coachtop">
+                  <span class="lbl">Coach guide</span>
+                  <span class="at">at Bhopal</span>
+                  <button class="gentoggle" aria-pressed="false" onclick="genToggle(this)"><svg class="ic" style="font-size:13px"><use href="#i-seat"/></svg>GEN mode</button>
+                </div>
+                <div class="reversal">Reverses at Itarsi — after that, coach order flips.</div>
+                <div class="coachrow" id="coaches">
+                  <span style="font-size:20px;align-self:center">🚂</span>
+                  <div class="coachtile"><div class="n">A1</div><div class="t">AC</div></div>
+                  <div class="coachtile on"><div class="n">B4</div><div class="t">3A</div></div>
+                  <div class="coachtile"><div class="n">B3</div><div class="t">3A</div></div>
+                  <div class="coachtile" data-gen><div class="n">GEN</div><div class="t">UR</div></div>
+                  <div class="coachtile" data-gen><div class="n">GEN</div><div class="t">UR</div></div>
+                  <div class="coachtile"><div class="n">SLR</div><div class="t">SLR</div></div>
+                </div>
+              </div>
+
+              <div class="timeline-title">Timeline</div>
+              <div class="dayhdr">Day 1</div>
+              <div class="stoprow"><div class="l"><div class="name">New Delhi · NDLS</div><div class="times">17:55 · Platform 16</div></div><div class="delaytag ok">On time</div></div>
+              <div class="dayhdr">Day 2</div>
+              <div class="stoprow"><div class="l"><div class="name">Itarsi Jn · ET</div><div class="times">15:50 → 16:02 · Platform 3</div></div><div class="delaytag warn">12m</div></div>
+              <div class="stoprow next"><div class="l"><div class="name">Hoshangabad · HBD</div><div class="times">16:19 → <span class="est">~16:31</span> · Platform 1</div></div><div class="delaytag warn">12m</div></div>
+              <div class="stoprow"><div class="l"><div class="name">Bhopal · BPL</div><div class="times">16:37 → <span class="est">~16:49</span></div></div><div class="delaytag warn">12m</div></div>
+              <div style="height:8px"></div>
+            </div>
+            <div class="actionbar">
+              <div class="actionbtn" onclick="toggleMute(this)"><svg class="ic"><use href="#i-bell"/></svg><span class="lb">Mute</span></div>
+              <div class="actionbtn" onclick="toast('down','Jumped to coach guide')"><svg class="ic"><use href="#i-seat"/></svg><span class="lb">Coach</span></div>
+              <div class="actionbtn" onclick="togglePin(this)"><svg class="ic"><use href="#i-star"/></svg><span class="lb">Save</span></div>
+            </div>
+          </div>
+
+          <!-- ===================== TRACK — cancelled variant (toggle to preview) ===================== -->
+          <div class="view" id="v-track-cancelled" style="display:none;flex-direction:column;height:100%">
+            <div class="hdr"><button class="hdrback" onclick="closeDetail('v-track-cancelled')">‹</button><span class="hdrtitle">Amritsar Express · 11058</span></div>
+            <div class="body pad20" style="flex:1">
+              <div class="cancelled">
+                <span class="x">✕</span>
+                <h3>Cancelled</h3>
+                <p>11058 Amritsar Express is cancelled today.</p>
+                <button class="bigbtn" onclick="findShowPlan();go('find');closeDetail('v-track-cancelled')">See alternatives</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- ===================== PNR (nested route, separate from Track) ===================== -->
+          <div class="view" id="v-pnr" style="display:none;flex-direction:column;height:100%">
+            <div class="hdr">
+              <button class="hdrback" onclick="closeDetail('v-pnr')">‹</button>
+              <span class="pnr-header">••••7431</span>
+            </div>
+            <div class="body pad20" style="flex:1">
+              <div class="celebrate" id="celebration" onclick="this.style.display='none'">
+                <span style="font-size:20px">🎉</span><span>Chart's out!</span>
+              </div>
+              <div style="margin-top:14px"><span class="chip green"><svg class="ic"><use href="#i-check"/></svg>Chart prepared</span></div>
+
+              <div class="journeycard">
+                <div class="t1">Tejas Rajdhani · 12952</div>
+                <div class="t2">New Delhi → Bhopal Jn</div>
+                <div class="t3">Sat, 26 Jul · 3A · General</div>
+                <div class="t3">Boards at New Delhi</div>
+              </div>
+
+              <div style="margin-top:12px"><span class="chip amber"><svg class="ic"><use href="#i-play"/></svg>12 min late</span></div>
+
+              <div class="section-title">Passengers</div>
+              <div class="paxrow"><div class="l"><div class="a">Passenger 1</div><div class="b">B4 · 32 · Lower</div></div><div class="r"><div class="a">CNF</div></div></div>
+              <div class="paxrow"><div class="l"><div class="a">Passenger 2</div><div class="b">B4 · 35 · Side Upper</div></div><div class="r"><div class="a">CNF</div><div class="b">WL 4</div></div></div>
+
+              <div style="font-size:14px;color:var(--ink);margin-top:14px">Total fare ₹1,240</div>
+
+              <button class="bigbtn" onclick="toast('check','Saved — watching for chart & delay alerts')" id="pnr-save">Save & watch</button>
+              <div class="mutechip" onclick="toast('bell','Muted alerts for this journey')"><svg class="ic"><use href="#i-bell"/></svg>Mute this journey</div>
+
+              <div class="privacylink" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='block'?'none':'block'">Your PNR is stored encrypted and deleted after your journey. More →</div>
+              <div class="privacybody" style="display:none">Shown masked (••••7431) everywhere in the app and in every log. Deleted automatically once your journey is complete.</div>
+            </div>
+          </div>
+
+          <!-- ===================== YOU (= AlertsScreen.kt — title still literally says "Alerts") ===================== -->
+          <section class="view pad20" id="v-you" style="padding-top:16px;padding-bottom:24px">
+            <div class="hdrtitle lg">Alerts</div>
+
+            <div class="section-title">Notification types</div>
+            <div class="togglerow"><span class="lb">Chart prepared</span><button class="sw" aria-pressed="true" onclick="sw(this)"></button></div>
+            <div class="togglerow"><span class="lb">Delay</span><button class="sw" aria-pressed="true" onclick="sw(this)"></button></div>
+            <div class="togglerow"><span class="lb">Platform change</span><button class="sw" aria-pressed="true" onclick="sw(this)"></button></div>
+            <div class="togglerow"><span class="lb">Cancelled / diverted</span><button class="sw" aria-pressed="true" onclick="sw(this)"></button></div>
+            <div class="togglerow"><span class="lb">Arrival alarm</span><button class="sw" aria-pressed="true" onclick="sw(this)"></button></div>
+            <div class="togglerow"><span class="lb">Tatkal open</span><button class="sw" aria-pressed="true" onclick="sw(this)"></button></div>
+
+            <div class="section-title">Quiet hours</div>
+            <div class="togglerow"><span class="lb">Enable quiet hours</span><button class="sw" aria-pressed="true" onclick="qhToggle(this)"></button></div>
+            <div id="qh-steppers">
+              <div class="timestepper"><span class="lb">From</span><button class="steparrow" onclick="toast('clock','22:00 → 21:30')">−</button><span class="mono" style="font-weight:600">22:00</span><button class="steparrow" onclick="toast('clock','22:00 → 22:30')">+</button></div>
+              <div class="timestepper"><span class="lb">To</span><button class="steparrow" onclick="toast('clock','06:30 → 06:00')">−</button><span class="mono" style="font-weight:600">06:30</span><button class="steparrow" onclick="toast('clock','06:30 → 07:00')">+</button></div>
+            </div>
+
+            <div class="oemrow" onclick="oemToggle(this)"><span class="lb">Not getting alerts?</span><span id="oem-caret">▸</span></div>
+            <div id="oem-body" style="display:none">
+              <div class="oembody">Xiaomi phones can silently stop background apps. Turn off battery optimisation for Railcast and enable autostart to keep alerts reliable.</div>
+              <div class="oemsettings" onclick="toast('gear','Opening system app settings…')">Open app settings →</div>
+            </div>
+
+            <div class="section-title">Privacy</div>
+            <div class="togglerow"><span class="lb">Anonymous usage analytics</span><button class="sw" aria-pressed="true" onclick="sw(this)"></button></div>
+
+            <div class="section-title">Display</div>
+            <div class="togglerow"><span class="lb">Sunlight mode</span><button class="sw" aria-pressed="false" onclick="sunToggle(this)"></button></div>
+            <div class="sunhint">Maximum contrast for reading on a platform in direct sun.</div>
+
+            <div class="section-title">Language</div>
+            <div class="res" style="cursor:pointer" onclick="toast('globe','भाषा हिन्दी में बदली — no restart needed')"><div class="rt"><div class="a">English</div><div class="b">Tap to switch to हिन्दी</div></div></div>
+          </section>
+
+        </div>
+
+        <div class="snack" id="snack" style="position:absolute;left:16px;right:16px;bottom:80px;z-index:50;background:var(--board);color:#fff;border-radius:13px;padding:12px 15px;display:none;align-items:center;gap:10px;font-size:13.5px;font-weight:600;box-shadow:0 14px 34px -12px rgba(0,0,0,.5);">
+          <svg class="ic" id="snackic" style="color:var(--boardGreen)"><use href="#i-check"/></svg><span id="snacktext"></span>
+        </div>
+
+        <nav class="tabs" role="tablist">
+          <button class="tab" role="tab" aria-selected="true" data-tab="journeys" onclick="go('journeys')"><svg class="ic"><use href="#i-train"/></svg>Journeys</button>
+          <button class="tab" role="tab" aria-selected="false" data-tab="find" onclick="go('find')"><svg class="ic"><use href="#i-search"/></svg>Find</button>
+          <button class="tab" role="tab" aria-selected="false" data-tab="you" onclick="go('you')"><svg class="ic"><use href="#i-bell"/></svg>You</button>
+        </nav>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button onclick="openTrack()" style="font-size:11px;padding:6px 10px;border-radius:8px;border:1px solid var(--stageline);background:var(--stage2);color:var(--stagink);cursor:pointer">Track (live)</button>
+        <button onclick="go('journeys');document.getElementById('v-track-cancelled').style.display='flex';document.getElementById('v-track-cancelled').classList.add('on')" style="font-size:11px;padding:6px 10px;border-radius:8px;border:1px solid var(--stageline);background:var(--stage2);color:var(--stagink);cursor:pointer">Track (cancelled)</button>
+        <button onclick="openPnr()" style="font-size:11px;padding:6px 10px;border-radius:8px;border:1px solid var(--stageline);background:var(--stage2);color:var(--stagink);cursor:pointer">PNR</button>
+      </div>
+    </div>
+
+    <!-- ============ AMBIENT PREVIEW ============ -->
+    <div class="col">
+      <span class="col-label">Ambient (widget + lockscreen)</span>
+      <div class="ambientpanel">
+        <div>
+          <div class="panelcap" style="margin-bottom:8px"><b>Home-screen widget</b> — RemoteViews, 30 min OS-throttled redraw floor. Never fetches; renders the last snapshot the app wrote.</div>
+          <div class="widgetmock">
+            <div class="t">Tejas Rajdhani · 12952</div>
+            <div class="status" style="color:#FFC24D">12 min late</div>
+            <div class="conseq">Bhopal ~16:49</div>
+            <div class="plat">Platform 4</div>
+            <div class="fresh">updated 40s ago</div>
+          </div>
+        </div>
+        <div>
+          <div class="panelcap" style="margin-bottom:8px"><b>Lockscreen notification</b> — silent, dismissible, never ongoing. One Mute action.</div>
+          <div class="notifmock">
+            <div class="app"><svg class="ic" style="font-size:12px"><use href="#i-train"/></svg>Live journey · now</div>
+            <div class="title">Tejas Rajdhani · 12952</div>
+            <div class="body">12 min late<br>Bhopal ~16:49  ·  Platform 4<br>updated 40s ago</div>
+            <div class="acts"><button onclick="toast('bell','Notification muted')">Mute</button></div>
+          </div>
+        </div>
+        <div class="panelcap">Both render from the same <code>Ambient.resolve()</code> model, so they can't show different answers for the same journey. Confidence here rides only on the <code>~</code> prefix — the dashed underline and breathing marker don't exist on these surfaces.</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="footnote">
+    <b>How this was built.</b> Every string, colour token, and component contract above is transcribed from <code>android/app/src/main/java/app/railcast/</code> as of the current <code>main</code> HEAD — <code>HomeScreen.kt</code>, <code>ui/FindScreen.kt</code>, <code>feature/track/TrackScreen.kt</code>, <code>feature/pnr/PnrScreen.kt</code>, <code>feature/alerts/AlertsScreen.kt</code>, <code>feature/ambient/*</code>, and the verified palette in <code>docs/design/design-system.md</code> §1.2. It is not run from the real APK (no device/emulator in this environment) — it's a faithful HTML reconstruction, not a build artifact. Try: type <code>129</code> or <code>4392</code> in Find to see the classifier morph; open Track to see the pinned board + dashed <code>~</code>-estimate on the timeline; open PNR to see the masked pass.
+  </div>
+</div>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-train" viewBox="0 0 24 24"><rect x="6" y="3" width="12" height="13" rx="3.5"/><path d="M6 11.5h12"/><circle cx="9" cy="13.7" r=".9" class="ic" style="fill:currentColor"/><circle cx="15" cy="13.7" r=".9" style="fill:currentColor"/><path d="M8.5 16l-2 4.5"/><path d="M15.5 16l2 4.5"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.6-3.6"/></symbol>
+  <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 9.5a6 6 0 0 1 12 0c0 4.5 1.6 5.5 1.6 5.5H4.4S6 14 6 9.5z"/><path d="M10 19a2 2 0 0 0 4 0"/></symbol>
+  <symbol id="i-mic" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0"/><path d="M12 17.5V21"/></symbol>
+  <symbol id="i-ticket" viewBox="0 0 24 24"><path d="M4 8.5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2 1.7 1.7 0 0 0 0 3.4 1.7 1.7 0 0 0 0 3.4 2 2 0 0 1-2 2H6a2 2 0 0 1-2-2 1.7 1.7 0 0 0 0-3.4 1.7 1.7 0 0 0 0-3.4z"/><path d="M14 6.5v11" stroke-dasharray="1.6 2.4"/></symbol>
+  <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s6.5-5.4 6.5-10.5A6.5 6.5 0 0 0 5.5 10.5C5.5 15.6 12 21 12 21z"/><circle cx="12" cy="10.2" r="2.4"/></symbol>
+  <symbol id="i-swap" viewBox="0 0 24 24"><path d="M7.5 4 4 7.5l3.5 3.5"/><path d="M4 7.5h13"/><path d="M16.5 20 20 16.5 16.5 13"/><path d="M20 16.5H7"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24" style="fill:currentColor;stroke:none"><path d="M7 4.5v15l12-7.5z"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 7.2v5l3.2 2"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6.5"/></symbol>
+  <symbol id="i-warn" viewBox="0 0 24 24"><path d="M12 4 2.6 20h18.8z"/><path d="M12 10v4.5"/><path d="M12 17.6v.1"/></symbol>
+  <symbol id="i-seat" viewBox="0 0 24 24"><path d="M6 10.5V7a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v3.5"/><rect x="4.5" y="10.5" width="15" height="5" rx="1.6"/><path d="M6.5 15.5V19M17.5 15.5V19"/></symbol>
+  <symbol id="i-star" viewBox="0 0 24 24" style="fill:currentColor;stroke:none"><path d="M12 3.4l2.6 5.3 5.8.8-4.2 4.1 1 5.8L12 16.9l-5.2 2.5 1-5.8L2.6 9.5l5.8-.8z"/></symbol>
+  <symbol id="i-down" viewBox="0 0 24 24"><path d="M5 9l7 7 7-7"/></symbol>
+  <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M4 12h16M12 4c2.4 2.2 2.4 13.8 0 16M12 4c-2.4 2.2-2.4 13.8 0 16"/></symbol>
+</svg>
+
+<script>
+(function(){
+  var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var phone = document.getElementById('phone');
+  document.querySelectorAll('.seg button').forEach(function(b){
+    b.addEventListener('click', function(){
+      document.querySelectorAll('.seg button').forEach(function(x){x.setAttribute('aria-pressed','false');});
+      b.setAttribute('aria-pressed','true'); phone.setAttribute('data-pt', b.dataset.pt);
+    });
+  });
+
+  window.go = function(tab){
+    ['journeys','find','you'].forEach(function(t){
+      var v = document.getElementById('v-'+t);
+      v.classList.toggle('on', t===tab);
+      v.style.display = (t===tab) ? 'flex' : 'none';
+    });
+    document.querySelectorAll('.tab').forEach(function(b){ b.setAttribute('aria-selected', b.dataset.tab===tab ? 'true':'false'); });
+    closeDetail('v-track'); closeDetail('v-track-cancelled'); closeDetail('v-pnr');
+    document.getElementById('body').scrollTop = 0;
+  };
+  window.openTrack = function(){
+    go('journeys');
+    var v = document.getElementById('v-track'); v.style.display='flex'; v.classList.add('on');
+  };
+  window.openPnr = function(){
+    var v = document.getElementById('v-pnr'); v.style.display='flex'; v.classList.add('on');
+  };
+  window.closeDetail = function(id){
+    var v = document.getElementById(id); if(v){ v.style.display='none'; v.classList.remove('on'); }
+  };
+
+  // Journeys tab: Train|PNR segmented control — selecting PNR opens the PNR screen directly (matches HomeViewModel.onCheckPnr)
+  window.segSelect = function(btn, mode){
+    document.querySelectorAll('#v-journeys .segc button').forEach(function(b){b.setAttribute('aria-pressed','false');});
+    if(mode==='pnr'){ openPnr(); btn.setAttribute('aria-pressed','false'); document.querySelectorAll('#v-journeys .segc button')[0].setAttribute('aria-pressed','true'); return; }
+    btn.setAttribute('aria-pressed','true');
+  };
+  window.jQuery = function(v){
+    var hint=document.getElementById('j-hint'), results=document.getElementById('j-results'), saved=document.getElementById('j-saved');
+    v=(v||'').trim();
+    if(!v){ hint.style.display='none'; results.style.display='none'; saved.style.display='block'; return; }
+    saved.style.display='none';
+    var digits=v.replace(/\D/g,'');
+    if(/^\d+$/.test(v) && digits.length>0 && digits.length<5){ hint.style.display='block'; hint.textContent='Train numbers are 5 digits'; } else { hint.style.display='none'; }
+    results.style.display='block';
+    results.innerHTML = '<div class="res" onclick="openTrack()"><div class="rt"><div class="a">12952 Tejas Rajdhani</div><div class="b">New Delhi → Bhopal Jn</div></div><div class="kind">Train</div></div>';
+  };
+
+  // Find tab: QueryClassifier — real shape rules (5 digits=train, 10=PNR, "X to Y"=route, else free text)
+  window.fClassify = function(v){
+    var lead=document.getElementById('f-lead'), hint=document.getElementById('f-hint'),
+        zero=document.getElementById('f-zero'), pnrA=document.getElementById('f-pnr-action'),
+        results=document.getElementById('f-results'), station=document.getElementById('f-station'), plan=document.getElementById('f-plan');
+    v=(v||'').trim();
+    [zero,pnrA,results,station,plan].forEach(function(el){el.style.display='none';});
+    if(!v){ zero.style.display='block'; hint.style.display='none'; lead.innerHTML='<svg class="ic"><use href="#i-search"/></svg>'; return; }
+    var digits=v.replace(/\D/g,'');
+    var isAllDigits = digits.length === v.replace(/[\s-]/g,'').length && digits.length>0;
+    var rm = v.toLowerCase().match(/^(.+?)\s*(?:to| se |→|->| - )\s*(.+)$/);
+    if(rm && rm[1].trim() && rm[2].trim()){
+      lead.innerHTML='<svg class="ic"><use href="#i-swap"/></svg>'; hint.style.display='none'; plan.style.display='block'; return;
+    }
+    if(isAllDigits && digits.length===10){ lead.innerHTML='<svg class="ic"><use href="#i-ticket"/></svg>'; hint.style.display='none'; pnrA.style.display='block'; return; }
+    if(isAllDigits && digits.length===5){ lead.innerHTML='<svg class="ic"><use href="#i-train"/></svg>'; hint.style.display='none';
+      results.style.display='block'; results.innerHTML='<div class="res" onclick="openTrack()"><div class="rt"><div class="a">12952 Tejas Rajdhani</div><div class="b">New Delhi → Bhopal Jn</div></div><div class="kind">Train</div></div>'; return; }
+    if(isAllDigits && digits.length>=6 && digits.length<=9){ lead.innerHTML='<svg class="ic"><use href="#i-ticket"/></svg>'; hint.style.display='block'; hint.textContent='PNRs are 10 digits'; return; }
+    if(isAllDigits && digits.length<5){ lead.innerHTML='<svg class="ic"><use href="#i-train"/></svg>'; hint.style.display='block'; hint.textContent='Train numbers are 5 digits'; return; }
+    lead.innerHTML='<svg class="ic"><use href="#i-search"/></svg>'; hint.style.display='none';
+    results.style.display='block';
+    results.innerHTML='<div class="res" onclick="openTrack()"><div class="rt"><div class="a">12952 Tejas Rajdhani</div><div class="b">New Delhi → Bhopal Jn</div></div><div class="kind">Train</div></div>'+
+      '<div class="res" onclick="findShowStation()"><div class="rt"><div class="a">Itarsi Jn · ET</div><div class="b">Madhya Pradesh</div></div><div class="kind">Station</div></div>';
+  };
+  window.findShowStation = function(){
+    ['f-zero','f-pnr-action','f-results','f-plan'].forEach(function(id){document.getElementById(id).style.display='none';});
+    document.getElementById('f-station').style.display='block';
+  };
+  window.findShowPlan = function(){
+    ['f-zero','f-pnr-action','f-results','f-station'].forEach(function(id){document.getElementById(id).style.display='none';});
+    document.getElementById('f-plan').style.display='block';
+  };
+
+  // Track flap-roll (BoardHero.kt AnimatedContent — real slide+fade on state change only)
+  function armFlap(id, from, to){
+    var el=document.getElementById(id); if(!el) return;
+    if(reduce) return;
+    setTimeout(function(){
+      el.style.transition='opacity .2s'; el.style.opacity='0';
+      setTimeout(function(){ el.querySelector('span').textContent=to; el.style.opacity='1'; }, 200);
+    }, 3000);
+  }
+  armFlap('j-flap','12 min late','14 min late');
+  armFlap('t-flap','12 min late','14 min late');
+
+  window.genToggle = function(btn){
+    var on = btn.getAttribute('aria-pressed')==='true';
+    btn.setAttribute('aria-pressed', on?'false':'true');
+    document.querySelectorAll('#coaches .coachtile[data-gen]').forEach(function(c){ c.classList.toggle('on', !on); });
+  };
+  window.toggleMute = function(btn){ btn.classList.toggle('muted'); };
+  window.togglePin = function(btn){ btn.classList.toggle('on'); };
+  window.sw = function(b){ b.setAttribute('aria-pressed', b.getAttribute('aria-pressed')==='true'?'false':'true'); };
+  window.qhToggle = function(b){ sw(b); document.getElementById('qh-steppers').style.display = b.getAttribute('aria-pressed')==='true' ? 'block':'none'; };
+  window.oemToggle = function(row){
+    var body=document.getElementById('oem-body'), caret=document.getElementById('oem-caret');
+    var open = body.style.display==='block';
+    body.style.display = open?'none':'block'; caret.textContent = open?'▸':'▾';
+  };
+  window.sunToggle = function(b){
+    sw(b);
+    var on = b.getAttribute('aria-pressed')==='true';
+    phone.setAttribute('data-pt', on?'sun':'dark');
+    document.querySelectorAll('.seg button').forEach(function(x){x.setAttribute('aria-pressed', x.dataset.pt===(on?'sun':'dark') ? 'true':'false');});
+  };
+  var st;
+  window.toast = function(ic, msg){
+    document.getElementById('snackic').innerHTML = '<use href="#i-'+ic+'"/>';
+    document.getElementById('snacktext').textContent = msg;
+    var s=document.getElementById('snack'); s.style.display='flex'; clearTimeout(st); st=setTimeout(function(){s.style.display='none';},3000);
+  };
+})();
+</script>
+
+</body>
+</html>
