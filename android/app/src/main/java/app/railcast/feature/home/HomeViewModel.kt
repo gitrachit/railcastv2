@@ -15,6 +15,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import app.railcast.feature.ambient.AmbientSink
+import app.railcast.feature.ambient.toAmbientJourney
 
 /** One saved train's card: its number plus the latest SWR snapshot (null until
  *  the first emission lands). */
@@ -40,6 +42,7 @@ class HomeViewModel(
     private val trainScreen: (trainNo: String) -> Flow<Resource<TrainScreen>>,
     private val poller: PollController,
     private val scope: CoroutineScope,
+    private val ambient: AmbientSink = AmbientSink.Noop,
     private val cadenceMs: Long = 45_000L, // trackTrain volatility band (PRD §6.4)
     private val debounceMs: Long = 150L,
 ) {
@@ -107,6 +110,21 @@ class HomeViewModel(
         _state.update { st ->
             st.copy(saved = st.saved.map { if (it.trainNo == trainNo) it.copy(resource = res) else it })
         }
+        publishAmbient()
+    }
+
+    /**
+     * Push the current journeys to the ambient surfaces (widget, live update).
+     *
+     * Published from here because this is where fresh journey data already
+     * lands — the widget must never fetch on its own, or the "background =
+     * push only" battery rule (NFR-3) is broken by the surface that exists to
+     * save the user opening the app.
+     */
+    private fun publishAmbient() {
+        ambient.publish(
+            _state.value.saved.mapNotNull { it.resource?.value?.toAmbientJourney() },
+        )
     }
 
     private fun loopKey(trainNo: String) = "home:train:$trainNo"

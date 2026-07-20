@@ -23,6 +23,7 @@ import app.railcast.directory.Directory
 import app.railcast.feature.alerts.AlertPrefsStore
 import app.railcast.feature.alerts.AlertsViewModel
 import app.railcast.feature.alerts.NotificationPoster
+import app.railcast.feature.ambient.WidgetAmbientSink
 import app.railcast.feature.home.HomeViewModel
 import app.railcast.feature.home.SavedStore
 import app.railcast.feature.pnr.PnrViewModel
@@ -91,6 +92,9 @@ class AppContainer(context: Context) {
         trainScreen = { trainNo -> screens.trainScreen(trainNo) },
         poller = poller,
         scope = appScope,
+        // Feeds the home-screen widget from data the app already fetched, so
+        // the ambient surface never polls on its own (NFR-3).
+        ambient = WidgetAmbientSink(appContext),
     )
 
     // Track: search → live train screen, refreshed by the same poller (4.3).
