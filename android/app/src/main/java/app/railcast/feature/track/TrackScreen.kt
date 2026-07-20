@@ -53,6 +53,8 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.res.stringResource
 import app.railcast.R
 import app.railcast.core.data.Resource
+import app.railcast.core.design.describe
+import app.railcast.core.design.confidencePrefix
 import app.railcast.core.design.reflowMaxLines
 import app.railcast.core.design.BoardHero
 import app.railcast.core.design.RailcastIcons
@@ -403,19 +405,27 @@ private fun StopRow(stop: RouteStop) {
     ) {
         Column(Modifier.weight(1f)) {
             Text(stop.name, fontSize = 15.sp, fontWeight = FontWeight.SemiBold, color = colors.ink)
+            // A time the train has already made is observed; one still ahead is
+            // projected from the current delay. The `~` marks the difference so
+            // a future ETA never looks like a fact (FR-11.1).
+            val showsActual = actual.isNotEmpty() && actual != sched
+            val confidence = StopConfidence.forStop(stop.state, showsActual)
+            val timeLine = buildString {
+                if (sched.isNotEmpty()) append(sched)
+                if (showsActual) append("  →  ${confidencePrefix(confidence)}$actual")
+                if (platformText != null) append("   ·   $platformText")
+            }
             Text(
                 // Times / platform numbers in the mono face (blueprint §2.2).
-                text = monoNumerals(
-                    buildString {
-                        if (sched.isNotEmpty()) append(sched)
-                        if (actual.isNotEmpty() && actual != sched) append("  →  $actual")
-                        if (platformText != null) append("   ·   $platformText")
-                    },
-                ),
+                text = monoNumerals(timeLine),
                 fontSize = 12.sp,
                 color = colors.ink2,
                 maxLines = reflowMaxLines(),
                 overflow = TextOverflow.Ellipsis,
+                // A blind user cannot see the tilde, so say it (WCAG 4.1.2).
+                modifier = Modifier.semantics {
+                    contentDescription = describe(timeLine, confidence, label = null)
+                },
             )
         }
         DelayTag(stop.delayMin)
