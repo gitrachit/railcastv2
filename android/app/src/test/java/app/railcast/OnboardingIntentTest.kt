@@ -20,9 +20,12 @@ class OnboardingIntentTest {
     }
 
     @Test fun `intents map to the expected tabs`() {
-        assertEquals(Destination.TRACK.route, OnboardingIntent.TRACK_TRAIN.route)
-        assertEquals(Destination.STATION.route, OnboardingIntent.TRAINS_NEARBY.route)
-        assertEquals(Destination.HOME.route, OnboardingIntent.CHECK_PNR.route)
+        // Three tabs since PRD §7 was amended: tracking a train and checking a
+        // PNR both start in Journeys (a PNR is a journey you hold a ticket
+        // for), and "trains nearby" is a Find.
+        assertEquals(Destination.JOURNEYS.route, OnboardingIntent.TRACK_TRAIN.route)
+        assertEquals(Destination.FIND.route, OnboardingIntent.TRAINS_NEARBY.route)
+        assertEquals(Destination.JOURNEYS.route, OnboardingIntent.CHECK_PNR.route)
     }
 
     @Test fun `stored value round-trips`() {

@@ -7,6 +7,11 @@
     <string name="nav_station">Station</string>
     <string name="nav_plan">Plan</string>
     <string name="nav_alerts">Alerts</string>
+    <string name="nav_journeys">Journeys</string>
+    <string name="nav_find">Find</string>
+    <string name="nav_you">You</string>
+    <string name="find_mode_station">Station board</string>
+    <string name="find_mode_plan">Plan a trip</string>
 
     <!-- Home -->
     <string name="home_greeting">Where to?</string>

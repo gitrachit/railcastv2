@@ -8,6 +8,11 @@
     <string name="nav_station">स्टेशन</string>
     <string name="nav_plan">प्लान</string>
     <string name="nav_alerts">अलर्ट</string>
+    <string name="nav_journeys">यात्राएँ</string>
+    <string name="nav_find">खोजें</string>
+    <string name="nav_you">आप</string>
+    <string name="find_mode_station">स्टेशन बोर्ड</string>
+    <string name="find_mode_plan">यात्रा प्लान करें</string>
 
     <!-- Home -->
     <string name="home_greeting">कहाँ जाना है?</string>
