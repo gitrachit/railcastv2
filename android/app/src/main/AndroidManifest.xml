@@ -65,6 +65,12 @@
                 android:name="android.appwidget.provider"
                 android:resource="@xml/widget_journey_info" />
         </receiver>
+
+        <!-- Mute action on the live journey notification (FR-7.4). Not exported:
+             only our own PendingIntent triggers it. -->
+        <receiver
+            android:name=".feature.ambient.LiveJourneyMuteReceiver"
+            android:exported="false" />
     </application>
 
 </manifest>

@@ -16,6 +16,9 @@
     <string name="widget_description">आपकी अगली यात्रा — देरी, आगमन और प्लेटफ़ॉर्म एक नज़र में।</string>
     <string name="widget_empty">ट्रेन ट्रैक करें</string>
     <string name="widget_others">+%1$d और</string>
+    <string name="live_channel_name">लाइव यात्रा</string>
+    <string name="live_channel_desc">आप जिस यात्रा पर हैं उसका मौन, हटाने योग्य अपडेट।</string>
+    <string name="live_action_mute">म्यूट</string>
 
     <!-- Home -->
     <string name="home_greeting">कहाँ जाना है?</string>
