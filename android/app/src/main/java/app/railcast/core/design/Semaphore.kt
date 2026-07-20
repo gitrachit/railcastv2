@@ -44,34 +44,12 @@ val RailcastSunlightColors = RailcastColors(
     boardGreen = Color(0xFF095731),
     boardAmber = Color(0xFF6E4100),
     boardInk = Color(0xFF333333),
+    boardRed = Color(0xFF852424),
+    estimate = Color(0xFF2A2A2A), // = ink2, full contrast (14.35:1)
+    focus = Color(0xFF000000),
+    brand2 = Color(0xFF1D33A0),
     isDark = false,
 )
-
-/**
- * New Semaphore role tokens not yet fields on RailcastColors. Kept standalone in
- * Stage 0; folded into the data class in Stage 1 so callers pick a theme variant.
- */
-object SemaphoreTokens {
-    // Board cancellation — today's board sub-palette has no red (FR-2.4 on Board).
-    val boardRedLight = Color(0xFFFF7A7A)
-    val boardRedDark = Color(0xFFFF7A7A)
-    val boardRedSun = Color(0xFF852424)
-
-    // "estimate" — every interpolated/predicted value renders reduced-opacity + dashed (P8).
-    val estimateLight = Color(0x9954696F) // ink2 @ 60%
-    val estimateDark = Color(0x999DB4BB)
-    val estimateSun = Color(0xFF2A2A2A)
-
-    // Keyboard / switch-access focus ring (FR-10.3).
-    val focusLight = Color(0xFF2743C4)
-    val focusDark = Color(0xFF8098FF)
-    val focusSun = Color(0xFF000000)
-
-    // Brand gradient top for primary buttons (brand2).
-    val brand2Light = Color(0xFF4E6BF2)
-    val brand2Dark = Color(0xFFA6B5FF)
-    val brand2Sun = Color(0xFF1D33A0)
-}
 
 /**
  * Confidence is a first-class visual dimension: no live value renders without one.

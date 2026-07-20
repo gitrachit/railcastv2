@@ -78,6 +78,25 @@ class SemaphoreContrastTest {
         assertPair("$label boardGreen/board", c.boardGreen, c.board, min)
         assertPair("$label boardAmber/board", c.boardAmber, c.board, min)
         assertPair("$label boardInk/board", c.boardInk, c.board, min)
+        assertPair("$label boardRed/board", c.boardRed, c.board, min)
+    }
+
+    /**
+     * ESTIMATED values are fact-bearing text — the ETA is usually the answer on
+     * the screen — so they hold the SAME bar as certain values. Confidence rides
+     * on the `~` prefix and the dashed edge, never on opacity. A faded estimate
+     * ink measured 2.53:1 in Light, which is why this gate exists.
+     */
+    private fun estimatePairs(c: RailcastColors, min: Float, label: String) {
+        assertPair("$label estimate/surface", c.estimate, c.surface, min)
+        assertPair("$label estimate/bg", c.estimate, c.bg, min)
+    }
+
+    /** WCAG 2.4.13: the focus indicator must be visible on every backdrop. */
+    private fun focusPairs(c: RailcastColors, label: String) {
+        assertPair("$label focus/surface", c.focus, c.surface, 3f)
+        assertPair("$label focus/bg", c.focus, c.bg, 3f)
+        assertPair("$label focus/surface2", c.focus, c.surface2, 3f)
     }
 
     @Test fun light_text_pairs() {
@@ -111,4 +130,16 @@ class SemaphoreContrastTest {
     @Test fun dark_board_pairs() = boardPairs(RailcastDarkColors, 4.5f, "dark")
 
     @Test fun sunlight_board_pairs() = boardPairs(RailcastSunlightColors, 7f, "sun")
+
+    @Test fun light_estimates_stay_readable() = estimatePairs(RailcastLightColors, 4.5f, "light")
+
+    @Test fun dark_estimates_stay_readable() = estimatePairs(RailcastDarkColors, 4.5f, "dark")
+
+    @Test fun sunlight_estimates_stay_readable() = estimatePairs(RailcastSunlightColors, 7f, "sun")
+
+    @Test fun light_focus_ring_is_visible() = focusPairs(RailcastLightColors, "light")
+
+    @Test fun dark_focus_ring_is_visible() = focusPairs(RailcastDarkColors, "dark")
+
+    @Test fun sunlight_focus_ring_is_visible() = focusPairs(RailcastSunlightColors, "sun")
 }

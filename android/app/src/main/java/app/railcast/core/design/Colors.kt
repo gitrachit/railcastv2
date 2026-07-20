@@ -29,6 +29,18 @@ data class RailcastColors(
     val boardGreen: Color,
     val boardAmber: Color,
     val boardInk: Color,
+    val boardRed: Color,
+    /**
+     * Ink for ESTIMATED values. Deliberately FULL contrast, not a faded ink:
+     * an estimate is still fact-bearing text (the ETA is the answer), so
+     * confidence rides on the `~` prefix, the dashed underline and the breathe
+     * — never on opacity. Fading it measured 2.53:1 in Light.
+     */
+    val estimate: Color,
+    /** Keyboard / switch-access focus ring (WCAG 2.4.13, >= 3:1). */
+    val focus: Color,
+    /** Gradient top for primary buttons. Affordance only, never a signal. */
+    val brand2: Color,
     val isDark: Boolean,
 )
 
@@ -55,6 +67,10 @@ val RailcastLightColors = RailcastColors(
     boardGreen = Color(0xFF3DE08A),
     boardAmber = Color(0xFFFFC24D),
     boardInk = Color(0xFF7FA6AE),
+    boardRed = Color(0xFFFF7A7A),
+    estimate = Color(0xFF54696F), // = ink2, full contrast (5.79:1)
+    focus = Color(0xFF2743C4),
+    brand2 = Color(0xFF4E6BF2),
     isDark = false,
 )
 
@@ -78,5 +94,9 @@ val RailcastDarkColors = RailcastColors(
     boardGreen = Color(0xFF3DE08A),
     boardAmber = Color(0xFFFFC24D),
     boardInk = Color(0xFF6E969E),
+    boardRed = Color(0xFFFF7A7A),
+    estimate = Color(0xFF9DB4BB), // = ink2, full contrast (7.62:1)
+    focus = Color(0xFF8098FF),
+    brand2 = Color(0xFFA6B5FF),
     isDark = true,
 )

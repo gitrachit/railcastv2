@@ -27,10 +27,17 @@ object RailcastTheme {
 @Composable
 fun RailcastTheme(
     dark: Boolean = isSystemInDarkTheme(),
+    sunlight: Boolean = false,
     content: @Composable () -> Unit,
 ) {
-    val colors = if (dark) RailcastDarkColors else RailcastLightColors
-    val material = if (dark) {
+    // Sunlight (FR-5.3) outranks dark: a user who has asked for the high-contrast
+    // platform theme wants it whatever the system says.
+    val colors = when {
+        sunlight -> RailcastSunlightColors
+        dark -> RailcastDarkColors
+        else -> RailcastLightColors
+    }
+    val material = if (colors.isDark) {
         darkColorScheme(
             primary = colors.brand,
             background = colors.bg,
