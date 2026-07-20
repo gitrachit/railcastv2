@@ -359,8 +359,8 @@ These cannot be asserted from static analysis, and I am not claiming them:
 
 | Criterion | Status / what must be tested |
 |---|---|
-| **1.4.4 Resize text** | ❌ **Not met.** Font scale clamped at 1.3× (§2.4). Needs per-screen reflow work. |
-| **1.4.10 Reflow** | ❌ Blocked on the same work: 200% text × 320dp width, every screen |
+| **1.4.4 Resize text** | ⚠️ Clamp removed, full OS scale honoured, line budget tested. Per-screen behaviour at 200% still needs instrumentation. |
+| **1.4.10 Reflow** | ⚠️ Same: mechanism in place, 200% × 320dp per screen unverified |
 | 2.4.13 Focus appearance | ⚠️ Token verified; the *rendered ring* (thickness, offset, keyboard + switch access) is untested |
 | 4.1.2 Name, role, value | ⚠️ Confidence path covered; full TalkBack pass on all screens in EN and HI outstanding |
 | 2.5.7 Dragging movements | ⚠️ Map pan and sheet drag need non-drag alternatives |
@@ -395,6 +395,20 @@ The selected direction puts the answer outside the app. That surface does **not*
 
 **This is the direction's weakest joint** and it remains untested on real hardware (Xiaomi/Oppo/Vivo). Per `direction-study.md` §5, device verification should gate full ambient adoption. The in-app experience is specified to stand complete without it.
 
+### 10.1 What shipped, and what that means
+
+The home-screen widget is built (`feature/ambient/`) using RemoteViews rather than Glance — no new dependency, no APK cost against NFR-1, and it consumes the XML tokens above.
+
+The split is deliberate: **every content decision is pure and unit-tested** (`Ambient.resolve`, `consequenceLine`, `platformLabel`, `freshnessLabel`), while the class that touches Android does nothing but bind those results to views. So the design is verified even though the surface is not.
+
+Three properties are baked in rather than assumed:
+
+- **`updatePeriodMillis` is 30 minutes**, the practical floor the framework honours. Anything tighter must arrive as a Watcher push, never as widget polling — a widget that polls breaks NFR-3 in the name of saving a launch.
+- **The freshness stamp is mandatory.** A surface that cannot promise recency must state the recency it has.
+- **The widget never fetches.** It renders a snapshot the app writes from data it already had.
+
+What remains unknowable without hardware: whether the OS honours that cadence, whether OEM battery managers suppress redraws entirely, and how the layout behaves at large text on a real launcher. Do not read "shipped" as "verified."
+
 ---
 
 ## 11 · Implementation status
@@ -409,6 +423,12 @@ The selected direction puts the answer outside the app. That surface does **not*
 | Confidence honesty rules as tests | `test/ConfidenceValueTest.kt` ✅ green |
 | Sunlight selectable + persisted, EN/HI toggle | `core/design/SunlightStore.kt`, `feature/alerts/` |
 | Theme precedence as a pure, tested rule | `test/ThemeSelectionTest.kt` ✅ green |
+| Full OS text scale honoured; reflow line budget | `core/design/Reflow.kt`, `test/ReflowTest.kt` ✅ |
+| Projected vs observed times distinguished | `feature/track/StopConfidence.kt` ✅ |
+| PNR masking enforced by type | `core/data/Pnr.kt`, `test/PnrMaskingTest.kt` ✅ |
+| XML tokens + CI drift gate | `res/values*/design_tokens.xml`, `test/DesignTokenParityTest.kt` ✅ |
+| Three tabs (PRD §7 amended) | `ui/RailcastApp.kt`, `ui/FindScreen.kt`, `test/NavigationStructureTest.kt` ✅ |
+| Ambient widget + tested content rules | `feature/ambient/`, `test/AmbientStateTest.kt` ✅ |
 | Spacing / radius scales | `core/design/Dimens.kt` |
 | Type scale, tabular numerals | `core/design/Type.kt` |
 | `StatusChip`, `BoardHero`, `MonoNumerals` | `core/design/` |
@@ -417,13 +437,13 @@ The selected direction puts the answer outside the app. That surface does **not*
 
 Ordered by dependency. Each is a separate reviewable change; the structural ones need a plan first per `android/CLAUDE.md`.
 
-1. **Finish `ConfidenceValue` adoption.** Confirmation odds now render as `ESTIMATED`. Remaining candidates: the Track timeline's future ETAs, and `STALE` on cached screens — both currently render as certain.
-2. **Ambient-light auto-suggest for Sunlight** (FR-5.3). The mode is now user-selectable; the sensor-driven prompt is not built. It must never override an explicit choice, which is why `SunlightStore` holds only the explicit one.
-3. **Text reflow to 200%**, replacing the 1.3× clamp (§2.4). The largest outstanding a11y item, and the only one blocking a WCAG AA claim.
-4. **`MaskedPnr` type** replacing `String` in UI/analytics — the enforcement mechanism for FR-4.3.
-5. **Generated XML colour resources** + CI equality assertion (§10.4).
-6. ⚠ **Three-tab restructure** — needs the PRD §7 amendment first.
-7. ⚠ **Ambient layer** (Glance widget, live notification) — needs the device matrix first.
+1. **Device verification of the ambient layer** — the one item that cannot be closed from here, and the direction's weakest joint. Redraw cadence, lockscreen persistence, and OEM battery-manager behaviour (PRD §12 Q3) need a real Xiaomi/Oppo/Vivo matrix. The content rules are unit-tested; *whether the OS redraws when asked* is not, and cannot be.
+2. **Live notification** (the lockscreen surface of W1). The widget covers the home screen; the ongoing notification does not exist yet. It should render from the same `Ambient` model so the two cannot diverge.
+3. **The omni-input classifier.** `FindScreen` consolidates the destination, but the single field that classifies train / PNR / station / route by shape is not built — it needs the directory classifier that Track and Station each own today.
+4. **Ambient-light auto-suggest for Sunlight** (FR-5.3). The mode is user-selectable; the sensor-driven prompt is not built, and must never override an explicit choice.
+5. **Sunlight on ambient surfaces.** Sunlight is a user choice, not a system configuration, so no resource qualifier selects it — RemoteViews renders the light tokens. The widget would need to read the preference and swap colours itself.
+6. **`STALE` rendering on cached screens.** Offline shows the banner; individual values do not yet drop to `STALE`.
+7. **Screen-level reflow verification.** The line budget is tested; per-screen behaviour at 200% × 320dp still needs instrumentation or screenshot tests.
 
 ---
 
