@@ -16,6 +16,7 @@ import androidx.lifecycle.lifecycleScope
 import app.railcast.core.AppContainer
 import app.railcast.feature.alerts.PushBootstrap
 import app.railcast.core.design.RailcastTheme
+import app.railcast.core.design.SunlightStore
 import app.railcast.core.i18n.AppLanguage
 import app.railcast.core.i18n.LanguageStore
 import app.railcast.core.i18n.LocalizedContent
@@ -48,7 +49,9 @@ class MainActivity : ComponentActivity() {
             val context = LocalContext.current
             val store = remember { LanguageStore(context.applicationContext) }
             val onboarding = remember { OnboardingStore(context.applicationContext) }
+            val sunlightStore = remember { SunlightStore(context.applicationContext) }
             val language by store.language.collectAsState(initial = AppLanguage.DEFAULT)
+            val sunlight by sunlightStore.sunlight.collectAsState(initial = false)
             val onboardingDone by onboarding.completed.collectAsState(initial = null)
             val online by container.connectivity.isOnline.collectAsState(initial = true)
             val scope = rememberCoroutineScope()
@@ -62,7 +65,7 @@ class MainActivity : ComponentActivity() {
             LaunchedEffect(Unit) { container.session.ensureToken(container.api) }
 
             LocalizedContent(language) {
-                RailcastTheme {
+                RailcastTheme(sunlight = sunlight) {
                     when (onboardingDone) {
                         // null = still reading the flag; render nothing to avoid a
                         // flash of the wrong screen on cold start.
@@ -86,6 +89,8 @@ class MainActivity : ComponentActivity() {
                             alerts = container.alerts,
                             language = language,
                             onLanguageChange = { scope.launch { store.setLanguage(it) } },
+                            sunlight = sunlight,
+                            onSunlightChange = { scope.launch { sunlightStore.setSunlight(it) } },
                             isOffline = !online,
                             startRoute = startRoute,
                         )

@@ -27,6 +27,9 @@
 
     <!-- Language -->
     <string name="settings_language">भाषा</string>
+    <string name="settings_display">डिस्प्ले</string>
+    <string name="settings_sunlight">धूप मोड</string>
+    <string name="settings_sunlight_hint">तेज़ धूप में प्लेटफ़ॉर्म पर पढ़ने के लिए अधिकतम कंट्रास्ट।</string>
 
     <!-- Privacy / analytics opt-out (backlog 5.5, FR-11.3) -->
     <string name="privacy_title">गोपनीयता</string>

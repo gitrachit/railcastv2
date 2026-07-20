@@ -26,6 +26,9 @@
 
     <!-- Language (full picker is the onboarding flow, 4.1) -->
     <string name="settings_language">Language</string>
+    <string name="settings_display">Display</string>
+    <string name="settings_sunlight">Sunlight mode</string>
+    <string name="settings_sunlight_hint">Maximum contrast for reading on a platform in direct sun.</string>
 
     <!-- Privacy / analytics opt-out (backlog 5.5, FR-11.3) -->
     <string name="privacy_title">Privacy</string>

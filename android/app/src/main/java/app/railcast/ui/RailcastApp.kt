@@ -58,6 +58,8 @@ fun RailcastApp(
     alerts: AlertsViewModel,
     language: AppLanguage,
     onLanguageChange: (AppLanguage) -> Unit,
+    sunlight: Boolean,
+    onSunlightChange: (Boolean) -> Unit,
     isOffline: Boolean = false,
     startRoute: String? = null,
 ) {
@@ -123,7 +125,13 @@ fun RailcastApp(
             }
             composable(Destination.PLAN.route) { PlanScreen(plan) }
             composable(Destination.ALERTS.route) {
-                AlertsScreen(alerts = alerts, language = language, onLanguageChange = onLanguageChange)
+                AlertsScreen(
+                    alerts = alerts,
+                    language = language,
+                    onLanguageChange = onLanguageChange,
+                    sunlight = sunlight,
+                    onSunlightChange = onSunlightChange,
+                )
             }
         }
       }

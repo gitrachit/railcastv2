@@ -32,12 +32,15 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.res.stringResource
 import app.railcast.R
+import app.railcast.core.design.Confidence
+import app.railcast.core.design.ConfidenceValue
 import app.railcast.core.design.RailcastIcons
 import app.railcast.core.design.RailcastTheme
 import app.railcast.core.design.monoNumerals
@@ -298,7 +301,16 @@ private fun AvailabilityText(cell: AvailabilityCell) {
                 else -> colors.red
             }
             Text(a.text, fontSize = 14.sp, fontWeight = FontWeight.Bold, color = color)
-            a.predictionPct?.let { Text(stringResource(R.string.plan_confirm_chance, it), fontSize = 10.sp, color = colors.ink3) }
+            // A confirmation chance is a PREDICTION, not an observed fact, and
+            // upstream gives us no basis to cite — so it renders as ESTIMATED:
+            // `~` prefix, dashed edge, and "estimated ..." to TalkBack (FR-11.1).
+            a.predictionPct?.let {
+                ConfidenceValue(
+                    value = stringResource(R.string.plan_confirm_chance, it),
+                    confidence = Confidence.ESTIMATED,
+                    style = TextStyle(fontSize = 10.sp, fontWeight = FontWeight.SemiBold),
+                )
+            }
         }
     }
 }

@@ -51,7 +51,9 @@ fun ConfidenceValue(
     val text = confidencePrefix(confidence) + displayValue(value, confidence)
 
     Text(
-        text = text,
+        // Only the number runs take the tabular face — "78% chance" keeps its
+        // word in the UI sans while the digits stay jitter-free on refresh.
+        text = monoNumerals(text),
         modifier = modifier
             .then(if (confidence == Confidence.ESTIMATED) Modifier.dashedUnderline(colors.estimate) else Modifier)
             .clearAndSetSemantics { contentDescription = describe(value, confidence, label) },
@@ -63,7 +65,7 @@ fun ConfidenceValue(
             Confidence.STALE -> colors.ink2
             Confidence.UNKNOWN -> colors.ink3
         },
-        style = style.merge(TabularNumberStyle),
+        style = style,
     )
 }
 

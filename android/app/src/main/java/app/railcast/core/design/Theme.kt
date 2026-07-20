@@ -13,6 +13,20 @@ import androidx.compose.ui.unit.Density
 
 private val LocalRailcastColors = staticCompositionLocalOf { RailcastLightColors }
 
+/**
+ * Palette selection, pure so the precedence rule is testable without Compose.
+ *
+ * Sunlight (FR-5.3) outranks dark: a user standing on a platform who has asked
+ * for the high-contrast theme wants it whatever the system says about night
+ * mode. Getting this backwards would silently disable the accessibility theme
+ * for every user with system dark mode on — which is most of them.
+ */
+fun paletteFor(dark: Boolean, sunlight: Boolean): RailcastColors = when {
+    sunlight -> RailcastSunlightColors
+    dark -> RailcastDarkColors
+    else -> RailcastLightColors
+}
+
 /** Access the Railcast palette anywhere under RailcastTheme. */
 object RailcastTheme {
     val colors: RailcastColors
@@ -30,13 +44,7 @@ fun RailcastTheme(
     sunlight: Boolean = false,
     content: @Composable () -> Unit,
 ) {
-    // Sunlight (FR-5.3) outranks dark: a user who has asked for the high-contrast
-    // platform theme wants it whatever the system says.
-    val colors = when {
-        sunlight -> RailcastSunlightColors
-        dark -> RailcastDarkColors
-        else -> RailcastLightColors
-    }
+    val colors = paletteFor(dark = dark, sunlight = sunlight)
     val material = if (colors.isDark) {
         darkColorScheme(
             primary = colors.brand,
