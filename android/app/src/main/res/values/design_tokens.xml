@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  GENERATED-EQUIVALENT of the Kotlin design tokens (core/design/Colors.kt).
+
+  RemoteViews surfaces — the Glance widget and the live notification — cannot
+  read the Compose CompositionLocal that carries RailcastColors, so the palette
+  must also exist as Android resources. That duplication is a drift risk: a
+  token corrected in Kotlin and forgotten here would leave the ambient layer
+  rendering the OLD, WCAG-failing colours while the app renders the new ones.
+
+  DesignTokenParityTest asserts every value below equals its Kotlin source and
+  fails CI on any divergence. Edit Colors.kt first, then mirror here — never
+  the reverse, and never only one.
+
+  Light theme lives here; values-night/ carries Dark.
+-->
+<resources>
+    <!-- Surfaces -->
+    <color name="rc_bg">#FFE7ECEF</color>
+    <color name="rc_surface">#FFFFFFFF</color>
+    <color name="rc_surface2">#FFF1F4F6</color>
+
+    <!-- Ink -->
+    <color name="rc_ink">#FF0F2A33</color>
+    <color name="rc_ink2">#FF54696F</color>
+    <color name="rc_ink3">#FF5B6E75</color>
+    <color name="rc_line">#FFDCE3E7</color>
+
+    <!-- Brand — affordance only, never a status signal -->
+    <color name="rc_brand">#FF2743C4</color>
+    <color name="rc_brand2">#FF4E6BF2</color>
+
+    <!-- Signal — railway semaphore. Always paired with icon + word (FR-10.2). -->
+    <color name="rc_green">#FF126C40</color>
+    <color name="rc_amber">#FF8B5208</color>
+    <color name="rc_red">#FFC03C3C</color>
+
+    <!-- Departure-board sub-palette -->
+    <color name="rc_board">#FF0F2A33</color>
+    <color name="rc_board_green">#FF3DE08A</color>
+    <color name="rc_board_amber">#FFFFC24D</color>
+    <color name="rc_board_red">#FFFF7A7A</color>
+    <color name="rc_board_ink">#FF7FA6AE</color>
+
+    <!-- Estimated values: full contrast. Confidence rides on the `~` prefix,
+         which is the only channel that survives on RemoteViews. -->
+    <color name="rc_estimate">#FF54696F</color>
+    <color name="rc_focus">#FF2743C4</color>
+</resources>
