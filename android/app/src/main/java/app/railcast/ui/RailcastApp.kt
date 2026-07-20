@@ -32,20 +32,25 @@ import app.railcast.feature.station.StationViewModel
 import app.railcast.feature.track.TrackScreen
 
 /**
- * The five tabs (PRD §7). Nothing important deeper than two taps; icons are
- * always labelled. Inlined vector glyphs (RailcastIcons) tint with selection
- * and keep the APK lean — no icon font (NFR-1).
+ * The three tabs (PRD §7, amended July 2026 — was five). Nothing important
+ * deeper than two taps; icons are always labelled. Inlined vector glyphs
+ * (RailcastIcons) tint with selection and keep the APK lean — no icon font
+ * (NFR-1).
+ *
+ * Track and Alerts stopped being destinations: tracking is what a journey *is*,
+ * not a place you go to do it, and an alert is a property of a journey rather
+ * than a sibling of it. Station and Plan merged because both are "find me
+ * something I don't have yet".
  */
-/** PNR is reached from Home, not a bottom tab (PRD's five tabs), so it's a
- *  plain nested route rather than a [Destination]. */
+/** Reached from within Journeys, not from the bottom bar, so these are plain
+ *  nested routes rather than [Destination]s. */
 private const val PNR_ROUTE = "pnr"
+private const val TRACK_ROUTE = "track"
 
 enum class Destination(val route: String, @StringRes val label: Int, val icon: ImageVector) {
-    HOME("home", R.string.nav_home, RailcastIcons.Home),
-    TRACK("track", R.string.nav_track, RailcastIcons.Train),
-    STATION("station", R.string.nav_station, RailcastIcons.Place),
-    PLAN("plan", R.string.nav_plan, RailcastIcons.Calendar),
-    ALERTS("alerts", R.string.nav_alerts, RailcastIcons.Bell),
+    JOURNEYS("journeys", R.string.nav_journeys, RailcastIcons.Train),
+    FIND("find", R.string.nav_find, RailcastIcons.Search),
+    YOU("you", R.string.nav_you, RailcastIcons.Bell),
 }
 
 @Composable
@@ -58,6 +63,8 @@ fun RailcastApp(
     alerts: AlertsViewModel,
     language: AppLanguage,
     onLanguageChange: (AppLanguage) -> Unit,
+    sunlight: Boolean,
+    onSunlightChange: (Boolean) -> Unit,
     isOffline: Boolean = false,
     startRoute: String? = null,
 ) {
@@ -87,43 +94,45 @@ fun RailcastApp(
             // Onboarding drops the user on the tab matching their chosen intent
             // (PRD §7); otherwise Home. Unknown routes fall back to Home.
             startDestination = Destination.entries.firstOrNull { it.route == startRoute }?.route
-                ?: Destination.HOME.route,
+                ?: Destination.JOURNEYS.route,
             modifier = Modifier.fillMaxSize().weight(1f),
         ) {
-            composable(Destination.HOME.route) {
-                HomeScreen(home, onCheckPnr = { navController.navigate(PNR_ROUTE) { launchSingleTop = true } })
+            // Cancelled train / cancelled board row → alternatives, which now
+            // live inside Find rather than being their own tab (FR-2.4, FR-5.1).
+            val toAlternatives: () -> Unit = {
+                navController.navigate(Destination.FIND.route) {
+                    popUpTo(navController.graph.findStartDestination().id) { saveState = true }
+                    launchSingleTop = true
+                    restoreState = true
+                }
+            }
+            composable(Destination.JOURNEYS.route) {
+                HomeScreen(
+                    home,
+                    onCheckPnr = { navController.navigate(PNR_ROUTE) { launchSingleTop = true } },
+                    // A journey card IS the way into tracking now that Track is
+                    // not a tab — without this the flow would have no entrance.
+                    onOpenTrain = { trainNo ->
+                        track.open(trainNo)
+                        navController.navigate(TRACK_ROUTE) { launchSingleTop = true }
+                    },
+                )
             }
             composable(PNR_ROUTE) { PnrScreen(pnr, alerts, onBack = { navController.popBackStack() }) }
-            composable(Destination.TRACK.route) {
-                TrackScreen(
-                    track = track,
+            composable(TRACK_ROUTE) {
+                TrackScreen(track = track, alerts = alerts, onAlternatives = toAlternatives)
+            }
+            composable(Destination.FIND.route) {
+                FindScreen(station = station, plan = plan, onAlternatives = toAlternatives)
+            }
+            composable(Destination.YOU.route) {
+                AlertsScreen(
                     alerts = alerts,
-                    // Cancelled → alternatives via the Plan pipeline (FR-2.4).
-                    onAlternatives = {
-                        navController.navigate(Destination.PLAN.route) {
-                            popUpTo(navController.graph.findStartDestination().id) { saveState = true }
-                            launchSingleTop = true
-                            restoreState = true
-                        }
-                    },
+                    language = language,
+                    onLanguageChange = onLanguageChange,
+                    sunlight = sunlight,
+                    onSunlightChange = onSunlightChange,
                 )
-            }
-            composable(Destination.STATION.route) {
-                StationScreen(
-                    station = station,
-                    // Cancelled row → alternatives via the Plan pipeline (FR-5.1).
-                    onAlternatives = {
-                        navController.navigate(Destination.PLAN.route) {
-                            popUpTo(navController.graph.findStartDestination().id) { saveState = true }
-                            launchSingleTop = true
-                            restoreState = true
-                        }
-                    },
-                )
-            }
-            composable(Destination.PLAN.route) { PlanScreen(plan) }
-            composable(Destination.ALERTS.route) {
-                AlertsScreen(alerts = alerts, language = language, onLanguageChange = onLanguageChange)
             }
         }
       }

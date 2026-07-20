@@ -125,3 +125,13 @@ dependencies {
 if (file("google-services.json").exists()) {
     apply(plugin = "com.google.gms.google-services")
 }
+
+// DesignTokenParityTest reads the colour resources off disk to prove the XML
+// palette still matches Colors.kt. Gradle cannot infer that dependency from
+// file I/O, so without this the test task stays UP-TO-DATE when only the XML
+// changes -- exactly the drift the test exists to catch would slip through CI.
+tasks.withType<Test>().configureEach {
+    inputs.dir(layout.projectDirectory.dir("src/main/res"))
+        .withPropertyName("designTokenResources")
+        .withPathSensitivity(PathSensitivity.RELATIVE)
+}

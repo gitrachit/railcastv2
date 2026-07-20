@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Ambient journey widget (direction-study.md — "the answer lives outside the
+  app"). RemoteViews, not Compose: a widget cannot read the Compose
+  CompositionLocal, which is why the rc_* tokens exist as resources with a CI
+  parity gate (DesignTokenParityTest).
+
+  Layout vocabulary here is deliberately plain — RemoteViews supports only a
+  fixed set of views, and ConstraintLayout is not among them on all levels.
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="@drawable/widget_bg">
+
+    <!-- Identity: smallest, because the user knows which train is theirs. -->
+    <TextView
+        android:id="@+id/widget_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:textColor="@color/rc_board_ink" />
+
+    <!-- Status: icon + word, never colour alone (FR-10.2). The colour is set
+         at bind time from the rc_ signal tokens. -->
+    <TextView
+        android:id="@+id/widget_status"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:maxLines="2"
+        android:ellipsize="end"
+        android:textColor="@color/rc_board_amber" />
+
+    <!-- The consequence — what the delay means for THIS user. The largest
+         thing after the status, because it is the answer (design-system Law 3). -->
+    <TextView
+        android:id="@+id/widget_consequence"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:textSize="15sp"
+        android:maxLines="2"
+        android:ellipsize="end"
+        android:textColor="@color/rc_estimate" />
+
+    <TextView
+        android:id="@+id/widget_platform"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:maxLines="1"
+        android:textColor="@color/rc_board_ink" />
+
+    <!-- Freshness is mandatory here: widget redraw cadence is OS-throttled and
+         OEM-variable, so a surface that cannot promise recency states it. -->
+    <TextView
+        android:id="@+id/widget_freshness"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:textSize="11sp"
+        android:maxLines="1"
+        android:textColor="@color/rc_board_ink" />
+</LinearLayout>

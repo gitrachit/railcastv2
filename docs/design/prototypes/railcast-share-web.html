@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Railcast — Shared Journey (web)</title>
+<style>
+:root{
+  --bg:#EDF1F3;--surface:#FFFFFF;--surface2:#F2F5F7;--ink:#0E2830;--ink2:#516870;--ink3:#93A6AD;--line:#E1E7EA;
+  --brand:#2743C4;--brand2:#4E6BF2;--green:#178A50;--amber:#C6760A;--red:#C43D3D;
+  --board-a:#153843;--board-b:#0C242D;--boardInk:#84AAB2;--live:#3DE08A;--boardAmber:#FFC658;
+  --mapbg:#DDE7EB;--maproute:#A6BBC3;--sh:0 24px 60px -26px rgba(14,40,48,.3);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+.mono{font-family:ui-monospace,"SF Mono","JetBrains Mono",monospace;font-variant-numeric:tabular-nums}
+body{background:
+  radial-gradient(900px 500px at 50% -10%,#dfe6f6,#EDF1F3) fixed;
+  min-height:100vh;color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans",sans-serif;
+  -webkit-font-smoothing:antialiased;display:flex;flex-direction:column;align-items:center;padding:34px 16px 70px}
+.caption{font-size:12.5px;color:var(--ink3);margin-bottom:16px;text-align:center;max-width:560px}
+
+/* browser chrome */
+.browser{width:520px;max-width:100%;border-radius:16px;overflow:hidden;box-shadow:var(--sh);background:var(--surface)}
+.chrome{background:#dfe4e8;padding:11px 14px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--line)}
+.dots{display:flex;gap:7px}.dots span{width:12px;height:12px;border-radius:50%}
+.dots .r{background:#ff5f57}.dots .y{background:#febc2e}.dots .g{background:#28c840}
+.urlbar{flex:1;background:var(--surface);border-radius:9px;padding:7px 12px;font-size:12.5px;color:var(--ink2);display:flex;align-items:center;gap:8px}
+.urlbar .lock{color:var(--green)}
+.page{max-height:760px;overflow-y:auto;background:var(--bg)}
+.page::-webkit-scrollbar{width:0}
+
+/* content */
+.top{background:linear-gradient(160deg,#1a2340,#0C242D);color:#fff;padding:20px 22px 26px;position:relative}
+.brandrow{display:flex;align-items:center;gap:10px;font-size:13px;font-weight:600;color:#cfe0e4}
+.brandrow .mk{width:26px;height:26px;border-radius:8px;overflow:hidden}
+.shared{font-size:12px;color:var(--boardInk);margin:16px 0 4px}
+.title{font-size:22px;font-weight:750;letter-spacing:-.02em}
+.sub{font-size:13px;color:#9fb6bd;margin-top:3px}
+
+.map{height:180px;background:var(--mapbg);position:relative}
+.map svg{position:absolute;inset:0;width:100%;height:100%}
+@keyframes breathe{0%,100%{opacity:.5;transform:scale(.86)}50%{opacity:1;transform:scale(1.14)}}
+.est-pulse{transform-box:fill-box;transform-origin:center;animation:breathe 2.4s ease-in-out infinite}
+.mk-label{position:absolute;font-size:10px;font-weight:600;color:var(--ink2);background:rgba(255,255,255,.82);padding:2px 8px;border-radius:999px;border:1px solid var(--line)}
+
+.body{padding:18px 20px 24px}
+.board{background:linear-gradient(158deg,var(--board-a),var(--board-b));border-radius:20px;padding:17px 18px;color:#fff;position:relative;overflow:hidden;margin-top:-42px;box-shadow:var(--sh)}
+.board::before{content:"";position:absolute;top:-40%;left:-10%;width:70%;height:120%;background:radial-gradient(closest-side,rgba(255,255,255,.08),transparent)}
+.live{position:absolute;top:14px;right:16px;font-size:10px;font-weight:800;letter-spacing:.12em;color:var(--boardInk);display:flex;align-items:center;gap:6px}
+@keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 0 0 var(--live)}50%{opacity:.75;box-shadow:0 0 10px 2px var(--live)}}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--live);animation:pulse 2.4s ease-in-out infinite}
+.fact{font-family:ui-monospace,monospace;font-variant-numeric:tabular-nums;font-size:36px;font-weight:600;color:var(--boardAmber);letter-spacing:-.02em}
+.conseq{font-size:15px;margin-top:3px}.conseq .est{border-bottom:1.5px dashed rgba(132,170,178,.8)}
+.bmeta{display:flex;gap:9px;margin-top:11px;align-items:center;flex-wrap:wrap}
+.bchip{font-size:11px;font-weight:600;color:var(--boardInk);border:1px solid rgba(132,170,178,.35);border-radius:999px;padding:4px 10px}
+.freshtxt{font-size:11px;color:var(--boardInk);display:flex;gap:5px;align-items:center}
+.minispine{display:flex;align-items:center;margin-top:13px;color:var(--boardInk);font-size:11px}
+.minispine .end{font-weight:700;color:#fff}
+.mtrack{flex:1;height:3px;margin:0 9px;border-radius:2px;position:relative;background:rgba(132,170,178,.3)}
+.mtrack .done{position:absolute;left:0;top:0;bottom:0;background:var(--live);border-radius:2px}
+.mtrack .you{position:absolute;top:50%;width:10px;height:10px;border-radius:50%;background:#fff;border:3px solid var(--live);transform:translate(-50%,-50%)}
+
+.sec{font-size:12px;font-weight:750;letter-spacing:.05em;text-transform:uppercase;color:var(--ink3);margin:22px 2px 10px}
+.spine{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:6px 4px}
+.snode{display:grid;grid-template-columns:26px 1fr auto;align-items:start;padding:9px 12px 9px 8px}
+.rail{position:relative;display:flex;justify-content:center}
+.rail::before{content:"";position:absolute;top:-9px;bottom:-9px;width:2px;background:var(--line)}
+.snode:first-child .rail::before{top:14px}.snode:last-child .rail::before{bottom:auto;height:14px}
+.nd{width:12px;height:12px;border-radius:50%;background:var(--surface);border:2px solid var(--ink3);z-index:2;margin-top:2px}
+.nd.done{background:var(--green);border-color:var(--green)}.nd.your{background:var(--brand);border-color:var(--brand)}
+.nm{font-size:14px;font-weight:600}.sb{font-size:11.5px;color:var(--ink3);margin-top:2px}
+.tm{text-align:right;font-size:13px;font-weight:600}.tm .est{color:var(--ink2)}
+.you2{display:grid;grid-template-columns:26px 1fr;align-items:center;padding:2px 12px 2px 8px}
+.youdot{width:14px;height:14px;border-radius:50%;background:var(--surface);border:3px solid var(--green);z-index:2;box-shadow:0 0 0 4px rgba(23,138,80,.18)}
+.youtxt{font-size:12px;color:var(--green);font-weight:600}
+.yourstop{background:rgba(39,67,196,.06);border-radius:12px}.yourstop .nm{color:var(--brand)}
+
+/* install prompt */
+.install{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:16px;margin-top:22px;display:flex;align-items:center;gap:14px;box-shadow:0 1px 2px rgba(14,40,48,.06)}
+.install .mk{width:46px;height:46px;border-radius:24%;overflow:hidden;flex:none}
+.install .t b{font-size:14.5px}.install .t span{font-size:12px;color:var(--ink3);display:block;margin-top:2px}
+.install .get{margin-left:auto;background:linear-gradient(180deg,var(--brand2),var(--brand));color:#fff;border:none;border-radius:12px;padding:11px 16px;font-weight:700;font-size:13px;cursor:pointer;white-space:nowrap}
+.foot{font-size:11px;color:var(--ink3);text-align:center;line-height:1.6;padding:20px 10px 6px}
+.expiry{font-size:11px;color:var(--ink3);text-align:center;margin-top:14px}
+.pagecap{font-size:12px;color:var(--ink3);margin-top:18px;max-width:520px;text-align:center;line-height:1.6}
+</style>
+</head>
+<body>
+<div class="caption">A recipient opens a shared journey — no app, no login, no wall. This is the growth loop (FR-8) and the SEO surface, served by the BFF from the same cache.</div>
+
+<div class="browser">
+  <div class="chrome"><div class="dots"><span class="r"></span><span class="y"></span><span class="g"></span></div>
+    <div class="urlbar"><span class="lock">🔒</span> railcast.app/t/9fK2eq</div></div>
+  <div class="page">
+    <div class="top">
+      <div class="brandrow"><span class="mk" id="mk"></span> Railcast · Live</div>
+      <div class="shared">Priya shared a live journey with you</div>
+      <div class="title">12952 · Tejas Rajdhani</div>
+      <div class="sub">New Delhi → Bhopal · Sat 26 Jul</div>
+    </div>
+    <div class="map">
+      <svg viewBox="0 0 520 180" preserveAspectRatio="xMidYMid slice">
+        <path d="M30,54 C150,34 210,120 320,110 S500,140 512,168" fill="none" stroke="var(--maproute)" stroke-width="4.5" stroke-linecap="round"/>
+        <path d="M30,54 C150,34 210,120 320,110" fill="none" stroke="var(--live)" stroke-width="4.5" stroke-linecap="round"/>
+        <circle cx="30" cy="54" r="5" fill="var(--maproute)"/><circle cx="320" cy="110" r="5" fill="var(--live)"/>
+        <g><circle class="est-pulse" cx="392" cy="122" r="14" fill="rgba(61,224,138,.3)"/><circle cx="392" cy="122" r="6" fill="var(--live)" stroke="#fff" stroke-width="2"/></g>
+      </svg>
+      <div class="mk-label" style="left:16px;top:38px">NDLS</div>
+      <div class="mk-label" style="left:270px;top:118px">Itarsi</div>
+      <div class="mk-label" style="left:400px;top:132px;color:var(--green)">◐ estimated</div>
+    </div>
+    <div class="body">
+      <div class="board">
+        <div class="live">LIVE <span class="dot"></span></div>
+        <div class="fact">▶ 12 min late</div>
+        <div class="conseq">Reaching Bhopal <span class="est">~16:49</span> · Platform 4</div>
+        <div class="bmeta"><span class="bchip">Started yesterday</span><span class="freshtxt"><span class="dot" style="width:6px;height:6px"></span>live · updated 40s ago</span></div>
+        <div class="minispine"><span class="end">NDLS</span><div class="mtrack"><div class="done" style="width:52%"></div><div class="you" style="left:52%"></div></div><span class="end">BPL</span></div>
+      </div>
+
+      <div class="sec">Where it is now</div>
+      <div class="spine">
+        <div class="snode"><div class="rail"><div class="nd done"></div></div><div><div class="nm">Itarsi Jn · ET</div><div class="sb mono">15:50 → 16:02 · Plat 3</div></div><div class="tm mono">16:02 ✓</div></div>
+        <div class="you2"><div class="rail"><div class="youdot"></div></div><div class="youtxt">◐ ~between Itarsi and Hoshangabad · estimated</div></div>
+        <div class="snode"><div class="rail"><div class="nd"></div></div><div><div class="nm">Hoshangabad · HBD</div><div class="sb mono">ETA · Plat 1</div></div><div class="tm mono"><span class="est">~16:31</span></div></div>
+        <div class="snode yourstop"><div class="rail"><div class="nd your"></div></div><div><div class="nm">Bhopal · BPL</div><div class="sb">destination</div></div><div class="tm mono"><span class="est">~16:49</span></div></div>
+      </div>
+
+      <div class="install">
+        <span class="mk" id="mk2"></span>
+        <div class="t"><b>Get Railcast free</b><span>Track any train, ad-free · alerts when the app is closed</span></div>
+        <button class="get">Get app</button>
+      </div>
+      <div class="expiry">This link updates live and expires after the journey · Priya can revoke it anytime.</div>
+      <div class="foot">Railcast is not affiliated with Indian Railways or IRCTC. Data is for information only and may be delayed. No cookies beyond what's needed to show this page.</div>
+    </div>
+  </div>
+</div>
+<div class="pagecap">Fully responsive · server-rendered from the shared cache · one quiet install prompt, never an interstitial. The same layer powers public SEO train-status pages.</div>
+
+<script>
+function mk(){return '<svg viewBox="0 0 512 512" width="100%" height="100%"><defs><linearGradient id="g'+Math.random().toString(36).slice(2,6)+'" x1="0" y1="0" x2="1" y2="1"></linearGradient><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#153843"/><stop offset="1" stop-color="#0C242D"/></linearGradient></defs><rect width="512" height="512" fill="url(#bg)"/><path d="M110 380 C186 346 214 250 292 240 S404 196 430 158" fill="none" stroke="rgba(255,255,255,.2)" stroke-width="26" stroke-linecap="round"/><path d="M110 380 C186 346 214 250 292 240" fill="none" stroke="#3DE08A" stroke-width="26" stroke-linecap="round"/><circle cx="330" cy="298" r="80" fill="#3DE08A" opacity=".2"/><circle cx="330" cy="298" r="38" fill="#3DE08A" stroke="#fff" stroke-width="12"/></svg>';}
+document.getElementById("mk").innerHTML=mk();
+document.getElementById("mk2").innerHTML=mk();
+</script>
+</body>
+</html>

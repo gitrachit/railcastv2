@@ -178,7 +178,12 @@ Requirements are numbered for traceability. **[P1/P2/P3]** = release phase (§9)
 ## 7. UX requirements (system-level)
 
 - **Answer-first skeleton on every data screen:** the answer in the largest type → freshness + live dot → one primary action → expandable detail. Identical skeleton app-wide so learning one screen teaches all.
-- **Five tabs:** Home · Track · Station · Plan · Alerts. Nothing important deeper than two taps. Icons always labelled.
+- **Three tabs:** Journeys · Find · You. Nothing important deeper than two taps. Icons always labelled.
+
+  > **Amended July 2026 (was: five tabs — Home · Track · Station · Plan · Alerts).**
+  > *Track* and *Alerts* were never destinations: tracking is what a journey **is**, not a place you go to do it, and an alert is a *property* of a journey rather than a sibling of it — so alerts now appear inside the journey they concern, where the evidence belongs. *Station* and *Plan* are both "find me something I don't have yet", which is one intent and takes one input. The five-tab layout also made the user the integration layer, scattering one mental object ("my train") across four destinations.
+  > Practical benefit: each tab label gets a third of the bottom bar instead of a fifth, which is what makes "icons always labelled" survive at 200% text (FR-10.3).
+  > Rationale and the rejected alternatives are in `docs/design/direction-study.md`.
 - **Design language:** humanist sans with first-class Indic-script support; tabular numerals (no jitter on refresh); calm base + single brand accent; railway-signal status colours (green/amber/red) always paired with icon+word; generous whitespace; restrained meaningful motion; dark mode and sunlight mode as first-class themes.
 - **Premium through restraint, not obscurity:** no hidden gestures for core actions; big and obvious, beautifully executed.
 - **Onboarding:** native-script language picker → one question ("Track a train / Check PNR / Trains near me") → straight into value. No tutorial carousel, no permission wall, no forced login.

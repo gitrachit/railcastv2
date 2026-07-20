@@ -60,6 +60,8 @@ fun AlertsScreen(
     alerts: AlertsViewModel,
     language: AppLanguage,
     onLanguageChange: (AppLanguage) -> Unit,
+    sunlight: Boolean,
+    onSunlightChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val colors = RailcastTheme.colors
@@ -121,6 +123,21 @@ fun AlertsScreen(
             label = stringResource(R.string.privacy_analytics),
             checked = analyticsOn,
             onChange = { alerts.setAnalyticsEnabled(it) },
+        )
+
+        // Sunlight theme (FR-5.3). The high-contrast palette shipped long before
+        // anything could select it; this is the switch. Ambient-light
+        // auto-suggest comes later and must never override this choice.
+        SectionTitle(stringResource(R.string.settings_display))
+        ToggleRow(
+            label = stringResource(R.string.settings_sunlight),
+            checked = sunlight,
+            onChange = onSunlightChange,
+        )
+        Text(
+            stringResource(R.string.settings_sunlight_hint),
+            style = MaterialTheme.typography.bodyMedium,
+            color = colors.ink2,
         )
 
         SectionTitle(stringResource(R.string.settings_language))

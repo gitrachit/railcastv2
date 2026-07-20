@@ -61,7 +61,12 @@ import app.railcast.ui.freshnessLabel
  * so nothing blanks offline (FR-9.1).
  */
 @Composable
-fun HomeScreen(home: HomeViewModel, onCheckPnr: () -> Unit, modifier: Modifier = Modifier) {
+fun HomeScreen(
+    home: HomeViewModel,
+    onCheckPnr: () -> Unit,
+    onOpenTrain: (String) -> Unit,
+    modifier: Modifier = Modifier,
+) {
     val state by home.state.collectAsState()
     val context = LocalContext.current
     val voiceLabel = stringResource(R.string.search_voice)
@@ -114,9 +119,15 @@ fun HomeScreen(home: HomeViewModel, onCheckPnr: () -> Unit, modifier: Modifier =
         if (state.query.isNotBlank()) {
             items(state.results, key = { it.entry.query + "|" + it.entry.label }) { result ->
                 ResultRow(result, onClick = {
-                    when (result.entry) {
-                        is Train -> { home.onSaveTrain(result.entry.query); home.onQueryChange("") }
-                        is Station -> Unit // Station screen lands in 4.6
+                    when (val entry = result.entry) {
+                        // Save AND open: the user searched a train because they
+                        // want to see it, not to file it away for later.
+                        is Train -> {
+                            home.onSaveTrain(entry.query)
+                            home.onQueryChange("")
+                            onOpenTrain(entry.query)
+                        }
+                        is Station -> Unit // stations are found under Find
                     }
                 })
             }
@@ -131,7 +142,12 @@ fun HomeScreen(home: HomeViewModel, onCheckPnr: () -> Unit, modifier: Modifier =
                     )
                 }
                 items(state.saved, key = { it.trainNo }) { card ->
-                    SavedCardView(card.trainNo, card.resource, onRemove = { home.onRemoveTrain(card.trainNo) })
+                    SavedCardView(
+                        card.trainNo,
+                        card.resource,
+                        onRemove = { home.onRemoveTrain(card.trainNo) },
+                        onOpen = { onOpenTrain(card.trainNo) },
+                    )
                 }
             }
         }
@@ -199,9 +215,17 @@ private fun ResultRow(result: SearchResult, onClick: () -> Unit) {
 }
 
 @Composable
-private fun SavedCardView(trainNo: String, resource: Resource<TrainScreen>?, onRemove: () -> Unit) {
+private fun SavedCardView(
+    trainNo: String,
+    resource: Resource<TrainScreen>?,
+    onRemove: () -> Unit,
+    onOpen: () -> Unit,
+) {
     val screen = resource?.value
-    Column(verticalArrangement = Arrangement.spacedBy(Spacing.xs)) {
+    Column(
+        modifier = Modifier.clickable(onClick = onOpen),
+        verticalArrangement = Arrangement.spacedBy(Spacing.xs),
+    ) {
         if (screen != null) {
             val visual = trainStatusVisual(screen.status.state, screen.status.delayMin)
             BoardHero(

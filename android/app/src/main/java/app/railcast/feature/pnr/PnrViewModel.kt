@@ -1,5 +1,6 @@
 package app.railcast.feature.pnr
 
+import app.railcast.core.data.RawPnr
 import app.railcast.core.data.Resource
 import app.railcast.core.net.PnrScreen
 import app.railcast.core.poll.PollController
@@ -41,8 +42,9 @@ class PnrViewModel(
     private val _state = MutableStateFlow(PnrUiState())
     val state: StateFlow<PnrUiState> = _state.asStateFlow()
 
-    // In-memory only. Never persisted, logged, or exposed in [state].
-    private var rawPnr: String? = null
+    // In-memory only. Never persisted, logged, or exposed in [state]. Typed as
+    // RawPnr so that even an accidental interpolation prints the masked form.
+    private var rawPnr: RawPnr? = null
     private var loopKey: String? = null
 
     fun onInputChange(raw: String) {
@@ -57,11 +59,15 @@ class PnrViewModel(
             _state.update { it.copy(hint = FormatValidation.Msg.PNR_LENGTH) }
             return
         }
-        rawPnr = entered
-        _state.update {
-            it.copy(maskedInput = maskPnr(entered), resource = null, saveState = SaveState.Idle, chartJustPrepared = false)
+        val parsed = RawPnr.parse(entered) ?: run {
+            _state.update { it.copy(hint = FormatValidation.Msg.PNR_LENGTH) }
+            return
         }
-        startWatchingLive(entered)
+        rawPnr = parsed
+        _state.update {
+            it.copy(maskedInput = parsed.masked().value, resource = null, saveState = SaveState.Idle, chartJustPrepared = false)
+        }
+        startWatchingLive(parsed)
     }
 
     fun save() {
@@ -69,7 +75,8 @@ class PnrViewModel(
         if (_state.value.saveState == SaveState.Saving) return
         _state.update { it.copy(saveState = SaveState.Saving) }
         scope.launch {
-            val ok = createChartWatch(pnr)
+            // reveal() only at the network boundary (FR-4.3).
+            val ok = createChartWatch(pnr.reveal())
             _state.update { it.copy(saveState = if (ok) SaveState.Saved else SaveState.Failed) }
         }
     }
@@ -95,7 +102,7 @@ class PnrViewModel(
             is FormatValidation.Result.Valid -> null
         }
 
-    private fun startWatchingLive(pnr: String) {
+    private fun startWatchingLive(pnr: RawPnr) {
         loopKey?.let { poller.unregister(it) }
         // One PNR is watched at a time and the previous loop was just
         // unregistered, so a constant key suffices — no PNR-derived value here.
@@ -103,7 +110,7 @@ class PnrViewModel(
         loopKey = key
         poller.register(key, cadenceMs) {
             var signature: String? = null
-            pnrScreen(pnr).collect { res ->
+            pnrScreen(pnr.reveal()).collect { res ->
                 val wasPrepared = _state.value.resource?.value?.chart?.prepared == true
                 _state.update { it.copy(resource = res) }
                 val nowPrepared = res.value?.chart?.prepared == true

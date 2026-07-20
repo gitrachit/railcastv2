@@ -7,6 +7,14 @@
     <string name="nav_station">Station</string>
     <string name="nav_plan">Plan</string>
     <string name="nav_alerts">Alerts</string>
+    <string name="nav_journeys">Journeys</string>
+    <string name="nav_find">Find</string>
+    <string name="nav_you">You</string>
+    <string name="find_mode_station">Station board</string>
+    <string name="find_mode_plan">Plan a trip</string>
+    <string name="widget_description">Your next journey — delay, arrival and platform at a glance.</string>
+    <string name="widget_empty">Track a train</string>
+    <string name="widget_others">+%1$d more</string>
 
     <!-- Home -->
     <string name="home_greeting">Where to?</string>
@@ -26,6 +34,9 @@
 
     <!-- Language (full picker is the onboarding flow, 4.1) -->
     <string name="settings_language">Language</string>
+    <string name="settings_display">Display</string>
+    <string name="settings_sunlight">Sunlight mode</string>
+    <string name="settings_sunlight_hint">Maximum contrast for reading on a platform in direct sun.</string>
 
     <!-- Privacy / analytics opt-out (backlog 5.5, FR-11.3) -->
     <string name="privacy_title">Privacy</string>

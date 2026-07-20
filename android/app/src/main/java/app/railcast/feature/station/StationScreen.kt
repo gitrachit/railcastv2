@@ -37,11 +37,15 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.res.stringResource
 import app.railcast.R
+import app.railcast.core.design.Reflow
+import app.railcast.core.design.reflowMaxLines
 import app.railcast.core.design.Radius
 import app.railcast.core.design.RailcastIcons
 import app.railcast.core.design.RailcastTheme
@@ -337,15 +341,33 @@ private fun TrainRow(t: StationTrain, onAlternatives: () -> Unit) {
                         if (actual.isNotEmpty() && actual != IsoTime.clock(time.scheduled)) append("  →  $actual")
                     }
                 }
-                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    if (line.isNotBlank()) Text(monoNumerals(line), fontSize = 12.sp, color = colors.ink2, maxLines = 1)
-                    // maxLines=1 + weight-free short strings: the platform label can
-                    // never be crushed into a one-char-per-line column again.
+                // Wraps to a column once text is large enough that the time and
+                // the platform cannot share a line — the platform number is the
+                // one fact a rushing traveller needs (FR-5.1), so it must never
+                // be pushed off the row or crushed one-char-per-line.
+                val stacked = LocalDensity.current.fontScale >= Reflow.WRAP_THRESHOLD
+                val timeText: @Composable () -> Unit = {
+                    if (line.isNotBlank()) {
+                        Text(
+                            monoNumerals(line), fontSize = 12.sp, color = colors.ink2,
+                            maxLines = reflowMaxLines(), overflow = TextOverflow.Ellipsis,
+                        )
+                    }
+                }
+                val platformText: @Composable () -> Unit = {
                     t.platform?.let {
                         Text(
                             stringResource(R.string.track_platform, it),
-                            fontSize = 12.sp, color = colors.ink3, maxLines = 1,
+                            fontSize = 12.sp, color = colors.ink3,
+                            maxLines = reflowMaxLines(), overflow = TextOverflow.Ellipsis,
                         )
+                    }
+                }
+                if (stacked) {
+                    Column(verticalArrangement = Arrangement.spacedBy(2.dp)) { timeText(); platformText() }
+                } else {
+                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        timeText(); platformText()
                     }
                 }
             }

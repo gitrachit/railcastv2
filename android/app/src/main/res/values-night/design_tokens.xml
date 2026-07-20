@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Dark-theme mirror of core/design/Colors.kt (RailcastDarkColors).
+  See values/design_tokens.xml for why this duplication exists and
+  DesignTokenParityTest for the gate that keeps it honest.
+
+  Note: Sunlight (FR-5.3) has no resource variant. It is an explicit user
+  choice, not a system configuration, so there is no qualifier the framework
+  would select it by — RemoteViews surfaces render the light tokens. Bringing
+  Sunlight to the ambient layer needs the widget to read the preference and
+  swap colours itself, which is tracked with the ambient work.
+-->
+<resources>
+    <!-- Surfaces -->
+    <color name="rc_bg">#FF081115</color>
+    <color name="rc_surface">#FF0F2129</color>
+    <color name="rc_surface2">#FF15303A</color>
+
+    <!-- Ink -->
+    <color name="rc_ink">#FFEAF3F4</color>
+    <color name="rc_ink2">#FF9DB4BB</color>
+    <color name="rc_ink3">#FF708A92</color>
+    <color name="rc_line">#FF1E3B45</color>
+
+    <!-- Brand -->
+    <color name="rc_brand">#FF8098FF</color>
+    <color name="rc_brand2">#FFA6B5FF</color>
+
+    <!-- Signal -->
+    <color name="rc_green">#FF3DBB77</color>
+    <color name="rc_amber">#FFE7A542</color>
+    <color name="rc_red">#FFE36868</color>
+
+    <!-- Departure-board sub-palette -->
+    <color name="rc_board">#FF06151A</color>
+    <color name="rc_board_green">#FF3DE08A</color>
+    <color name="rc_board_amber">#FFFFC24D</color>
+    <color name="rc_board_red">#FFFF7A7A</color>
+    <color name="rc_board_ink">#FF6E969E</color>
+
+    <!-- Estimated values -->
+    <color name="rc_estimate">#FF9DB4BB</color>
+    <color name="rc_focus">#FF8098FF</color>
+</resources>

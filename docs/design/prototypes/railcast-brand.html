@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Railcast — Brand Identity</title>
+<style>
+:root{
+  --bg:#EDF1F3;--surface:#FFFFFF;--ink:#0E2830;--ink2:#516870;--ink3:#93A6AD;--line:#E1E7EA;
+  --brand:#2743C4;--green:#178A50;--amber:#C6760A;--red:#C43D3D;
+  --board-a:#153843;--board-b:#0C242D;--live:#3DE08A;
+  --sh:0 20px 50px -24px rgba(14,40,48,.3);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans",sans-serif;
+  -webkit-font-smoothing:antialiased;line-height:1.5;padding:48px 20px 80px}
+.mono{font-family:ui-monospace,"SF Mono","JetBrains Mono",monospace;font-variant-numeric:tabular-nums}
+.wrap{max-width:940px;margin:0 auto}
+.kicker{font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--ink3)}
+h1{font-size:40px;font-weight:800;letter-spacing:-.03em;margin:6px 0 10px}
+.lede{font-size:17px;color:var(--ink2);max-width:640px}
+section{margin-top:56px}
+.sh{font-size:13px;font-weight:750;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);border-bottom:1px solid var(--line);padding-bottom:10px;margin-bottom:24px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:24px;box-shadow:var(--sh)}
+.grid{display:grid;gap:20px}
+.g2{grid-template-columns:1fr 1fr}.g3{grid-template-columns:1fr 1fr 1fr}.g4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:720px){.g2,.g3,.g4{grid-template-columns:1fr 1fr}}
+.note{font-size:13px;color:var(--ink3);margin-top:10px}
+.mininote{font-size:11px;color:var(--ink3);text-align:center;margin-top:8px}
+
+/* hero lockup */
+.hero{display:flex;gap:26px;align-items:center;padding:40px;border-radius:28px}
+.hero.dark{background:linear-gradient(155deg,var(--board-a),var(--board-b))}
+.lockup{display:flex;align-items:center;gap:18px}
+.wordmark{font-size:44px;font-weight:800;letter-spacing:-.03em;display:flex;align-items:baseline}
+.wordmark .live{color:var(--live)}
+.dark .wordmark{color:#fff}
+.tagline{font-size:15px;color:var(--ink2);margin-top:8px;font-weight:500}
+.dark .tagline{color:#9FBAC1}
+
+/* icon tiles */
+.tile{display:flex;flex-direction:column;align-items:center;padding:26px}
+.iconbox{border-radius:22%;overflow:hidden;box-shadow:var(--sh)}
+.swatchrow{display:flex;flex-wrap:wrap;gap:14px}
+.swatch{flex:1;min-width:130px;border-radius:16px;overflow:hidden;border:1px solid var(--line)}
+.swatch .chip{height:78px}
+.swatch .meta{padding:10px 12px;font-size:12px}
+.swatch .meta b{display:block;font-size:13px}
+.swatch .meta span{color:var(--ink3)}
+.type-spec{padding:30px}
+.t-fact{font-size:46px;font-weight:600;letter-spacing:-.02em;font-family:ui-monospace,monospace;color:var(--board-a)}
+.t-title{font-size:26px;font-weight:700;letter-spacing:-.02em;margin-top:20px}
+.t-body{font-size:16px;color:var(--ink2);margin-top:12px;max-width:560px}
+.t-label{font-size:13px;font-weight:600;color:var(--ink3);margin-top:16px;text-transform:uppercase;letter-spacing:.04em}
+.dodont{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.dd{padding:20px;border-radius:18px;font-size:14px}
+.dd.do{background:#E2F1E9;color:var(--green)}.dd.dont{background:#F7E3E3;color:var(--red)}
+.dd b{display:block;margin-bottom:8px;font-size:12px;letter-spacing:.08em;text-transform:uppercase}
+.dd ul{margin:0;padding-left:18px;color:var(--ink2)}
+.foot{margin-top:60px;text-align:center;font-size:12px;color:var(--ink3)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="kicker">Railcast · Brand Identity</div>
+<h1>The signal, made friendly.</h1>
+<p class="lede">One mark, built from the product's own soul: a live position glowing on the line. It says what Railcast is in a glance — <em>your train, right now, honestly</em> — and works from a 48px notification dot to a full departure board.</p>
+
+<!-- HERO LOCKUPS -->
+<section>
+  <div class="sh">Primary lockup</div>
+  <div class="grid g2">
+    <div class="hero card">
+      <span class="iconbox" style="width:92px;height:92px" id="icon-light"></span>
+      <div><div class="lockup"><span class="wordmark">Rail<span class="live">c</span>ast</span></div><div class="tagline">Your train, before you ask.</div></div>
+    </div>
+    <div class="hero dark">
+      <span class="iconbox" style="width:92px;height:92px" id="icon-dark"></span>
+      <div><div class="lockup"><span class="wordmark">Rail<span class="live">c</span>ast</span></div><div class="tagline">Your train, before you ask.</div></div>
+    </div>
+  </div>
+  <p class="note">The <b>c</b> is set in signal-green — the one live accent, echoing the position node. Everywhere else the wordmark is monochrome. Clear-space = the height of the node all around.</p>
+</section>
+
+<!-- THE MARK -->
+<section>
+  <div class="sh">The mark — "the live node"</div>
+  <div class="grid g4">
+    <div class="card tile"><span class="iconbox" style="width:120px;height:120px" id="m-color"></span><div class="mininote">App icon · full colour</div></div>
+    <div class="card tile" style="background:#0C242D"><span class="iconbox" style="width:120px;height:120px" id="m-onboard"></span><div class="mininote" style="color:#9FBAC1">On board surface</div></div>
+    <div class="card tile"><span class="iconbox" style="width:120px;height:120px;border-radius:0;box-shadow:none" id="m-mono"></span><div class="mininote">Monochrome · notifications</div></div>
+    <div class="card tile"><span class="iconbox" style="width:120px;height:120px;border-radius:0;box-shadow:none" id="m-line"></span><div class="mininote">Line · one-colour print</div></div>
+  </div>
+  <p class="note">The glyph is the estimated-position marker from the app's spine: a rail line, a completed green segment, and a glowing live node. It <em>is</em> the product — not an abstract logo bolted on.</p>
+</section>
+
+<!-- ADAPTIVE ICON -->
+<section>
+  <div class="sh">Android adaptive icon &amp; sizes</div>
+  <div class="grid g3">
+    <div class="card tile"><span class="iconbox" style="width:110px;height:110px;border-radius:50%" id="a-fore"></span><div class="mininote">Foreground layer</div></div>
+    <div class="card tile"><span class="iconbox" style="width:110px;height:110px;border-radius:50%" id="a-back"></span><div class="mininote">Background layer</div></div>
+    <div class="card tile"><span class="iconbox" style="width:110px;height:110px;border-radius:28%" id="a-full"></span><div class="mininote">Composited (squircle mask)</div></div>
+  </div>
+  <div class="card" style="margin-top:20px;padding:26px;display:flex;align-items:flex-end;gap:26px;justify-content:center;flex-wrap:wrap">
+    <div style="text-align:center"><span class="iconbox" style="display:inline-block;width:96px;height:96px;border-radius:22%" id="s-96"></span><div class="mininote">512 / 192</div></div>
+    <div style="text-align:center"><span class="iconbox" style="display:inline-block;width:64px;height:64px;border-radius:22%" id="s-64"></span><div class="mininote">96</div></div>
+    <div style="text-align:center"><span class="iconbox" style="display:inline-block;width:48px;height:48px;border-radius:22%" id="s-48"></span><div class="mininote">48</div></div>
+    <div style="text-align:center"><span class="iconbox" style="display:inline-block;width:28px;height:28px;border-radius:22%" id="s-28"></span><div class="mininote">notification</div></div>
+  </div>
+  <p class="note">Two layers per Android spec: the node + line ride the <b>foreground</b>, the board gradient is the <b>background</b>, so launchers can mask, parallax, and theme it. The node stays legible and centred at every size; below 48px it drops the line and keeps just the glowing node.</p>
+</section>
+
+<!-- COLOUR -->
+<section>
+  <div class="sh">Colour signature</div>
+  <div class="swatchrow">
+    <div class="swatch"><div class="chip" style="background:#2743C4"></div><div class="meta"><b>Brand</b><span class="mono">#2743C4 · tappable only</span></div></div>
+    <div class="swatch"><div class="chip" style="background:#3DE08A"></div><div class="meta"><b>Live</b><span class="mono">#3DE08A · the node</span></div></div>
+    <div class="swatch"><div class="chip" style="background:linear-gradient(155deg,#153843,#0C242D)"></div><div class="meta"><b>Board</b><span class="mono">#0F2A33 · live truth</span></div></div>
+    <div class="swatch"><div class="chip" style="background:#FFFFFF;border-bottom:1px solid var(--line)"></div><div class="meta"><b>Paper</b><span class="mono">#FFFFFF · calm ground</span></div></div>
+  </div>
+  <div class="swatchrow" style="margin-top:14px">
+    <div class="swatch"><div class="chip" style="background:#178A50"></div><div class="meta"><b>On time</b><span class="mono">#178A52 green</span></div></div>
+    <div class="swatch"><div class="chip" style="background:#C6760A"></div><div class="meta"><b>Delay</b><span class="mono">#C9770B amber</span></div></div>
+    <div class="swatch"><div class="chip" style="background:#C43D3D"></div><div class="meta"><b>Cancelled</b><span class="mono">#C33F3F red</span></div></div>
+    <div class="swatch"><div class="chip" style="background:#E7ECEF"></div><div class="meta"><b>Ground</b><span class="mono">#E7ECEF</span></div></div>
+  </div>
+  <p class="note">Signal colours (green/amber/red) describe the <em>train</em>; brand blue describes what you can <em>touch</em>; they never cross. Live-green is reserved for the node and freshness — the pulse of "now".</p>
+</section>
+
+<!-- TYPE -->
+<section>
+  <div class="sh">Typography</div>
+  <div class="card type-spec">
+    <div class="t-fact">▶ 12 min late</div>
+    <div class="t-label">Board · mono, tabular · the fact</div>
+    <div class="t-title">Your train, before you ask.</div>
+    <div class="t-label">Title · humanist sans 700</div>
+    <div class="t-body">Noto Sans carries every string across all 12 launch languages at full parity; a tabular mono renders every digit that changes under the reader, so nothing jitters on refresh.</div>
+    <div class="t-label">Body · Noto Sans 450</div>
+  </div>
+</section>
+
+<!-- DO / DON'T -->
+<section>
+  <div class="sh">Usage</div>
+  <div class="dodont">
+    <div class="dd do"><b>✓ Do</b><ul><li>Keep the node green and glowing</li><li>Give the mark node-height clear-space</li><li>Use board-dark or paper-white grounds</li><li>Pair the wordmark with the tagline once</li></ul></div>
+    <div class="dd dont"><b>✕ Don't</b><ul><li>Recolour the node to brand-blue</li><li>Add a drop shadow to the wordmark</li><li>Stretch, outline, or rotate the mark</li><li>Place on busy photography</li></ul></div>
+  </div>
+</section>
+
+<p class="foot">Railcast · Semaphore design system · brand v1 · 2026</p>
+</div>
+
+<!-- reusable mark builder -->
+<script>
+function mark(opts){
+  opts=opts||{};
+  var bgFill = opts.bg==="none" ? "none" : (opts.bg||"url(#bgg)");
+  var lineCol = opts.mono ? (opts.inkOnLight?"#0E2830":"#ffffff") : "rgba(255,255,255,.20)";
+  var doneCol = opts.mono ? (opts.inkOnLight?"#0E2830":"#ffffff") : "#3DE08A";
+  var nodeCol = opts.mono ? (opts.inkOnLight?"#0E2830":"#ffffff") : "#3DE08A";
+  var ring = opts.mono ? "none" : "#ffffff";
+  var glow = opts.mono ? "" : '<circle cx="330" cy="300" r="96" fill="#3DE08A" opacity="0.20"/>';
+  var bg = bgFill==="none" ? "" : '<rect width="512" height="512" fill="'+bgFill+'"/>';
+  return '<svg viewBox="0 0 512 512" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">'+
+    '<defs><linearGradient id="bgg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#153843"/><stop offset="1" stop-color="#0C242D"/></linearGradient></defs>'+
+    bg+
+    '<path d="M96 388 C176 352 208 250 288 240 S404 190 432 150" fill="none" stroke="'+lineCol+'" stroke-width="26" stroke-linecap="round"/>'+
+    '<path d="M96 388 C176 352 208 250 288 240" fill="none" stroke="'+doneCol+'" stroke-width="26" stroke-linecap="round"/>'+
+    glow+
+    '<circle cx="330" cy="300" r="42" fill="'+nodeCol+'"'+(ring==="none"?"":' stroke="'+ring+'" stroke-width="14"')+'/>'+
+    '</svg>';
+}
+document.getElementById("icon-light").innerHTML=mark();
+document.getElementById("icon-dark").innerHTML=mark();
+document.getElementById("m-color").innerHTML=mark();
+document.getElementById("m-onboard").innerHTML=mark({bg:"none"});
+document.getElementById("m-mono").innerHTML=mark({mono:true,inkOnLight:true,bg:"none"});
+document.getElementById("m-line").innerHTML=mark({mono:true,inkOnLight:true,bg:"none"});
+document.getElementById("a-fore").innerHTML=mark({bg:"none"});
+document.getElementById("a-back").innerHTML='<svg viewBox="0 0 512 512" width="100%" height="100%"><defs><linearGradient id="b2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#153843"/><stop offset="1" stop-color="#0C242D"/></linearGradient></defs><rect width="512" height="512" fill="url(#b2)"/></svg>';
+document.getElementById("a-full").innerHTML=mark();
+["s-96","s-64","s-48"].forEach(function(id){document.getElementById(id).innerHTML=mark();});
+document.getElementById("s-28").innerHTML='<svg viewBox="0 0 512 512" width="100%" height="100%"><defs><linearGradient id="b3" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#153843"/><stop offset="1" stop-color="#0C242D"/></linearGradient></defs><rect width="512" height="512" fill="url(#b3)"/><circle cx="256" cy="256" r="150" fill="#3DE08A" opacity="0.22"/><circle cx="256" cy="256" r="86" fill="#3DE08A" stroke="#fff" stroke-width="26"/></svg>';
+</script>
+</body>
+</html>

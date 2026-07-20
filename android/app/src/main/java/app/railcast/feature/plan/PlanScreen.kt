@@ -32,12 +32,17 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.res.stringResource
 import app.railcast.R
+import app.railcast.core.design.reflowMaxLines
+import app.railcast.core.design.Confidence
+import app.railcast.core.design.ConfidenceValue
 import app.railcast.core.design.RailcastIcons
 import app.railcast.core.design.RailcastTheme
 import app.railcast.core.design.monoNumerals
@@ -232,7 +237,11 @@ private fun PlanRowCard(row: PlanRow, expanded: Boolean, onToggle: () -> Unit, t
                 Text("${row.name} · ${row.no}", fontSize = 15.sp, fontWeight = FontWeight.SemiBold, color = colors.ink)
                 Text(
                     monoNumerals("${IsoTime.clock(row.dep)} – ${IsoTime.clock(row.arr)}  ·  ${durationText(row.durationMin)}"),
-                    fontSize = 12.sp, color = colors.ink2, maxLines = 1,
+                    fontSize = 12.sp, color = colors.ink2,
+                    // One line at default size; grows rather than clipping as
+                    // system text scales (FR-10.3).
+                    maxLines = reflowMaxLines(),
+                    overflow = TextOverflow.Ellipsis,
                 )
                 Text(runsOnText(row.runsOn), fontSize = 11.sp, color = colors.ink3)
             }
@@ -298,7 +307,16 @@ private fun AvailabilityText(cell: AvailabilityCell) {
                 else -> colors.red
             }
             Text(a.text, fontSize = 14.sp, fontWeight = FontWeight.Bold, color = color)
-            a.predictionPct?.let { Text(stringResource(R.string.plan_confirm_chance, it), fontSize = 10.sp, color = colors.ink3) }
+            // A confirmation chance is a PREDICTION, not an observed fact, and
+            // upstream gives us no basis to cite — so it renders as ESTIMATED:
+            // `~` prefix, dashed edge, and "estimated ..." to TalkBack (FR-11.1).
+            a.predictionPct?.let {
+                ConfidenceValue(
+                    value = stringResource(R.string.plan_confirm_chance, it),
+                    confidence = Confidence.ESTIMATED,
+                    style = TextStyle(fontSize = 10.sp, fontWeight = FontWeight.SemiBold),
+                )
+            }
         }
     }
 }

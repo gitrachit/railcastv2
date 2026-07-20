@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Railcast — Journey Surface (Prototype)</title>
+<style>
+  :root{
+    /* ── Light theme (default) ── */
+    --bg:#E7ECEF; --surface:#FFFFFF; --surface2:#F1F4F6;
+    --ink:#0F2A33; --ink2:#54696F; --ink3:#8FA1A8; --line:#DCE3E7;
+    --brand:#2743C4; --brandSoft:#EAEEFB;
+    --green:#178A52; --amber:#C9770B; --red:#C33F3F;
+    --board:#0F2A33; --board2:#16323C; --boardInk:#7FA6AE;
+    --boardGreen:#3DE08A; --boardAmber:#FFC24D; --boardRed:#FF7A7A;
+    --mapbg:#DCE6EA; --maproute:#9BB2BB; --shadow:rgba(15,42,51,.16);
+  }
+  html[data-theme="dark"]{
+    --bg:#081115; --surface:#0F2129; --surface2:#15303A;
+    --ink:#EAF3F4; --ink2:#9DB4BB; --ink3:#6C868E; --line:#1E3B45;
+    --brand:#8098FF; --brandSoft:#182747;
+    --green:#3DBB77; --amber:#E7A542; --red:#E36868;
+    --board:#06151A; --board2:#0E2830; --boardInk:#6E969E;
+    --boardGreen:#3DE08A; --boardAmber:#FFC24D; --boardRed:#FF7A7A;
+    --mapbg:#0C1E25; --maproute:#22454F; --shadow:rgba(0,0,0,.5);
+  }
+  html[data-theme="sun"]{
+    --bg:#FFFFFF; --surface:#FFFFFF; --surface2:#F2F2F2;
+    --ink:#000000; --ink2:#2A2A2A; --ink3:#555555; --line:#BBBBBB;
+    --brand:#1D33A0; --brandSoft:#D8DEF6;
+    --green:#0B6B3C; --amber:#8F5400; --red:#9E2B2B;
+    --board:#FFFFFF; --board2:#F2F2F2; --boardInk:#333333;
+    --boardGreen:#0B6B3C; --boardAmber:#8F5400; --boardRed:#9E2B2B;
+    --mapbg:#EDEDED; --maproute:#999999; --shadow:rgba(0,0,0,.22);
+  }
+  html[data-theme="sun"] .board{border:2px solid #000;}
+  html[data-theme="sun"] .board .fresh-dot{outline:1px solid #000;}
+
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  body{
+    margin:0; background:
+      radial-gradient(1200px 600px at 50% -10%, color-mix(in srgb,var(--brand) 8%, var(--bg)), var(--bg));
+    min-height:100vh; color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans",sans-serif;
+    display:flex; flex-direction:column; align-items:center; padding:28px 12px 60px;
+    transition:background .3s ease;
+  }
+  .mono{font-family:ui-monospace,"SF Mono","JetBrains Mono","Roboto Mono",monospace;
+    font-variant-numeric:tabular-nums; font-feature-settings:"tnum" 1;}
+
+  .page-head{text-align:center;margin-bottom:18px;max-width:420px}
+  .page-head h1{font-size:15px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink2);margin:0 0 4px;font-weight:650}
+  .page-head p{margin:0;font-size:13px;color:var(--ink3);line-height:1.5}
+
+  /* ── Phone frame ── */
+  .phone{
+    position:relative; width:392px; max-width:100%; height:812px;
+    background:var(--bg); border-radius:44px; overflow:hidden;
+    box-shadow:0 40px 90px -30px var(--shadow), 0 0 0 10px #0a0f12, 0 0 0 11px #1c262b;
+    transition:background .3s ease;
+  }
+  html[data-theme="dark"] .phone{box-shadow:0 40px 90px -30px #000, 0 0 0 10px #05090b, 0 0 0 11px #16202400;}
+  .notch{position:absolute;top:0;left:50%;transform:translateX(-50%);width:130px;height:30px;
+    background:#0a0f12;border-radius:0 0 18px 18px;z-index:60}
+  .statusbar{position:absolute;top:0;left:0;right:0;height:44px;z-index:55;
+    display:flex;align-items:center;justify-content:space-between;padding:0 26px;
+    font-size:13px;font-weight:600;color:var(--ink)}
+  .statusbar .r{display:flex;gap:6px;align-items:center;font-size:12px}
+
+  .screen{position:absolute;inset:0;border-radius:44px;overflow:hidden}
+
+  /* ── Map canvas ── */
+  .map{position:absolute;top:0;left:0;right:0;height:100%;background:var(--mapbg);transition:background .3s}
+  .map svg{position:absolute;inset:0;width:100%;height:100%}
+  .mk-label{position:absolute;font-size:10px;font-weight:600;color:var(--ink2);
+    background:color-mix(in srgb,var(--surface) 78%, transparent);padding:2px 7px;border-radius:999px;
+    backdrop-filter:blur(4px);border:1px solid var(--line);white-space:nowrap}
+
+  /* estimated marker breathes — honesty motion */
+  @keyframes breathe{0%,100%{opacity:.55;transform:scale(.9)}50%{opacity:1;transform:scale(1.12)}}
+  .est-pulse{transform-box:fill-box;transform-origin:center;animation:breathe 2.4s ease-in-out infinite}
+  html.reduce-motion .est-pulse{animation:none;opacity:.9}
+
+  /* ── Sheet over map ── */
+  .sheet{
+    position:absolute;left:0;right:0;bottom:0; z-index:20;
+    background:color-mix(in srgb,var(--surface) 94%, transparent);
+    backdrop-filter:blur(18px) saturate(1.1);
+    border-radius:26px 26px 0 0; box-shadow:0 -18px 50px -20px var(--shadow);
+    display:flex;flex-direction:column;
+    height:360px; transition:height .34s cubic-bezier(.2,.8,.2,1);
+    border-top:1px solid var(--line);
+  }
+  .sheet.dragging{transition:none}
+  .grab-wrap{padding:9px 0 3px;display:flex;justify-content:center;cursor:grab;touch-action:none}
+  .grab{width:38px;height:5px;border-radius:999px;background:var(--ink3);opacity:.55}
+  .sheet-scroll{flex:1;overflow-y:auto;overflow-x:hidden;padding:2px 16px 8px;
+    -webkit-overflow-scrolling:touch}
+  .sheet-scroll::-webkit-scrollbar{width:0}
+
+  .jhead{display:flex;align-items:center;gap:10px;padding:2px 2px 12px}
+  .jhead .ic{width:38px;height:38px;border-radius:12px;border:1px solid var(--line);
+    background:var(--surface);display:flex;align-items:center;justify-content:center;
+    font-size:17px;color:var(--ink);cursor:pointer;flex:none}
+  .jhead .tt{flex:1;min-width:0}
+  .jhead .tt b{display:block;font-size:16px;font-weight:650;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .jhead .tt span{font-size:12px;color:var(--ink3)}
+
+  /* ── Board hero ── */
+  .board{background:var(--board);border-radius:16px;padding:16px 16px 14px;position:relative;
+    box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--boardInk) 22%, transparent);
+    overflow:hidden;transition:background .45s ease}
+  .board.cond{padding:12px 16px 12px}
+  .board .live{position:absolute;top:14px;right:14px;font-size:10px;font-weight:700;letter-spacing:.1em;
+    color:var(--boardInk);display:flex;align-items:center;gap:6px}
+  .fresh-dot{width:8px;height:8px;border-radius:50%;background:var(--boardGreen);
+    box-shadow:0 0 8px var(--boardGreen)}
+  .fresh-dot.stale{background:var(--boardInk);box-shadow:none}
+
+  .fact-wrap{height:52px;overflow:hidden;position:relative}
+  .board.cond .fact-wrap{height:34px}
+  .fact{font-size:40px;line-height:52px;font-weight:600;letter-spacing:-.01em;color:#fff;
+    display:flex;align-items:center;gap:10px;transition:color .42s ease}
+  html[data-theme="sun"] .fact{color:#000}
+  .board.cond .fact{font-size:26px;line-height:34px}
+  .fact .gl{font-size:.8em}
+  .fact.green{color:var(--boardGreen)} .fact.amber{color:var(--boardAmber)} .fact.red{color:var(--boardRed)}
+
+  @keyframes rollOut{to{transform:translateY(-100%);opacity:0}}
+  @keyframes rollIn{from{transform:translateY(100%);opacity:0}to{transform:translateY(0);opacity:1}}
+  .roll-out{animation:rollOut .42s cubic-bezier(.3,.7,.2,1) forwards}
+  .roll-in{animation:rollIn .42s cubic-bezier(.3,.7,.2,1) forwards}
+  html.reduce-motion .roll-out,html.reduce-motion .roll-in{animation:none}
+
+  .conseq{color:#fff;opacity:.96;font-size:15px;font-weight:500;margin-top:2px;line-height:1.4}
+  html[data-theme="sun"] .conseq{color:#000}
+  .board.cond .conseq{font-size:13px}
+  .conseq .est{border-bottom:1.5px dashed color-mix(in srgb,var(--boardInk) 90%,transparent);padding-bottom:1px}
+  .metaline{display:flex;align-items:center;gap:10px;margin-top:10px;flex-wrap:wrap}
+  .chip{font-size:11.5px;font-weight:600;color:var(--boardInk);
+    border:1px solid color-mix(in srgb,var(--boardInk) 35%,transparent);
+    border-radius:999px;padding:3px 9px}
+  .freshtxt{font-size:11.5px;color:var(--boardInk);display:flex;align-items:center;gap:6px}
+
+  /* mini spine */
+  .minispine{display:flex;align-items:center;gap:0;margin-top:13px;color:var(--boardInk);font-size:11px}
+  .minispine .end{font-weight:700;color:#fff;font-size:11px}
+  html[data-theme="sun"] .minispine .end{color:#000}
+  .track{flex:1;height:3px;margin:0 8px;border-radius:2px;position:relative;
+    background:color-mix(in srgb,var(--boardInk) 30%,transparent)}
+  .track .done{position:absolute;left:0;top:0;bottom:0;background:var(--boardGreen);border-radius:2px}
+  .track .you{position:absolute;top:50%;width:11px;height:11px;border-radius:50%;
+    background:#fff;border:3px solid var(--boardGreen);transform:translate(-50%,-50%)}
+
+  .amberbanner{margin-top:11px;background:color-mix(in srgb,var(--amber) 16%,transparent);
+    border:1px solid color-mix(in srgb,var(--amber) 45%,transparent);border-radius:11px;
+    padding:9px 11px;font-size:12.5px;color:var(--amber);display:none;gap:8px;align-items:flex-start}
+  .amberbanner.show{display:flex}
+
+  /* ── detail sections (timeline detent) ── */
+  .detail{margin-top:16px;display:none;flex-direction:column;gap:14px}
+  .sheet[data-detent="timeline"] .detail{display:flex}
+  .sec-h{font-size:12px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--ink3);margin:2px 0 -2px}
+
+  /* spine */
+  .spine{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:6px 4px}
+  .snode{display:grid;grid-template-columns:26px 1fr auto;align-items:start;padding:9px 12px 9px 8px;position:relative}
+  .snode .rail{position:relative;display:flex;justify-content:center}
+  .snode .rail::before{content:"";position:absolute;top:-9px;bottom:-9px;width:2px;background:var(--line)}
+  .snode:first-child .rail::before{top:14px}
+  .snode:last-child .rail::before{bottom:auto;height:14px}
+  .dot{width:13px;height:13px;border-radius:50%;background:var(--surface);border:2px solid var(--ink3);z-index:2;margin-top:2px}
+  .dot.done{background:var(--green);border-color:var(--green)}
+  .dot.you{background:var(--surface);border-color:var(--green);box-shadow:0 0 0 4px color-mix(in srgb,var(--green) 22%,transparent)}
+  .dot.your{background:var(--brand);border-color:var(--brand)}
+  .snode .nm{font-size:14.5px;font-weight:600;line-height:1.25}
+  .snode .sub{font-size:11.5px;color:var(--ink3);margin-top:2px}
+  .snode .sub s{color:var(--ink3);opacity:.7}
+  .snode .tm{text-align:right;font-size:13px;font-weight:600}
+  .snode .tm .est{color:var(--ink2)}
+  .snode.yourstop{background:color-mix(in srgb,var(--brand) 6%,transparent);border-radius:12px}
+  .snode.yourstop .nm{color:var(--brand)}
+  .star{color:var(--brand);font-size:12px;font-weight:700}
+  .youline{display:grid;grid-template-columns:26px 1fr;align-items:center;padding:2px 12px 2px 8px}
+  .youline .rail{position:relative;display:flex;justify-content:center}
+  .youline .rail::before{content:"";position:absolute;top:-10px;bottom:-10px;width:2px;background:var(--line)}
+  .youdot{width:15px;height:15px;border-radius:50%;background:var(--surface);border:3px solid var(--green);z-index:2;
+    box-shadow:0 0 0 4px color-mix(in srgb,var(--green) 20%,transparent)}
+  .youtxt{font-size:12px;color:var(--green);font-weight:600}
+  .daypill{text-align:center;margin:6px 0}
+  .daypill span{font-size:10.5px;font-weight:700;letter-spacing:.08em;color:var(--ink3);
+    background:var(--surface2);padding:3px 10px;border-radius:999px}
+  .more{font-size:12.5px;color:var(--brand);font-weight:600;padding:9px 12px;cursor:pointer}
+
+  /* stand here */
+  .stand{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px}
+  .stand .ans{font-size:15px;font-weight:650;line-height:1.35}
+  .stand .ans b{color:var(--brand)}
+  .stand .approach{font-size:11.5px;color:var(--ink3);margin:6px 0 8px;display:flex;align-items:center;gap:5px}
+  .platform-edge{height:4px;border-radius:2px;background:repeating-linear-gradient(90deg,var(--ink3) 0 10px,transparent 10px 16px);margin:6px 0 10px;opacity:.6}
+  .coaches{display:flex;gap:5px;overflow-x:auto;padding-bottom:6px}
+  .coach{flex:none;min-width:40px;height:38px;border-radius:9px;background:var(--surface2);
+    border:1px solid var(--line);display:flex;align-items:center;justify-content:center;
+    font-size:12px;font-weight:700;color:var(--ink2);position:relative;transition:.2s}
+  .coach.mine{background:var(--brand);color:#fff;border-color:var(--brand);box-shadow:0 4px 12px -4px var(--brand)}
+  .coach.gen.on{background:color-mix(in srgb,var(--green) 20%,transparent);border-color:var(--green);color:var(--green)}
+  .coach .eng{font-size:14px}
+  .fmr{display:flex;justify-content:space-between;font-size:10px;color:var(--ink3);margin-top:3px;padding:0 2px}
+  .rev{margin-top:11px;background:color-mix(in srgb,var(--amber) 13%,transparent);
+    border-radius:10px;padding:9px 11px;font-size:12px;color:var(--amber);display:flex;gap:7px;align-items:flex-start}
+  .genbtn{margin-top:11px;width:100%;padding:10px;border-radius:11px;border:1px solid var(--line);
+    background:var(--surface2);color:var(--ink);font-size:13px;font-weight:600;cursor:pointer;transition:.2s}
+  .genbtn.on{background:color-mix(in srgb,var(--green) 15%,transparent);border-color:var(--green);color:var(--green)}
+
+  /* pass */
+  .pass{background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+  .pass .top{padding:13px 15px;display:flex;justify-content:space-between;align-items:center}
+  .pass .pnr{font-size:15px;font-weight:700}
+  .pass .cnf{font-size:11px;font-weight:700;color:var(--green);
+    background:color-mix(in srgb,var(--green) 14%,transparent);padding:4px 9px;border-radius:999px}
+  .pass .route{padding:0 15px 12px;font-size:12.5px;color:var(--ink2)}
+  .perf{border-top:2px dashed var(--line);position:relative}
+  .perf::before,.perf::after{content:"";position:absolute;top:-9px;width:16px;height:16px;border-radius:50%;background:var(--bg)}
+  .perf::before{left:-8px}.perf::after{right:-8px}
+  .prow{display:flex;justify-content:space-between;align-items:center;padding:10px 15px;font-size:13px;border-top:1px solid var(--line)}
+  .prow:first-of-type{border-top:none}
+  .prow .who{font-weight:600}.prow .seat{color:var(--ink2);font-size:12px}
+  .prow .st{font-size:11.5px;font-weight:700}
+  .st.cnf{color:var(--green)} .st.wl{color:var(--amber)}
+  .pred{font-size:11px;color:var(--ink3);padding:0 15px 8px;margin-top:-4px}
+  .privacy{padding:10px 15px 13px;font-size:11px;color:var(--ink3);line-height:1.45;border-top:1px solid var(--line)}
+
+  /* ── action dock ── */
+  .dock{padding:10px 16px calc(14px + env(safe-area-inset-bottom));display:flex;gap:10px;
+    border-top:1px solid var(--line);background:color-mix(in srgb,var(--surface) 90%,transparent);
+    backdrop-filter:blur(10px)}
+  .primary{flex:1;padding:15px;border-radius:14px;border:none;background:var(--brand);color:#fff;
+    font-size:15px;font-weight:650;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;
+    transition:.2s;box-shadow:0 8px 20px -8px var(--brand)}
+  .primary:active{transform:scale(.98)}
+  .primary.set{background:var(--surface2);color:var(--green);box-shadow:none;border:1px solid var(--green)}
+  .primary.rescue{background:var(--red);box-shadow:0 8px 20px -8px var(--red)}
+  .ovf{width:52px;border-radius:14px;border:1px solid var(--line);background:var(--surface);
+    color:var(--ink);font-size:20px;cursor:pointer;flex:none}
+
+  /* haptic flash */
+  @keyframes buzz{0%,100%{transform:translate(0,0)}25%{transform:translate(-1px,1px)}75%{transform:translate(1px,-1px)}}
+  .phone.buzz{animation:buzz .18s linear 2}
+
+  .hint{position:absolute;top:52px;left:50%;transform:translateX(-50%);z-index:40;
+    background:color-mix(in srgb,var(--ink) 88%,transparent);color:var(--bg);font-size:11px;font-weight:600;
+    padding:6px 12px;border-radius:999px;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap}
+  .hint.show{opacity:1}
+
+  /* ── demo controls (outside device) ── */
+  .controls{margin-top:22px;width:392px;max-width:100%;background:var(--surface);border:1px solid var(--line);
+    border-radius:18px;padding:14px 16px;box-shadow:0 20px 50px -30px var(--shadow)}
+  .controls h2{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink3);margin:0 0 3px}
+  .controls .cap{font-size:12px;color:var(--ink3);margin:0 0 12px;line-height:1.5}
+  .cgrid{display:flex;flex-wrap:wrap;gap:8px}
+  .cbtn{padding:9px 13px;border-radius:11px;border:1px solid var(--line);background:var(--surface2);
+    color:var(--ink);font-size:13px;font-weight:600;cursor:pointer;transition:.15s}
+  .cbtn:hover{border-color:var(--brand);color:var(--brand)}
+  .cbtn.active{background:var(--brand);color:#fff;border-color:var(--brand)}
+  .seg{display:inline-flex;background:var(--surface2);border-radius:11px;padding:3px;border:1px solid var(--line)}
+  .seg button{border:none;background:transparent;padding:7px 12px;border-radius:8px;font-size:12.5px;
+    font-weight:600;color:var(--ink2);cursor:pointer}
+  .seg button.on{background:var(--surface);color:var(--ink);box-shadow:0 1px 3px var(--shadow)}
+  .row{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:11px;flex-wrap:wrap}
+  .row .lbl{font-size:13px;font-weight:600;color:var(--ink2)}
+  .foot{margin-top:14px;font-size:11px;color:var(--ink3);text-align:center;max-width:392px;line-height:1.5}
+</style>
+</head>
+<body>
+
+<div class="page-head">
+  <h1>Railcast · Journey Surface</h1>
+  <p>Interactive prototype. Drag the grabber (or tap it) to move between the three detents: Glance · Timeline · Full&nbsp;map.</p>
+</div>
+
+<div class="phone" id="phone">
+  <div class="notch"></div>
+  <div class="statusbar">
+    <span class="mono">9:41</span>
+    <span class="r"><span>●●●</span><span>Wi-Fi</span><span class="mono">78%</span></span>
+  </div>
+  <div class="hint" id="hint"></div>
+
+  <div class="screen">
+    <!-- MAP CANVAS -->
+    <div class="map" id="map">
+      <svg viewBox="0 0 392 812" preserveAspectRatio="xMidYMid slice">
+        <path d="M40,150 C120,120 150,250 230,240 S360,360 360,470"
+              fill="none" stroke="var(--maproute)" stroke-width="4" stroke-linecap="round" stroke-dasharray="0"/>
+        <path id="donepath" d="M40,150 C120,120 150,250 230,240"
+              fill="none" stroke="var(--boardGreen)" stroke-width="4" stroke-linecap="round"/>
+        <!-- stations -->
+        <circle cx="40" cy="150" r="5" fill="var(--maproute)"/>
+        <circle cx="230" cy="240" r="5" fill="var(--boardGreen)"/>
+        <circle cx="360" cy="470" r="6" fill="none" stroke="var(--maproute)" stroke-width="3"/>
+        <!-- estimated marker -->
+        <g id="estmarker">
+          <circle class="est-pulse" cx="285" cy="290" r="13" fill="color-mix(in srgb, var(--boardGreen) 30%, transparent)"/>
+          <circle cx="285" cy="290" r="6" fill="var(--boardGreen)" stroke="#fff" stroke-width="2"/>
+        </g>
+      </svg>
+      <div class="mk-label" style="left:20px;top:130px">NDLS</div>
+      <div class="mk-label" style="left:196px;top:255px">Itarsi</div>
+      <div class="mk-label" style="left:300px;top:300px;color:var(--green)">◐ estimated</div>
+      <div class="mk-label" style="left:330px;top:452px">BPL ★</div>
+    </div>
+
+    <!-- SHEET -->
+    <div class="sheet" id="sheet" data-detent="glance">
+      <div class="grab-wrap" id="grab"><div class="grab"></div></div>
+      <div class="sheet-scroll" id="scroll">
+
+        <div class="jhead">
+          <div class="ic" title="Back to Journeys" onclick="cycleDetent()">⌂</div>
+          <div class="tt"><b>12952 · Tejas Rajdhani</b><span>New Delhi → Bhopal</span></div>
+          <div class="ic" title="More">⋯</div>
+        </div>
+
+        <!-- BOARD HERO -->
+        <div class="board" id="board">
+          <div class="live"><span id="livew">LIVE</span><span class="fresh-dot" id="fdot"></span></div>
+          <div class="fact-wrap"><div class="fact amber" id="fact"><span class="gl">▶</span><span id="factxt">12 min late</span></div></div>
+          <div class="conseq" id="conseq">You reach Bhopal <span class="est">~16:49</span> · Platform 4</div>
+          <div class="metaline">
+            <span class="chip" id="runchip">Started yesterday</span>
+            <span class="freshtxt"><span class="fresh-dot" style="width:6px;height:6px"></span><span id="fresh">live · updated 40s ago</span></span>
+          </div>
+          <div class="amberbanner" id="amber"><span>⚠</span><span>Diverted via Bina — expect ~25 min extra. Plain-language reason shown here.</span></div>
+          <div class="minispine" id="mspine">
+            <span class="end">NDLS</span>
+            <div class="track"><div class="done" style="width:52%"></div><div class="you" style="left:52%"></div></div>
+            <span class="end">BPL</span>
+          </div>
+        </div>
+
+        <!-- DETAIL (timeline detent) -->
+        <div class="detail">
+          <div>
+            <div class="sec-h">Journey timeline</div>
+            <div class="spine" style="margin-top:8px">
+              <div class="daypill"><span>— Day 1 · yesterday —</span></div>
+              <div class="snode">
+                <div class="rail"><div class="dot done"></div></div>
+                <div><div class="nm">New Delhi · NDLS</div><div class="sub mono">Departed <s>17:55</s> 17:58 · Plat 16</div></div>
+                <div class="tm mono">17:58 ✓</div>
+              </div>
+              <div class="daypill"><span>— Day 2 · today —</span></div>
+              <div class="snode">
+                <div class="rail"><div class="dot done"></div></div>
+                <div><div class="nm">Itarsi Jn · ET</div><div class="sub mono"><s>15:50</s> → 16:02 · Plat 3</div></div>
+                <div class="tm mono">16:02 ✓</div>
+              </div>
+              <div class="youline">
+                <div class="rail"><div class="youdot"></div></div>
+                <div class="youtxt">◐ You are here — ~between Itarsi and Hoshangabad · estimated</div>
+              </div>
+              <div class="snode">
+                <div class="rail"><div class="dot"></div></div>
+                <div><div class="nm">Hoshangabad · HBD</div><div class="sub mono">ETA · Plat 1</div></div>
+                <div class="tm mono"><span class="est">~16:31</span></div>
+              </div>
+              <div class="snode yourstop">
+                <div class="rail"><div class="dot your"></div></div>
+                <div><div class="nm">Bhopal · BPL <span class="star">★ your stop</span></div><div class="sub" id="alarmsub">alarm not set</div></div>
+                <div class="tm mono"><span class="est" id="bpleta">~16:49</span></div>
+              </div>
+              <div class="more">▾ 6 more stops to terminus</div>
+            </div>
+          </div>
+
+          <!-- STAND HERE -->
+          <div>
+            <div class="sec-h">Stand here · coach guide</div>
+            <div class="stand" style="margin-top:8px">
+              <div class="ans">Your coach <b>B4</b> stops near the <b>front</b> of the platform.</div>
+              <div class="approach">▶ train approaches this way</div>
+              <div class="platform-edge"></div>
+              <div class="coaches" id="coaches">
+                <div class="coach"><span class="eng">🚂</span></div>
+                <div class="coach">A1</div>
+                <div class="coach mine">B4★</div>
+                <div class="coach">B3</div>
+                <div class="coach">SL</div>
+                <div class="coach gen">GEN</div>
+                <div class="coach gen">GEN</div>
+              </div>
+              <div class="fmr"><span>front</span><span>middle</span><span>rear</span></div>
+              <div class="rev"><span>↺</span><span>Reverses at Itarsi — after that, your coach is now toward the front.</span></div>
+              <button class="genbtn" id="genbtn" onclick="toggleGen()">⛃ Show GEN coach positions</button>
+            </div>
+          </div>
+
+          <!-- PASS -->
+          <div>
+            <div class="sec-h">Your ticket</div>
+            <div class="pass" style="margin-top:8px">
+              <div class="top"><span class="pnr mono">••••2882</span><span class="cnf">✅ CNF · CHART</span></div>
+              <div class="route mono">NDLS → BPL · Sat 26 Jul · 3A · Booking (GN)</div>
+              <div class="perf"></div>
+              <div class="prow"><div><div class="who">P1</div><div class="seat mono">B4 · 32 · Lower</div></div><div class="st cnf">✅ CNF</div></div>
+              <div class="prow"><div><div class="who">P2</div><div class="seat mono">B4 · 35 · Side Upper</div></div><div class="st wl">⚠ WL 4</div></div>
+              <div class="pred">P2 · ~72% likely to confirm (based on last 60 runs) — labelled prediction</div>
+              <div class="privacy">🔒 Shown masked · encrypted at rest · auto-deleted after your journey. <span style="color:var(--brand)">Privacy note ›</span></div>
+            </div>
+          </div>
+          <div style="height:6px"></div>
+        </div>
+
+      </div>
+
+      <!-- ACTION DOCK -->
+      <div class="dock">
+        <button class="primary" id="primary" onclick="primaryTap()"><span id="primic">🔔</span><span id="primtxt">Set arrival alarm</span></button>
+        <button class="ovf" title="More actions" onclick="flash('Share · Mute · Report wrong info · Unsave')">⋯</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DEMO CONTROLS -->
+<div class="controls">
+  <h2>Prototype controls</h2>
+  <p class="cap">These aren't part of the app — they let you trigger live states a reviewer can't otherwise reach.</p>
+  <div class="row">
+    <span class="lbl">Theme</span>
+    <div class="seg" id="themeseg">
+      <button class="on" onclick="setTheme('light',this)">Light</button>
+      <button onclick="setTheme('dark',this)">Dark</button>
+      <button onclick="setTheme('sun',this)">Sunlight ☀</button>
+    </div>
+  </div>
+  <div class="row">
+    <span class="lbl">Detent</span>
+    <div class="seg" id="detseg">
+      <button class="on" onclick="setDetent('glance',this)">Glance</button>
+      <button onclick="setDetent('timeline',this)">Timeline</button>
+      <button onclick="setDetent('full',this)">Full map</button>
+    </div>
+  </div>
+  <div class="cgrid">
+    <button class="cbtn" onclick="simulateDelay()">▶ Simulate delay update (12→18)</button>
+    <button class="cbtn" id="cancelbtn" onclick="toggleCancel()">⛔ Toggle cancellation</button>
+    <button class="cbtn" onclick="toggleReduce(this)">Reduced motion</button>
+    <button class="cbtn" onclick="resetAll()">↺ Reset</button>
+  </div>
+</div>
+
+<p class="foot">Faithful to the redesign spec: sheet-over-map · Board hero with flap-roll · consequence line · confidence rendering (dashed = estimated, breathing marker) · unified spine with your-stop ★ · Stand&nbsp;Here · PNR pass · state-chosen action dock · Light / Dark / Sunlight. No external dependencies.</p>
+
+<script>
+"use strict";
+var S = { detent:"glance", delay:12, alarmSet:false, cancelled:false, gen:false };
+var sheet = document.getElementById("sheet");
+var scroll = document.getElementById("scroll");
+
+/* ── haptic + hint ── */
+var hintT;
+function flash(msg){
+  var h=document.getElementById("hint"); h.textContent=msg; h.classList.add("show");
+  clearTimeout(hintT); hintT=setTimeout(function(){h.classList.remove("show");},1600);
+}
+function haptic(){
+  if(document.documentElement.classList.contains("reduce-motion")) return;
+  var p=document.getElementById("phone"); p.classList.remove("buzz"); void p.offsetWidth; p.classList.add("buzz");
+}
+
+/* ── detents ── */
+var HEIGHTS={glance:360,timeline:690,full:96};
+function applyDetent(name){
+  S.detent=name;
+  sheet.dataset.detent = (name==="timeline")?"timeline":(name==="full"?"full":"glance");
+  sheet.style.height=HEIGHTS[name]+"px";
+  document.getElementById("board").classList.toggle("cond", name==="timeline");
+  if(name!=="timeline") scroll.scrollTop=0;
+  // sync segmented control
+  var segs=document.querySelectorAll("#detseg button");
+  var order=["glance","timeline","full"];
+  segs.forEach(function(b,i){b.classList.toggle("on",order[i]===name);});
+}
+function setDetent(name,btn){ applyDetent(name);
+  if(btn){var s=btn.parentNode.querySelectorAll("button");s.forEach(function(b){b.classList.remove("on");});btn.classList.add("on");}
+}
+function cycleDetent(){
+  var order=["glance","timeline","full"];
+  applyDetent(order[(order.indexOf(S.detent)+1)%3]);
+  flash("Detent: "+S.detent);
+}
+
+/* ── drag the grabber ── */
+(function(){
+  var grab=document.getElementById("grab"), startY=0, startH=0, dragging=false, moved=0;
+  function down(e){dragging=true;moved=0;startY=(e.touches?e.touches[0].clientY:e.clientY);
+    startH=sheet.getBoundingClientRect().height;sheet.classList.add("dragging");
+    document.addEventListener("mousemove",move);document.addEventListener("mouseup",up);
+    document.addEventListener("touchmove",move,{passive:false});document.addEventListener("touchend",up);}
+  function move(e){if(!dragging)return; if(e.cancelable)e.preventDefault();
+    var y=(e.touches?e.touches[0].clientY:e.clientY); var d=startY-y; moved=Math.abs(d);
+    var h=Math.min(720,Math.max(96,startH+d)); sheet.style.height=h+"px";}
+  function up(){if(!dragging)return;dragging=false;sheet.classList.remove("dragging");
+    document.removeEventListener("mousemove",move);document.removeEventListener("mouseup",up);
+    document.removeEventListener("touchmove",move);document.removeEventListener("touchend",up);
+    if(moved<6){cycleDetent();return;}
+    var h=sheet.getBoundingClientRect().height;
+    var best="glance",bd=1e9;
+    for(var k in HEIGHTS){var dd=Math.abs(HEIGHTS[k]-h);if(dd<bd){bd=dd;best=k;}}
+    applyDetent(best);
+  }
+  grab.addEventListener("mousedown",down); grab.addEventListener("touchstart",down,{passive:true});
+})();
+
+/* ── flap-roll a fact string ── */
+function rollFact(newText){
+  var txt=document.getElementById("factxt");
+  if(document.documentElement.classList.contains("reduce-motion")){txt.textContent=newText;return;}
+  var old=txt.cloneNode(true); old.classList.add("roll-out");
+  txt.parentNode.appendChild(old);
+  txt.textContent=newText; txt.classList.remove("roll-in"); void txt.offsetWidth; txt.classList.add("roll-in");
+  setTimeout(function(){ if(old.parentNode) old.parentNode.removeChild(old); },440);
+}
+
+/* ── recompute the board from state ── */
+function render(){
+  var fact=document.getElementById("fact");
+  var conseq=document.getElementById("conseq");
+  var prim=document.getElementById("primary");
+  var primt=document.getElementById("primtxt");
+  var primi=document.getElementById("primic");
+  if(S.cancelled){
+    fact.className="fact red";
+    fact.querySelector(".gl").textContent="⛔";
+    document.getElementById("factxt").textContent="Cancelled";
+    conseq.innerHTML="This train won't run today — let's find you another.";
+    document.getElementById("mspine").style.opacity=".4";
+    prim.className="primary rescue"; primi.textContent="→"; primt.textContent="Find alternatives";
+    document.getElementById("livew").textContent="ALERT";
+    return;
+  }
+  document.getElementById("mspine").style.opacity="1";
+  document.getElementById("livew").textContent="LIVE";
+  fact.className="fact amber";
+  fact.querySelector(".gl").textContent="▶";
+  // arrival = 16:37 sched + delay
+  var arr=16*60+37+S.delay; var hh=Math.floor(arr/60), mm=arr%60;
+  var arrs=("0"+hh).slice(-2)+":"+("0"+mm).slice(-2);
+  conseq.innerHTML="You reach Bhopal <span class='est'>~"+arrs+"</span> · Platform 4";
+  document.getElementById("bpleta").textContent="~"+arrs;
+  if(S.alarmSet){
+    prim.className="primary set"; primi.textContent="✓"; primt.textContent="Alarm set · edit";
+    document.getElementById("alarmsub").textContent="your stop · alarm set for 10 min before";
+  }else{
+    prim.className="primary"; primi.textContent="🔔"; primt.textContent="Set arrival alarm";
+    document.getElementById("alarmsub").textContent="alarm not set";
+  }
+}
+
+/* ── interactions ── */
+function primaryTap(){
+  if(S.cancelled){ flash("→ Plan: alternatives on NDLS → BPL, sorted by seats"); haptic(); return; }
+  S.alarmSet=!S.alarmSet; haptic(); render();
+  flash(S.alarmSet?"Arrival alarm set — wakes you 10 min before Bhopal":"Alarm cleared");
+}
+function simulateDelay(){
+  if(S.cancelled) return;
+  S.delay = (S.delay===12)?18:12;
+  rollFact(S.delay+" min late"); haptic(); render();
+  document.getElementById("fresh").textContent="live · updated just now";
+  flash("Live update · now "+S.delay+" min late");
+}
+function toggleCancel(){
+  S.cancelled=!S.cancelled;
+  document.getElementById("cancelbtn").classList.toggle("active",S.cancelled);
+  var board=document.getElementById("board");
+  board.style.background = S.cancelled? "color-mix(in srgb, var(--red) 22%, var(--board))" : "";
+  rollFact(S.cancelled?"Cancelled":S.delay+" min late");
+  document.getElementById("fdot").classList.toggle("stale",S.cancelled);
+  haptic(); setTimeout(haptic,140); render();
+  flash(S.cancelled?"⛔ 12952 cancelled — bad-day flow":"Restored to running");
+}
+function toggleGen(){
+  S.gen=!S.gen;
+  document.querySelectorAll("#coaches .coach.gen").forEach(function(c){c.classList.toggle("on",S.gen);});
+  document.getElementById("genbtn").classList.toggle("on",S.gen);
+  document.getElementById("genbtn").textContent = S.gen? "⛃ Hide GEN coach positions" : "⛃ Show GEN coach positions";
+  haptic();
+}
+function setTheme(name,btn){
+  document.documentElement.dataset.theme = name==="light"?"":name;
+  if(name==="dark") document.documentElement.setAttribute("data-theme","dark");
+  else if(name==="sun") document.documentElement.setAttribute("data-theme","sun");
+  else document.documentElement.removeAttribute("data-theme");
+  document.querySelectorAll("#themeseg button").forEach(function(b){b.classList.remove("on");});
+  if(btn) btn.classList.add("on");
+}
+function toggleReduce(btn){
+  document.documentElement.classList.toggle("reduce-motion");
+  btn.classList.toggle("active");
+  flash(document.documentElement.classList.contains("reduce-motion")?"Reduced motion ON":"Reduced motion OFF");
+}
+function resetAll(){
+  S={detent:"glance",delay:12,alarmSet:false,cancelled:false,gen:false};
+  document.getElementById("board").style.background="";
+  document.getElementById("fdot").classList.remove("stale");
+  document.getElementById("cancelbtn").classList.remove("active");
+  document.getElementById("fresh").textContent="live · updated 40s ago";
+  document.getElementById("factxt").textContent="12 min late";
+  if(S.gen) toggleGen();
+  document.querySelectorAll("#coaches .coach.gen").forEach(function(c){c.classList.remove("on");});
+  document.getElementById("genbtn").classList.remove("on");
+  document.getElementById("genbtn").textContent="⛃ Show GEN coach positions";
+  applyDetent("glance"); render(); flash("Reset");
+}
+
+/* init */
+applyDetent("glance");
+render();
+</script>
+</body>
+</html>
