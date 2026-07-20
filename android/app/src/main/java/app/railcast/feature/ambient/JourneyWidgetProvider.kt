@@ -38,8 +38,14 @@ class JourneyWidgetProvider : AppWidgetProvider() {
         appWidgetManager: AppWidgetManager,
         appWidgetIds: IntArray,
     ) {
+        // A throw inside onReceive kills the whole process, so a widget that
+        // cannot render must degrade to the invitation rather than take the app
+        // down with it. The known hazard is direct boot (AmbientRepository
+        // guards it); this is the backstop for the ones we have not met.
+        val state = runCatching { AmbientRepository.currentState(context) }
+            .getOrDefault(AmbientState.Invitation)
         for (id in appWidgetIds) {
-            appWidgetManager.updateAppWidget(id, buildViews(context, AmbientRepository.currentState(context)))
+            runCatching { appWidgetManager.updateAppWidget(id, buildViews(context, state)) }
         }
     }
 

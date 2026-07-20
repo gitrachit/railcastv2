@@ -23,8 +23,26 @@ object AmbientRepository {
     private const val KEY_UPDATED_AT = "updated_at"
     private const val KEY_PREFIX = "j0_"
 
-    private fun prefs(context: Context) =
-        context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+    /**
+     * Null before the device is unlocked.
+     *
+     * Credential-encrypted storage does not exist until the user unlocks, and
+     * `getSharedPreferences` throws `IllegalStateException` if you ask for it
+     * during direct boot. [JourneyWidgetProvider] is a BroadcastReceiver, so it
+     * CAN be invoked in that window — `ACTION_APPWIDGET_UPDATE` after a reboot —
+     * and an uncaught throw in `onReceive` is a boot-time crash, not a missing
+     * widget.
+     *
+     * Device-protected storage would survive the window, but a journey snapshot
+     * does not belong there: it names the user's train and destination, and
+     * that storage is readable before authentication. Rendering the invitation
+     * until unlock is the correct trade.
+     */
+    private fun prefs(context: Context): android.content.SharedPreferences? {
+        val userManager = context.getSystemService(android.os.UserManager::class.java)
+        if (userManager != null && !userManager.isUserUnlocked) return null
+        return runCatching { context.getSharedPreferences(PREFS, Context.MODE_PRIVATE) }.getOrNull()
+    }
 
     /**
      * Persists the resolved journey. Only the chosen one is stored — the widget
@@ -32,7 +50,7 @@ object AmbientRepository {
      * read on every redraw.
      */
     fun writeSnapshot(context: Context, journeys: List<AmbientJourney>, nowMs: Long = System.currentTimeMillis()) {
-        val editor = prefs(context).edit()
+        val editor = prefs(context)?.edit() ?: return
         editor.putInt(KEY_COUNT, journeys.size)
         editor.putLong(KEY_UPDATED_AT, nowMs)
         when (val state = Ambient.resolve(journeys)) {
@@ -55,7 +73,7 @@ object AmbientRepository {
 
     /** What the widget should render right now, from the last snapshot. */
     fun currentState(context: Context): AmbientState {
-        val p = prefs(context)
+        val p = prefs(context) ?: return AmbientState.Invitation
         val no = p.getString(KEY_PREFIX + "no", null) ?: return AmbientState.Invitation
         val journey = AmbientJourney(
             trainNo = no,
@@ -74,14 +92,14 @@ object AmbientRepository {
 
     /** Age of the snapshot. Drives the mandatory freshness stamp (FR-2.5). */
     fun ageSeconds(context: Context, nowMs: Long = System.currentTimeMillis()): Long {
-        val updated = prefs(context).getLong(KEY_UPDATED_AT, 0L)
+        val updated = prefs(context)?.getLong(KEY_UPDATED_AT, 0L) ?: 0L
         if (updated <= 0L) return Long.MAX_VALUE / 1000
         return ((nowMs - updated).coerceAtLeast(0L)) / 1000
     }
 
     /** Journey ended or was removed — clear rather than leave a stale answer. */
     fun clear(context: Context) {
-        prefs(context).edit().clear().apply()
+        prefs(context)?.edit()?.clear()?.apply()
         JourneyWidgetProvider.refresh(context)
     }
 }
