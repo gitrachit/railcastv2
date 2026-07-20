@@ -122,7 +122,19 @@ Negative tracking on large sizes only — it tightens display type optically, an
 
 ### 2.4 Scaling
 
-All sizes in `sp`, honouring OS text size (FR-10.3). Layouts must reflow, not clip, to **200%**. Concretely: no fixed-height text containers, no `maxLines` without `ellipsis`, and every card sized by content. The board hero and status chips are verified at 200% as part of the a11y pass.
+All sizes in `sp`, honouring OS text size (FR-10.3).
+
+**Known deviation — the app currently caps text scaling at 1.3×.** `RailcastTheme` clamps `LocalDensity.fontScale` to `MAX_FONT_SCALE = 1.3f` app-wide, because past that point existing layouts clip. So a user who sets 200% system text receives 130%.
+
+This is a deliberate trade that is nonetheless **an accessibility failure**, and it should not be described as anything else:
+
+- WCAG 2.2 **1.4.4 Resize text** requires 200% without loss of content or function. The clamp does not meet it.
+- FR-10.3 requires OS text-size "honoured with reflow". The clamp honours it only up to 130%.
+- The users most affected are exactly persona P1 (elderly, vernacular-first) — the primary persona.
+
+**The correct fix is reflow, not clamping**: no fixed-height text containers, no `maxLines` without `ellipsis`, every card sized by content, and horizontal rows that wrap to vertical stacks past a threshold. That is per-screen work across all features and is tracked as its own change — it must not be done by simply raising the constant, which would trade clipping for silent content loss.
+
+Until then, this system does **not** claim 1.4.4 conformance. See §9.2.
 
 ---
 
@@ -171,10 +183,28 @@ enum class Confidence { CERTAIN, ESTIMATED, STALE, UNKNOWN }
 
 | Level | Meaning | Render | Copy |
 |---|---|---|---|
-| `CERTAIN` | Observed and fresh | Full opacity, crisp edge, mono numerals | `16:49` |
-| `ESTIMATED` | Interpolated or predicted | 60% opacity ink, dashed edge, slow breathe | `~16:49` |
-| `STALE` | Cached, past TTL | Desaturated, freshness strip visible | `16:49 · 14:02` |
+| `CERTAIN` | Observed and fresh | `ink`, crisp edge, mono numerals | `16:49` |
+| `ESTIMATED` | Interpolated or predicted | `estimate` ink, **dashed underline**, slow breathe | `~16:49` |
+| `STALE` | Cached, past TTL | `ink2` + freshness strip beside it | `16:49 · 14:02` |
 | `UNKNOWN` | Upstream has no value | Em-dash, never zero, never blank | `—` |
+
+### 4.1a Confidence never rides on opacity *(a correction)*
+
+The obvious way to make an estimate *look* less certain is to fade it. **That is wrong, and this system explicitly forbids it.**
+
+Fading costs legibility, and it takes it from precisely the values the user needs most — the ETA is usually the single most important number on the screen. A first draft of these tokens set `ESTIMATED` to 60% ink and measured **2.53:1 in Light, 3.63:1 in Dark**, far below the 4.5:1 floor. The design intent was right; the channel was the worst possible choice.
+
+Confidence therefore rides only on channels that cost nothing:
+
+| Channel | Carries | Survives on |
+|---|---|---|
+| **Copy** — the `~` prefix | ESTIMATED | Everywhere, including Glance widgets and RemoteViews |
+| **Edge** — dashed underline | ESTIMATED | In-app only |
+| **Motion** — the breathe | ESTIMATED position marker | In-app only, reduced-motion off |
+| **Adjacency** — freshness strip | STALE | Everywhere |
+| **Semantics** — the word "estimated" | All | Screen readers |
+
+`estimate` is a **full-contrast** token (= `ink2`) in all three themes, gated by `light/dark/sunlight_estimates_stay_readable`. Note that copy is the only channel that survives on every surface — which is why the `~` is a *rule*, not a flourish.
 
 ### 4.2 Rules
 
@@ -318,20 +348,22 @@ Haptics are a **third redundant channel** alongside visual and audio — critica
 | 1.4.3 Contrast (minimum) | ✅ All fact-bearing pairs ≥4.5:1, composited. 9 CI tests. |
 | 1.4.1 Use of colour | ✅ icon + word + colour everywhere; greyscale-legible |
 | 1.4.11 Non-text contrast | ✅ brand ≥3:1 in all themes |
-| 1.4.4 Resize text | ✅ sp throughout, reflow to 200% |
+| 2.4.13 Focus appearance (token) | ✅ `focus` ≥3:1 vs surface, bg and surface2, all themes |
 | 2.5.8 Target size (minimum) | ✅ ≥48dp, exceeds the 24dp AA floor |
 | 1.3.1 Info & relationships | ✅ semantic grouping; chips carry one description |
+| 4.1.2 Name, role, value (confidence) | ✅ epistemic state reaches TalkBack in words |
 
 ### 9.2 Requires device verification
 
 These cannot be asserted from static analysis, and I am not claiming them:
 
-| Criterion | What must be tested |
+| Criterion | Status / what must be tested |
 |---|---|
-| 2.4.13 Focus appearance | Focus ring ≥3:1 against *every* backdrop it lands on, keyboard + switch access |
-| 4.1.2 Name, role, value | Full TalkBack pass on all screens in EN and HI |
-| 2.5.7 Dragging movements | Map pan and sheet drag need non-drag alternatives |
-| 1.4.10 Reflow | 200% text × 320dp width, every screen |
+| **1.4.4 Resize text** | ❌ **Not met.** Font scale clamped at 1.3× (§2.4). Needs per-screen reflow work. |
+| **1.4.10 Reflow** | ❌ Blocked on the same work: 200% text × 320dp width, every screen |
+| 2.4.13 Focus appearance | ⚠️ Token verified; the *rendered ring* (thickness, offset, keyboard + switch access) is untested |
+| 4.1.2 Name, role, value | ⚠️ Confidence path covered; full TalkBack pass on all screens in EN and HI outstanding |
+| 2.5.7 Dragging movements | ⚠️ Map pan and sheet drag need non-drag alternatives |
 
 ### 9.3 Beyond compliance
 
@@ -370,22 +402,26 @@ The selected direction puts the answer outside the app. That surface does **not*
 | Delivered | Location |
 |---|---|
 | Corrected palette, all three themes | `core/design/Colors.kt`, `Semaphore.kt` |
-| Composite-aware contrast gate, 9 tests | `test/SemaphoreContrastTest.kt` ✅ green |
+| Composite-aware contrast gate, **20 tests** | `test/SemaphoreContrastTest.kt` ✅ green |
+| Unified token set — `boardRed`, `estimate`, `focus`, `brand2` folded into `RailcastColors` | `core/design/Colors.kt` |
+| Sunlight theme selectable (FR-5.3) | `core/design/Theme.kt` |
+| `ConfidenceValue` primitive, required `Confidence` | `core/design/ConfidenceValue.kt` |
+| Confidence honesty rules as tests | `test/ConfidenceValueTest.kt` ✅ green |
 | Spacing / radius scales | `core/design/Dimens.kt` |
 | Type scale, tabular numerals | `core/design/Type.kt` |
-| `Confidence` enum, motion ladder | `core/design/Semaphore.kt` |
 | `StatusChip`, `BoardHero`, `MonoNumerals` | `core/design/` |
 
 ### Not yet built
 
 Ordered by dependency. Each is a separate reviewable change; the structural ones need a plan first per `android/CLAUDE.md`.
 
-1. **Fold `SemaphoreTokens` into `RailcastColors`** — currently standalone (Stage 0). Mechanical; unblocks the rest.
-2. **`ConfidenceValue` primitive** with required `Confidence` param — the enforcement mechanism for Law 2.
-3. **`MaskedPnr` type** replacing `String` in UI/analytics — the enforcement mechanism for FR-4.3.
-4. **Generated XML colour resources** + CI equality assertion (§10.4).
-5. ⚠ **Three-tab restructure** — needs the PRD §7 amendment first.
-6. ⚠ **Ambient layer** (Glance widget, live notification) — needs the device matrix first.
+1. **Adopt `ConfidenceValue` at call sites.** The primitive exists; the screens still render live values directly. Until they migrate, Law 2 is enforceable but not enforced.
+2. **Sunlight toggle plumbing.** The theme accepts `sunlight`; it needs a DataStore preference and the FR-5.3 ambient-light auto-suggest.
+3. **Text reflow to 200%**, replacing the 1.3× clamp (§2.4). The largest outstanding a11y item.
+4. **`MaskedPnr` type** replacing `String` in UI/analytics — the enforcement mechanism for FR-4.3.
+5. **Generated XML colour resources** + CI equality assertion (§10.4).
+6. ⚠ **Three-tab restructure** — needs the PRD §7 amendment first.
+7. ⚠ **Ambient layer** (Glance widget, live notification) — needs the device matrix first.
 
 ---
 
