@@ -4,6 +4,7 @@ import androidx.compose.ui.graphics.Color
 import app.railcast.core.design.RailcastColors
 import app.railcast.core.design.RailcastDarkColors
 import app.railcast.core.design.RailcastLightColors
+import app.railcast.core.design.RailcastSunlightColors
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -66,11 +67,10 @@ class DesignTokenParityTest {
             assertEquals("$label token $name drifted from Colors.kt", want, actual[name])
         }
         // Catches a token added to XML that no Kotlin field backs.
-        assertEquals(
-            "$label has XML tokens with no Kotlin source: ${actual.keys - expected.keys}",
-            emptySet<String>(),
-            actual.keys - expected.keys,
-        )
+        // rc_sun_* are theme-selected in code rather than by qualifier, and are
+        // checked by sunlight_xml_matches_kotlin instead.
+        val unexplained = actual.keys - expected.keys - actual.keys.filter { it.startsWith("rc_sun_") }.toSet()
+        assertEquals("$label has XML tokens with no Kotlin source: $unexplained", emptySet<String>(), unexplained)
     }
 
     @Test fun light_xml_matches_kotlin() =
@@ -78,4 +78,26 @@ class DesignTokenParityTest {
 
     @Test fun dark_xml_matches_kotlin() =
         assertParity("src/main/res/values-night/design_tokens.xml", RailcastDarkColors, "dark")
+
+    /**
+     * Sunlight lives only in values/ — it is a user choice, not a configuration,
+     * so no qualifier selects it and it must not flip with night mode. The
+     * widget reads the preference and picks these tokens itself, which means
+     * they can drift from Kotlin exactly like the rest.
+     */
+    @Test fun sunlight_xml_matches_kotlin() {
+        val actual = parse(File("src/main/res/values/design_tokens.xml"))
+        val c = RailcastSunlightColors
+        val expected = mapOf(
+            "rc_sun_board" to hex(c.board),
+            "rc_sun_ink" to hex(c.ink),
+            "rc_sun_ink3" to hex(c.ink3),
+            "rc_sun_green" to hex(c.green),
+            "rc_sun_amber" to hex(c.amber),
+            "rc_sun_red" to hex(c.red),
+        )
+        for ((name, want) in expected) {
+            assertEquals("sunlight token $name drifted from Semaphore.kt", want, actual[name])
+        }
+    }
 }

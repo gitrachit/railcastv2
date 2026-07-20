@@ -16,3 +16,7 @@ CLAUDE.local.md
 dump.rdb
 packages/directory/ingest/raw/
 android/.kotlin/
+
+# Device logcat dumps captured during manual testing
+android/crash.txt
+*.logcat

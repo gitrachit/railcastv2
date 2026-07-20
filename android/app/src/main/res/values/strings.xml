@@ -10,11 +10,15 @@
     <string name="nav_journeys">Journeys</string>
     <string name="nav_find">Find</string>
     <string name="nav_you">You</string>
-    <string name="find_mode_station">Station board</string>
     <string name="find_mode_plan">Plan a trip</string>
+    <string name="find_hint">Train, PNR, station, or “Delhi to Goa”</string>
+    <string name="find_open_pnr">Check this PNR</string>
     <string name="widget_description">Your next journey — delay, arrival and platform at a glance.</string>
     <string name="widget_empty">Track a train</string>
     <string name="widget_others">+%1$d more</string>
+    <string name="live_channel_name">Live journey</string>
+    <string name="live_channel_desc">A silent, dismissible update on the journey you are travelling now.</string>
+    <string name="live_action_mute">Mute</string>
 
     <!-- Home -->
     <string name="home_greeting">Where to?</string>

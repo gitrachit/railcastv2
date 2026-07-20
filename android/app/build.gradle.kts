@@ -35,6 +35,7 @@ android {
         targetSdk = 35
         versionCode = 1
         versionName = "0.1.0"
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         // BFF base URL (contracts §0); see railcastBaseUrl above for overrides.
         buildConfigField("String", "BASE_URL", "\"$railcastBaseUrl\"")
@@ -118,6 +119,16 @@ dependencies {
 
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)
+
+    // Instrumentation: the accessibility checks that cannot be made on the JVM
+    // (real text scaling, real TalkBack semantics). Run with
+    // `./gradlew :app:connectedDebugAndroidTest` against a device.
+    androidTestImplementation(libs.junit)
+    androidTestImplementation(libs.androidx.test.ext.junit)
+    androidTestImplementation(libs.androidx.test.runner)
+    androidTestImplementation(platform(libs.androidx.compose.bom))
+    androidTestImplementation(libs.androidx.compose.ui.test.junit4)
+    debugImplementation(libs.androidx.compose.ui.test.manifest)
 }
 
 // FCM config ships only when the Firebase file exists — the build stays green

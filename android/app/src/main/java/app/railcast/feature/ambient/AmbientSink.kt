@@ -20,10 +20,24 @@ fun interface AmbientSink {
     }
 }
 
-/** Writes snapshots to [AmbientRepository] and nudges the widget to redraw. */
+/**
+ * Publishes to every ambient surface: the home-screen widget and the lockscreen
+ * live notification. Both render from the same resolved state, so they cannot
+ * show different answers for the same journey.
+ */
 class WidgetAmbientSink(private val context: Context) : AmbientSink {
     override fun publish(journeys: List<AmbientJourney>) {
-        AmbientRepository.writeSnapshot(context, journeys)
+        // The user's mutes are applied BEFORE resolution, so a muted journey
+        // cannot win the urgency sort and reappear on either surface.
+        val visible = AmbientSuppression.filter(context, journeys)
+        AmbientSuppression.prune(context, journeys.map { it.trainNo }.toSet())
+
+        AmbientRepository.writeSnapshot(context, visible)
+        LiveJourneyNotification.render(
+            context,
+            Ambient.resolve(visible),
+            AmbientRepository.ageSeconds(context),
+        )
     }
 }
 

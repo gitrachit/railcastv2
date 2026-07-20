@@ -11,11 +11,15 @@
     <string name="nav_journeys">यात्राएँ</string>
     <string name="nav_find">खोजें</string>
     <string name="nav_you">आप</string>
-    <string name="find_mode_station">स्टेशन बोर्ड</string>
     <string name="find_mode_plan">यात्रा प्लान करें</string>
+    <string name="find_hint">ट्रेन, PNR, स्टेशन, या “दिल्ली से गोवा”</string>
+    <string name="find_open_pnr">यह PNR देखें</string>
     <string name="widget_description">आपकी अगली यात्रा — देरी, आगमन और प्लेटफ़ॉर्म एक नज़र में।</string>
     <string name="widget_empty">ट्रेन ट्रैक करें</string>
     <string name="widget_others">+%1$d और</string>
+    <string name="live_channel_name">लाइव यात्रा</string>
+    <string name="live_channel_desc">आप जिस यात्रा पर हैं उसका मौन, हटाने योग्य अपडेट।</string>
+    <string name="live_action_mute">म्यूट</string>
 
     <!-- Home -->
     <string name="home_greeting">कहाँ जाना है?</string>

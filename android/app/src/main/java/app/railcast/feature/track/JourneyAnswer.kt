@@ -15,9 +15,17 @@ import app.railcast.core.net.TrainStatus
  */
 object JourneyAnswer {
 
-    /** Arrival at the next stop is a projection: the train is not there yet. */
-    fun confidence(status: TrainStatus): Confidence = when (status.state) {
-        "cancelled" -> Confidence.UNKNOWN
+    /**
+     * Arrival at the next stop is a projection: the train is not there yet.
+     *
+     * When the screen is serving cached data, it is something weaker still —
+     * not a projection from *current* delay but the last thing we knew, which
+     * may be hours old. STALE says that; ESTIMATED would overclaim, implying a
+     * live calculation that is not happening (FR-9.1, FR-11.1).
+     */
+    fun confidence(status: TrainStatus, stale: Boolean = false): Confidence = when {
+        status.state == "cancelled" -> Confidence.UNKNOWN
+        stale -> Confidence.STALE
         else -> Confidence.ESTIMATED
     }
 
@@ -26,11 +34,13 @@ object JourneyAnswer {
      * that has arrived, or never started, has no consequence to state, and
      * inventing one would be worse than saying nothing.
      */
-    fun consequence(status: TrainStatus): String? {
+    fun consequence(status: TrainStatus, stale: Boolean = false): String? {
         val next = status.nextStation ?: return null
         val eta = next.etaActual ?: next.etaScheduled
         if (eta.isBlank()) return null
-        val prefix = if (confidence(status) == Confidence.ESTIMATED) "~" else ""
+        // Only a live projection earns the `~`. A stale value is marked by the
+        // freshness strip beside it instead, so the two are never confused.
+        val prefix = if (confidence(status, stale) == Confidence.ESTIMATED) "~" else ""
         return "${next.name} $prefix$eta"
     }
 
