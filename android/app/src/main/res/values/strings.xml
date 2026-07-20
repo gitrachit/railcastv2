@@ -12,6 +12,9 @@
     <string name="nav_you">You</string>
     <string name="find_mode_station">Station board</string>
     <string name="find_mode_plan">Plan a trip</string>
+    <string name="widget_description">Your next journey — delay, arrival and platform at a glance.</string>
+    <string name="widget_empty">Track a train</string>
+    <string name="widget_others">+%1$d more</string>
 
     <!-- Home -->
     <string name="home_greeting">Where to?</string>
