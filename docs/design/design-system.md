@@ -407,6 +407,8 @@ The selected direction puts the answer outside the app. That surface does **not*
 | Sunlight theme selectable (FR-5.3) | `core/design/Theme.kt` |
 | `ConfidenceValue` primitive, required `Confidence` | `core/design/ConfidenceValue.kt` |
 | Confidence honesty rules as tests | `test/ConfidenceValueTest.kt` ✅ green |
+| Sunlight selectable + persisted, EN/HI toggle | `core/design/SunlightStore.kt`, `feature/alerts/` |
+| Theme precedence as a pure, tested rule | `test/ThemeSelectionTest.kt` ✅ green |
 | Spacing / radius scales | `core/design/Dimens.kt` |
 | Type scale, tabular numerals | `core/design/Type.kt` |
 | `StatusChip`, `BoardHero`, `MonoNumerals` | `core/design/` |
@@ -415,9 +417,9 @@ The selected direction puts the answer outside the app. That surface does **not*
 
 Ordered by dependency. Each is a separate reviewable change; the structural ones need a plan first per `android/CLAUDE.md`.
 
-1. **Adopt `ConfidenceValue` at call sites.** The primitive exists; the screens still render live values directly. Until they migrate, Law 2 is enforceable but not enforced.
-2. **Sunlight toggle plumbing.** The theme accepts `sunlight`; it needs a DataStore preference and the FR-5.3 ambient-light auto-suggest.
-3. **Text reflow to 200%**, replacing the 1.3× clamp (§2.4). The largest outstanding a11y item.
+1. **Finish `ConfidenceValue` adoption.** Confirmation odds now render as `ESTIMATED`. Remaining candidates: the Track timeline's future ETAs, and `STALE` on cached screens — both currently render as certain.
+2. **Ambient-light auto-suggest for Sunlight** (FR-5.3). The mode is now user-selectable; the sensor-driven prompt is not built. It must never override an explicit choice, which is why `SunlightStore` holds only the explicit one.
+3. **Text reflow to 200%**, replacing the 1.3× clamp (§2.4). The largest outstanding a11y item, and the only one blocking a WCAG AA claim.
 4. **`MaskedPnr` type** replacing `String` in UI/analytics — the enforcement mechanism for FR-4.3.
 5. **Generated XML colour resources** + CI equality assertion (§10.4).
 6. ⚠ **Three-tab restructure** — needs the PRD §7 amendment first.
