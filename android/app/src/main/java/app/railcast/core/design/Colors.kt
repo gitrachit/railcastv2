@@ -38,15 +38,18 @@ val RailcastLightColors = RailcastColors(
     surface2 = Color(0xFFF1F4F6),
     ink = Color(0xFF0F2A33),
     ink2 = Color(0xFF54696F),
-    ink3 = Color(0xFF8FA1A8),
+    ink3 = Color(0xFF5B6E75),
     line = Color(0xFFDCE3E7),
     brand = Color(0xFF2743C4),
     brandSoft = Color(0xFFEAEEFB),
-    green = Color(0xFF178A52),
-    greenSoft = Color(0x24178A52), // rgba(23,138,82,.14)
-    amber = Color(0xFFC9770B),
-    amberSoft = Color(0x24C9770B), // rgba(201,119,11,.14)
-    red = Color(0xFFC33F3F),
+    // Signal colours are darkened from the prototype so that StatusChip's
+    // *composited* pair (text over the 14% tint over surface OR bg) clears
+    // 4.5:1. Measuring text against a plain surface overstated these by ~1 stop.
+    green = Color(0xFF126C40),
+    greenSoft = Color(0x24178A52), // rgba(23,138,82,.14) — tint hue unchanged
+    amber = Color(0xFF8B5208),
+    amberSoft = Color(0x24C9770B), // rgba(201,119,11,.14) — tint hue unchanged
+    red = Color(0xFFC03C3C),
     redSoft = Color(0xFFFBECEC),
     board = Color(0xFF0F2A33),
     boardGreen = Color(0xFF3DE08A),
@@ -61,7 +64,7 @@ val RailcastDarkColors = RailcastColors(
     surface2 = Color(0xFF15303A),
     ink = Color(0xFFEAF3F4),
     ink2 = Color(0xFF9DB4BB),
-    ink3 = Color(0xFF6C868E),
+    ink3 = Color(0xFF708A92), // lifted to clear 4.5:1 on surface (was 4.28:1)
     line = Color(0xFF1E3B45),
     brand = Color(0xFF8098FF),
     brandSoft = Color(0xFF182747),

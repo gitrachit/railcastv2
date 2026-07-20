@@ -32,15 +32,17 @@ val RailcastSunlightColors = RailcastColors(
     line = Color(0xFFBBBBBB),
     brand = Color(0xFF1D33A0),
     brandSoft = Color(0xFFD8DEF6),
-    green = Color(0xFF0B6B3C),
+    // Deepened so the composited chip pair (text on the opaque tint) clears the
+    // 7:1 Sunlight bar, not merely text-on-white.
+    green = Color(0xFF095731),
     greenSoft = Color(0xFFD9EEE2),
-    amber = Color(0xFF8F5400),
+    amber = Color(0xFF6E4100),
     amberSoft = Color(0xFFF3E7D5),
-    red = Color(0xFF9E2B2B),
+    red = Color(0xFF852424),
     redSoft = Color(0xFFF2DEDE),
     board = Color(0xFFFFFFFF),
-    boardGreen = Color(0xFF0B6B3C),
-    boardAmber = Color(0xFF8F5400),
+    boardGreen = Color(0xFF095731),
+    boardAmber = Color(0xFF6E4100),
     boardInk = Color(0xFF333333),
     isDark = false,
 )
@@ -53,7 +55,7 @@ object SemaphoreTokens {
     // Board cancellation — today's board sub-palette has no red (FR-2.4 on Board).
     val boardRedLight = Color(0xFFFF7A7A)
     val boardRedDark = Color(0xFFFF7A7A)
-    val boardRedSun = Color(0xFF9E2B2B)
+    val boardRedSun = Color(0xFF852424)
 
     // "estimate" — every interpolated/predicted value renders reduced-opacity + dashed (P8).
     val estimateLight = Color(0x9954696F) // ink2 @ 60%
